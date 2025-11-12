@@ -1,5 +1,5 @@
 <?php
-// TourLink Server Diagnostic Script
+// tourlink Server Diagnostic Script
 // This file helps diagnose issues on the deployed server
 
 error_reporting(E_ALL);
