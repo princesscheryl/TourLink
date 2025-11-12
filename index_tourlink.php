@@ -144,6 +144,34 @@ $categories = get_all_service_categories_ctr();
             color: white;
         }
 
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #2d6a4f;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
@@ -708,6 +736,32 @@ $categories = get_all_service_categories_ctr();
             .footer-container {
                 grid-template-columns: 1fr 1fr;
             }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 68px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 68px);
+                background: white;
+                flex-direction: column;
+                padding: 40px;
+                gap: 20px;
+                transition: left 0.3s;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .top-bar {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
@@ -722,6 +776,16 @@ $categories = get_all_service_categories_ctr();
             }
             .testimonials-grid {
                 grid-template-columns: 1fr;
+            }
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            .destinations-tabs {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            .hero-buttons {
+                flex-direction: column;
             }
         }
     </style>
@@ -754,7 +818,7 @@ $categories = get_all_service_categories_ctr();
     <nav class="main-nav">
         <div class="nav-container">
             <a href="index_tourlink.php" class="logo">TourLink</a>
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="navMenu">
                 <li><a href="index_tourlink.php">Home</a></li>
                 <li><a href="view/all_services.php">Destinations</a></li>
                 <li><a href="view/all_services.php">Tour Listing</a></li>
@@ -767,6 +831,11 @@ $categories = get_all_service_categories_ctr();
                 <?php else: ?>
                     <a href="login/login.php" class="btn-signin">Sign In</a>
                 <?php endif; ?>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </nav>
@@ -1113,5 +1182,57 @@ $categories = get_all_service_categories_ctr();
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Category Tabs
+        const tabButtons = document.querySelectorAll('.tab-btn');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // In a real application, this would filter the destinations
+                // For now, it just changes the active state
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
