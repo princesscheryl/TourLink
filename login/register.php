@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Register - Shopify</title>
+    <title>Sign Up - TourLink</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/country-select-js/2.1.1/css/countrySelect.min.css">
-    <link href="../css/index.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
-            background: var(--gray-50);
+            background: #f8f9fa;
         }
 
         .auth-container {
@@ -22,9 +26,9 @@
             grid-template-columns: 1fr 1fr;
         }
 
-        /* Left Side - Animated Illustrations */
+        /* Left Side - Tourism Visual */
         .auth-visual {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -78,10 +82,11 @@
         }
 
         .visual-subtitle {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             opacity: 0.95;
             margin-bottom: 40px;
             animation: slideInRight 1s ease-out;
+            line-height: 1.6;
         }
 
         @keyframes slideInRight {
@@ -95,14 +100,14 @@
             }
         }
 
-        /* Animated Product Cards */
-        .product-carousel {
+        /* Tourism Feature Cards */
+        .feature-carousel {
             display: flex;
             gap: 20px;
             animation: slide 20s linear infinite;
         }
 
-        .product-mini-card {
+        .feature-mini-card {
             min-width: 150px;
             height: 150px;
             background: rgba(255, 255, 255, 0.15);
@@ -117,15 +122,15 @@
             animation: floatCard 3s infinite ease-in-out;
         }
 
-        .product-mini-card:nth-child(odd) {
+        .feature-mini-card:nth-child(odd) {
             animation-delay: 0.5s;
         }
 
-        .product-mini-card i {
+        .feature-mini-card i {
             font-size: 3rem;
         }
 
-        .product-mini-card span {
+        .feature-mini-card span {
             font-size: 0.9rem;
             font-weight: 600;
         }
@@ -163,31 +168,31 @@
 
         .logo-text {
             font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--gray-900);
+            font-weight: 800;
+            color: #1a1a1a;
             margin-bottom: 8px;
         }
 
         .logo-dot {
-            color: var(--primary);
+            color: #2d6a4f;
         }
 
         .form-title {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--gray-900);
+            color: #1a1a1a;
             margin-bottom: 12px;
         }
 
         .form-subtitle {
-            color: var(--gray-600);
+            color: #666;
             margin-bottom: 32px;
             font-size: 1.1rem;
         }
 
         .form-label {
             font-weight: 600;
-            color: var(--gray-700);
+            color: #333;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -197,15 +202,15 @@
 
         .form-control {
             padding: 12px 16px;
-            border: 2px solid var(--gray-300);
+            border: 2px solid #e5e5e5;
             border-radius: 8px;
             font-size: 0.95rem;
             transition: all 0.3s;
         }
 
         .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(103, 146, 103, 0.1);
+            border-color: #2d6a4f;
+            box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.1);
             outline: none;
         }
 
@@ -217,7 +222,7 @@
 
         .role-option {
             padding: 16px;
-            border: 2px solid var(--gray-300);
+            border: 2px solid #e5e5e5;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
@@ -229,17 +234,17 @@
         }
 
         .role-option:hover {
-            border-color: var(--primary-light);
-            background: var(--gray-50);
+            border-color: #74c69d;
+            background: #f8f9fa;
         }
 
         .role-option input[type="radio"]:checked + .role-content {
-            color: var(--primary);
+            color: #2d6a4f;
         }
 
         .role-option input[type="radio"]:checked ~ {
-            border-color: var(--primary);
-            background: rgba(103, 146, 103, 0.05);
+            border-color: #2d6a4f;
+            background: rgba(45, 106, 79, 0.05);
         }
 
         .role-content {
@@ -253,7 +258,7 @@
         }
 
         .btn-register {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
             color: white;
             border: none;
             padding: 16px;
@@ -261,7 +266,7 @@
             font-weight: 700;
             font-size: 1.1rem;
             transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(103, 146, 103, 0.3);
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -286,17 +291,17 @@
 
         .btn-register:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(103, 146, 103, 0.4);
+            box-shadow: 0 8px 24px rgba(45, 106, 79, 0.4);
         }
 
         .auth-footer {
             text-align: center;
             margin-top: 24px;
-            color: var(--gray-600);
+            color: #666;
         }
 
         .auth-footer a {
-            color: var(--primary);
+            color: #2d6a4f;
             text-decoration: none;
             font-weight: 600;
         }
@@ -306,7 +311,7 @@
         }
 
         .back-link {
-            color: var(--gray-600);
+            color: #666;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -317,7 +322,7 @@
         }
 
         .back-link:hover {
-            color: var(--primary);
+            color: #2d6a4f;
         }
 
         /* Responsive */
@@ -341,29 +346,29 @@
         <!-- Left Side - Visual -->
         <div class="auth-visual">
             <div class="visual-content">
-                <h1 class="visual-title">Join Our Community!</h1>
-                <p class="visual-subtitle">Create an account and start your shopping journey</p>
+                <h1 class="visual-title">Start Your Adventure!</h1>
+                <p class="visual-subtitle">Join TourLink and discover unforgettable experiences across Ghana's<br>most beautiful destinations</p>
 
-                <div class="product-carousel">
-                    <div class="product-mini-card">
-                        <i class="fa fa-laptop"></i>
-                        <span>Electronics</span>
+                <div class="feature-carousel">
+                    <div class="feature-mini-card">
+                        <i class="fa fa-map-marked-alt"></i>
+                        <span>Explore Ghana</span>
                     </div>
-                    <div class="product-mini-card">
-                        <i class="fa fa-tshirt"></i>
-                        <span>Fashion</span>
+                    <div class="feature-mini-card">
+                        <i class="fa fa-umbrella-beach"></i>
+                        <span>Beach Tours</span>
                     </div>
-                    <div class="product-mini-card">
-                        <i class="fa fa-home"></i>
-                        <span>Home Decor</span>
+                    <div class="feature-mini-card">
+                        <i class="fa fa-mountain"></i>
+                        <span>Adventures</span>
                     </div>
-                    <div class="product-mini-card">
-                        <i class="fa fa-laptop"></i>
-                        <span>Electronics</span>
+                    <div class="feature-mini-card">
+                        <i class="fa fa-landmark"></i>
+                        <span>Historical Sites</span>
                     </div>
-                    <div class="product-mini-card">
-                        <i class="fa fa-tshirt"></i>
-                        <span>Fashion</span>
+                    <div class="feature-mini-card">
+                        <i class="fa fa-map-marked-alt"></i>
+                        <span>Explore Ghana</span>
                     </div>
                 </div>
             </div>
@@ -372,21 +377,31 @@
         <!-- Right Side - Form -->
         <div class="auth-form-side">
             <div class="form-container">
-                <a href="../index.php" class="back-link">
+                <a href="../index_tourlink.php" class="back-link">
                     <i class="fa fa-arrow-left"></i> Back to Home
                 </a>
 
-                <div class="logo-text">shopify<span class="logo-dot">.</span></div>
+                <div class="logo-text">TourLink<span class="logo-dot">.</span></div>
                 <h2 class="form-title">Create Account</h2>
-                <p class="form-subtitle">Join thousands of happy shoppers today</p>
+                <p class="form-subtitle">Join thousands of travelers exploring Ghana</p>
 
                 <form method="POST" action="" id="register-form">
-                    <div class="mb-3">
-                        <label for="full_name" class="form-label">
-                            <i class="fa fa-user"></i> Full Name
-                        </label>
-                        <input type="text" class="form-control" id="full_name" name="full_name"
-                               placeholder="John Doe" required>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">
+                                <i class="fa fa-user"></i> First Name
+                            </label>
+                            <input type="text" class="form-control" id="first_name" name="first_name"
+                                   placeholder="John" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">
+                                <i class="fa fa-user"></i> Last Name
+                            </label>
+                            <input type="text" class="form-control" id="last_name" name="last_name"
+                                   placeholder="Doe" required>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -398,59 +413,44 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="phone" class="form-label">
+                            <i class="fa fa-phone"></i> Phone Number (Optional)
+                        </label>
+                        <input type="text" class="form-control" id="phone" name="phone"
+                               placeholder="+233 24 123 4567">
+                    </div>
+
+                    <div class="mb-3">
                         <label for="password" class="form-label">
                             <i class="fa fa-lock"></i> Password
                         </label>
                         <input type="password" class="form-control" id="password" name="password"
-                               placeholder="Create a strong password" required>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="country" class="form-label">
-                                <i class="fa fa-flag"></i> Country
-                            </label>
-                            <input type="text" class="form-control" id="country" name="country"
-                                   placeholder="Your country" required>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="city" class="form-label">
-                                <i class="fa fa-city"></i> City
-                            </label>
-                            <input type="text" class="form-control" id="city" name="city"
-                                   placeholder="Your city" required>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="contact" class="form-label">
-                            <i class="fa fa-phone"></i> Phone Number
-                        </label>
-                        <input type="text" class="form-control" id="contact" name="contact"
-                               placeholder="e.g., 0241234567" required>
+                               placeholder="Minimum 8 characters" required>
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label">
-                            <i class="fa fa-id-badge"></i> Register As
+                            <i class="fa fa-id-badge"></i> I want to
                         </label>
                         <div class="role-selector">
                             <label class="role-option">
-                                <input type="radio" name="role" value="2" checked>
+                                <input type="radio" name="user_type" value="tourist" checked>
                                 <div class="role-content">
-                                    <i class="fa fa-shopping-cart"></i>
-                                    <span>Customer</span>
+                                    <i class="fa fa-suitcase-rolling"></i>
+                                    <span>Book Tours</span>
+                                    <small style="font-size: 0.75rem; color: #666;">Tourist</small>
                                 </div>
                             </label>
                             <label class="role-option">
-                                <input type="radio" name="role" value="1">
+                                <input type="radio" name="user_type" value="provider">
                                 <div class="role-content">
-                                    <i class="fa fa-store"></i>
-                                    <span>Business Owner</span>
+                                    <i class="fa fa-building"></i>
+                                    <span>Offer Services</span>
+                                    <small style="font-size: 0.75rem; color: #666;">Provider</small>
                                 </div>
                             </label>
                         </div>
+                        <small class="text-muted">Providers can list tourism services after account verification</small>
                     </div>
 
                     <button type="submit" class="btn-register w-100">
@@ -468,23 +468,133 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/country-select-js/2.1.1/js/countrySelect.min.js"></script>
-    <script src="../js/register.js"></script>
     <script>
-        // Make role selector more interactive
-        document.querySelectorAll('.role-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.role-option').forEach(opt => {
-                    opt.style.borderColor = 'var(--gray-300)';
-                    opt.style.background = 'white';
+        $(document).ready(function(){
+            // Make role selector interactive
+            document.querySelectorAll('.role-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.role-option').forEach(opt => {
+                        opt.style.borderColor = '#e5e5e5';
+                        opt.style.background = 'white';
+                    });
+                    this.style.borderColor = '#2d6a4f';
+                    this.style.background = 'rgba(45, 106, 79, 0.05)';
                 });
-                this.style.borderColor = 'var(--primary)';
-                this.style.background = 'rgba(103, 146, 103, 0.05)';
+            });
+
+            // Set initial active state
+            document.querySelector('.role-option input[type="radio"]:checked').parentElement.click();
+
+            // Handle form submission
+            $('#register-form').submit(function(e){
+                e.preventDefault();
+
+                var first_name = $('#first_name').val().trim();
+                var last_name = $('#last_name').val().trim();
+                var email = $('#email').val().trim();
+                var phone = $('#phone').val().trim();
+                var password = $('#password').val();
+                var user_type = $('input[name="user_type"]:checked').val() || 'tourist';
+
+                // Validation
+                if (first_name === '' || last_name === '' || email === '' || password === '') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Missing Fields',
+                        text: 'Please fill in all required fields!'
+                    });
+                    return;
+                }
+
+                if (!/^[a-zA-Z\s\-']{2,50}$/.test(first_name)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Name',
+                        text: 'First name must be 2-50 characters (letters only)'
+                    });
+                    return;
+                }
+
+                if (!/^[a-zA-Z\s\-']{2,50}$/.test(last_name)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Name',
+                        text: 'Last name must be 2-50 characters (letters only)'
+                    });
+                    return;
+                }
+
+                var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(email) || email.length > 100) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Email',
+                        text: 'Please enter a valid email address'
+                    });
+                    return;
+                }
+
+                if (password.length < 8) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Weak Password',
+                        text: 'Password must be at least 8 characters long'
+                    });
+                    return;
+                }
+
+                if (phone !== '' && !/^[\d\s\+\-\(\)]{7,20}$/.test(phone)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Phone',
+                        text: 'Please enter a valid phone number'
+                    });
+                    return;
+                }
+
+                // Submit via AJAX
+                $.ajax({
+                    url: '../actions/register_user_action.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        first_name: first_name,
+                        last_name: last_name,
+                        email: email,
+                        phone: phone,
+                        password: password,
+                        user_type: user_type
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message
+                            }).then((result) => {
+                                if (result.isConfirmed && response.redirect) {
+                                    window.location.href = response.redirect;
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Registration Failed',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Registration error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Connection Error',
+                            text: 'Unable to connect to server. Please try again.'
+                        });
+                    }
+                });
             });
         });
-
-        // Set initial active state
-        document.querySelector('.role-option input[type="radio"]:checked').parentElement.click();
     </script>
 </body>
 </html>
