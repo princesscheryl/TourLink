@@ -36,10 +36,72 @@ $categories = get_all_service_categories_ctr();
             background: #fafafa;
         }
 
+        /* Top Info Bar */
+        .top-bar {
+            background: #2d6a4f;
+            color: white;
+            padding: 12px 0;
+            font-size: 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }
+
+        .top-bar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar-left {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .top-bar-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.3s;
+        }
+
+        .top-bar a:hover {
+            opacity: 0.8;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .social-links span {
+            margin-right: 5px;
+            font-weight: 500;
+        }
+
+        .social-links a {
+            font-size: 16px;
+        }
+
         /* Navigation */
         .main-nav {
             position: fixed;
-            top: 0;
+            top: 48px;
             left: 0;
             right: 0;
             background: rgba(255, 255, 255, 0.95);
@@ -100,7 +162,7 @@ $categories = get_all_service_categories_ctr();
 
         /* Hero Section */
         .hero {
-            margin-top: 80px;
+            margin-top: 128px;
             height: 85vh;
             background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
                         url('https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=1600&q=80') center/cover no-repeat;
@@ -402,6 +464,18 @@ $categories = get_all_service_categories_ctr();
         }
 
         @media (max-width: 768px) {
+            .top-bar {
+                display: none;
+            }
+
+            .main-nav {
+                top: 0;
+            }
+
+            .hero {
+                margin-top: 80px;
+            }
+
             .hero h1 {
                 font-size: 40px;
             }
@@ -425,6 +499,31 @@ $categories = get_all_service_categories_ctr();
     </style>
 </head>
 <body>
+    <!-- Top Info Bar -->
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div class="top-bar-left">
+                <a href="mailto:info@tourlink.com.gh">
+                    <i class="fas fa-envelope"></i>
+                    info@tourlink.com.gh
+                </a>
+                <a href="tel:+233501234567">
+                    <i class="fas fa-phone"></i>
+                    +233 50 123 4567
+                </a>
+            </div>
+            <div class="top-bar-right">
+                <div class="social-links">
+                    <span>Follow Us:</span>
+                    <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="main-nav">
         <div class="nav-container">
