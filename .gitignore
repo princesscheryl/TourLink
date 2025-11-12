@@ -1,0 +1,26 @@
+# macOS system
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+error/php-error.log
+
+# Credentials (never push real DB details)
+settings/db_cred.php
+
+# Node / Composer (future use)
+node_modules/
+vendor/
+composer.lock
+
+# FontAwesome (too many files, use CDN instead)
+fontawesome/
+
+# Cache
+*.cache
+
+# Documentation
+CLAUDE.md
