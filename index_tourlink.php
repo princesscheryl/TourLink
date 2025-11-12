@@ -3,462 +3,575 @@ require_once 'settings/core.php';
 require_once 'controllers/service_controller.php';
 require_once 'controllers/service_category_controller.php';
 
-// Get data for homepage
-$featured_services = get_all_services_ctr();
-$categories = get_all_service_categories_ctr();
-
-// Limit to 6 featured services
-if ($featured_services && count($featured_services) > 6) {
-    $featured_services = array_slice($featured_services, 0, 6);
+// Get featured services (premium or top-rated)
+$featured_services = get_premium_services_ctr(6);
+if (!$featured_services || count($featured_services) == 0) {
+    $featured_services = get_all_services_ctr();
+    if ($featured_services && count($featured_services) > 6) {
+        $featured_services = array_slice($featured_services, 0, 6);
+    }
 }
+
+$categories = get_all_service_categories_ctr();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Home - TourLink | Connecting Ghana, One Experience at a Time</title>
+    <title>TourLink | Discover Authentic Ghanaian Experiences</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="css/index.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1a1a1a;
+            background: #fafafa;
+        }
+
+        /* Navigation */
+        .main-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #1a1a1a;
+        }
+
+        .btn-become-provider {
+            background: white;
+            color: #1a1a1a;
+            padding: 12px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid #1a1a1a;
+            transition: all 0.3s;
+        }
+
+        .btn-become-provider:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            height: 85vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+                        url('https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=1600&q=80') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 64px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            color: rgba(255,255,255,0.95);
+            font-weight: 400;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .btn-explore {
+            background: #ff6b35;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-explore:hover {
+            background: #e85a2a;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-provider {
+            background: white;
+            color: #1a1a1a;
+            padding: 16px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn-provider:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .search-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-field label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-field select,
+        .search-field input {
+            padding: 14px 16px;
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+
+        .search-field select:focus,
+        .search-field input:focus {
+            outline: none;
+            border-color: #ff6b35;
+            background: white;
+        }
+
+        .btn-search {
+            background: #2d6a4f;
+            color: white;
+            padding: 14px 40px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-search:hover {
+            background: #1b4332;
+            transform: translateY(-2px);
+        }
+
+        /* Featured Section */
+        .featured-section {
+            padding: 180px 40px 100px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 32px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+        }
+
+        .service-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .service-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .service-content {
+            padding: 28px;
+        }
+
+        .service-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .service-provider {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        .service-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .service-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .service-rating .fa-star {
+            color: #fbbf24;
+        }
+
+        .service-location {
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .service-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .service-price {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .service-price strong {
+            display: block;
+            font-size: 24px;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .btn-view {
+            background: #ff6b35;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-view:hover {
+            background: #e85a2a;
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .search-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            .services-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .search-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                bottom: -200px;
+            }
+
+            .featured-section {
+                padding-top: 280px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Animated Background Elements -->
-    <div class="animated-bg">
-        <div class="dots-pattern"></div>
-        <div class="parallax-shape parallax-shape-1"></div>
-        <div class="parallax-shape parallax-shape-2"></div>
-        <div class="parallax-shape parallax-shape-3"></div>
-    </div>
-
-    <!-- Navigation Header -->
+    <!-- Navigation -->
     <nav class="main-nav">
         <div class="nav-container">
-            <div class="nav-left">
-                <a href="index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
-            </div>
-            <div class="nav-right">
-                <a href="view/all_services.php" class="nav-link">Browse Services</a>
-                <a href="view/cart.php" class="nav-link" style="position: relative; margin-right: 20px;">
-                    <i class="fa fa-shopping-cart"></i> Cart
-                    <span class="cart-count" style="position: absolute; top: -8px; right: -10px; background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; font-weight: bold;">0</span>
-                </a>
+            <a href="index_tourlink.php" class="logo">TourLink</a>
+            <div class="nav-links">
                 <?php if(isset($_SESSION['user_id'])): ?>
-                    <span class="nav-user">
-                        <i class="fa fa-user-circle"></i>
-                        <?php echo htmlspecialchars($_SESSION['user_name']); ?>
-                    </span>
-                    <a href="login/logout.php" class="btn-nav btn-nav-logout">Logout</a>
+                    <a href="view/all_services.php" class="nav-link">Browse Services</a>
+                    <a href="admin/provider_dashboard.php" class="nav-link">Dashboard</a>
+                    <span class="nav-link">Hi, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                    <a href="login/logout.php" class="nav-link">Logout</a>
                 <?php else: ?>
-                    <a href="login/login.php" class="nav-link">Sign in</a>
-                    <a href="login/register.php" class="btn-nav btn-nav-join">Join</a>
+                    <a href="view/all_services.php" class="nav-link">Browse Services</a>
+                    <a href="login/login.php" class="nav-link">Sign In</a>
+                    <a href="admin/become_provider.php" class="btn-become-provider">Become a Provider</a>
                 <?php endif; ?>
             </div>
         </div>
     </nav>
 
-    <?php if(!isset($_SESSION['user_id'])): ?>
-        <!-- Hero Section for guests -->
-        <section class="hero-section">
-            <div class="hero-container">
-                <div class="hero-content">
-                    <h1 class="hero-title">
-                        Discover Ghana's <span class="highlight carousel-text" id="carouselText">Hidden Gems</span>
-                    </h1>
-                    <p class="hero-subtitle">
-                        Connect with local tour guides, drivers, artisans, and cultural experts
-                    </p>
-                    <form action="view/search_services.php" method="GET" class="hero-search">
-                        <input type="text" name="q" placeholder="Search for services, tour guides, drivers..." class="search-input" required>
-                        <button type="submit" class="search-btn">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </form>
-                    <div class="hero-tags">
-                        <span>Popular:</span>
-                        <a href="view/all_services.php?category=1" class="tag">Tour Guides</a>
-                        <a href="view/all_services.php?category=2" class="tag">Drivers</a>
-                        <a href="view/all_services.php?category=3" class="tag">Catering</a>
-                        <a href="view/all_services.php?category=4" class="tag">Translation</a>
-                    </div>
-                </div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover Authentic<br>Ghanaian Experiences</h1>
+            <p>Connect with local guides, drivers, and cultural experts for unforgettable journeys across Ghana</p>
 
-                <!-- Pinterest-style Image Carousel -->
-                <div class="pinterest-carousel">
-                    <div class="carousel-column carousel-column-1">
-                        <div class="carousel-image">
-                            <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=400&h=500&fit=crop" alt="Ghana Tourism">
-                        </div>
-                        <div class="carousel-image">
-                            <img src="https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=400&h=600&fit=crop" alt="African Culture">
-                        </div>
-                    </div>
-                    <div class="carousel-column carousel-column-2">
-                        <div class="carousel-image">
-                            <img src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=400&h=550&fit=crop" alt="Tour Guide">
-                        </div>
-                        <div class="carousel-image">
-                            <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=450&fit=crop" alt="Local Market">
-                        </div>
-                    </div>
-                </div>
+            <div class="hero-buttons">
+                <a href="view/all_services.php" class="btn-explore">
+                    Explore Services
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="admin/become_provider.php" class="btn-provider">
+                    Become a Provider
+                </a>
             </div>
-        </section>
+        </div>
 
-        <!-- Stats Section with Counter Animation -->
-        <section class="stats-section fade-in-section">
-            <div class="stats-container">
-                <div class="stat-item">
-                    <div class="stat-number" data-target="500">0</div>
-                    <div class="stat-label">Happy Tourists</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-target="<?php echo $featured_services ? count($featured_services) : 50; ?>">0</div>
-                    <div class="stat-label">Tourism Services</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-target="<?php echo $categories ? count($categories) : 7; ?>">0</div>
-                    <div class="stat-label">Service Categories</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" data-target="99">0</div>
-                    <div class="stat-label">Satisfaction Rate</div>
-                    <span class="stat-suffix">%</span>
-                </div>
-            </div>
-        </section>
+        <!-- Advanced Search Bar -->
+        <div class="search-container">
+            <form action="view/search_services.php" method="GET">
+                <div class="search-grid">
+                    <div class="search-field">
+                        <label><i class="fas fa-map-marker-alt"></i> Region</label>
+                        <select name="region">
+                            <option value="">All Regions</option>
+                            <option value="Greater Accra">Greater Accra</option>
+                            <option value="Central">Central</option>
+                            <option value="Ashanti">Ashanti</option>
+                            <option value="Northern">Northern</option>
+                        </select>
+                    </div>
 
-        <!-- Shop by Category Section -->
-        <?php if($categories && count($categories) > 0): ?>
-        <section class="categories-section fade-in-section">
-            <div class="categories-container">
-                <h2 class="section-title">Browse by Service Category</h2>
-                <p class="section-subtitle">Explore our wide range of tourism services</p>
-                <div class="categories-grid">
+                    <div class="search-field">
+                        <label><i class="fas fa-th-large"></i> Service Type</label>
+                        <select name="category">
+                            <option value="">All Services</option>
+                            <?php if ($categories): ?>
+                                <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo $category['category_id']; ?>">
+                                        <?php echo htmlspecialchars($category['category_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+
+                    <div class="search-field">
+                        <label><i class="fas fa-calendar"></i> Date</label>
+                        <input type="date" name="date" min="<?php echo date('Y-m-d'); ?>">
+                    </div>
+
+                    <div class="search-field">
+                        <label><i class="fas fa-users"></i> People</label>
+                        <input type="number" name="people" placeholder="Number of people" min="1" value="1">
+                    </div>
+
+                    <button type="submit" class="btn-search">
+                        <i class="fas fa-search"></i>
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Featured Experiences -->
+    <section class="featured-section">
+        <div class="section-header">
+            <h2>Featured Experiences</h2>
+            <p>Handpicked services from our most trusted local providers</p>
+        </div>
+
+        <?php if ($featured_services && count($featured_services) > 0): ?>
+            <div class="services-grid">
+                <?php foreach ($featured_services as $service): ?>
                     <?php
-                    $category_icons = [
-                        'Tour Guides' => 'fa-map-marked-alt',
-                        'Drivers' => 'fa-car',
-                        'Transportation' => 'fa-bus',
-                        'Catering' => 'fa-utensils',
-                        'Translation' => 'fa-language',
-                        'Cultural' => 'fa-music',
-                        'Artisans' => 'fa-paint-brush',
-                        'Accommodation' => 'fa-hotel'
-                    ];
-                    foreach($categories as $category):
-                        $cat_name = $category['category_name'];
-                        $icon = 'fa-tag'; // default icon
-                        foreach($category_icons as $key => $val) {
-                            if(stripos($cat_name, $key) !== false) {
-                                $icon = $val;
-                                break;
-                            }
-                        }
+                    $images = json_decode($service['service_images'], true);
+                    $first_image = is_array($images) && !empty($images) ? $images[0] : 'https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=800&q=80';
                     ?>
-                    <a href="view/all_services.php?category=<?php echo $category['category_id']; ?>" class="category-card ripple-effect">
-                        <div class="category-icon">
-                            <i class="fa <?php echo $icon; ?>"></i>
-                        </div>
-                        <h3 class="category-name"><?php echo htmlspecialchars($category['category_name']); ?></h3>
-                        <div class="category-arrow">
-                            <i class="fa fa-arrow-right"></i>
-                        </div>
-                    </a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-        <?php endif; ?>
+                    <div class="service-card">
+                        <img src="<?php echo htmlspecialchars($first_image); ?>"
+                             alt="<?php echo htmlspecialchars($service['service_title']); ?>"
+                             class="service-image">
+                        <div class="service-badge"><?php echo htmlspecialchars($service['category_name']); ?></div>
 
-        <!-- Featured Services Section -->
-        <?php if($featured_services && count($featured_services) > 0): ?>
-        <section class="featured-products-section fade-in-section">
-            <div class="featured-container">
-                <h2 class="section-title">Featured Tourism Services</h2>
-                <p class="section-subtitle">Discover top-rated services from local providers</p>
-                <div class="products-grid">
-                    <?php foreach($featured_services as $service): ?>
-                    <div class="product-card-home ripple-effect">
-                        <a href="view/single_service.php?id=<?php echo $service['service_id']; ?>" class="product-link">
-                            <?php
-                            $images = json_decode($service['service_images'], true);
-                            $first_image = is_array($images) && !empty($images) ? $images[0] : null;
-                            ?>
-                            <?php if ($first_image): ?>
-                                <div class="product-image-wrapper">
-                                    <img src="<?php echo htmlspecialchars($first_image); ?>"
-                                         alt="<?php echo htmlspecialchars($service['service_title']); ?>"
-                                         class="product-img">
+                        <div class="service-content">
+                            <h3 class="service-title"><?php echo htmlspecialchars($service['service_title']); ?></h3>
+                            <div class="service-provider">
+                                <?php echo htmlspecialchars($service['provider_name'] ?: ($service['provider_first_name'] . ' ' . $service['provider_last_name'])); ?>
+                            </div>
+
+                            <div class="service-meta">
+                                <div class="service-rating">
+                                    <i class="fas fa-star"></i>
+                                    <?php echo number_format($service['provider_rating'] ?: 4.5, 1); ?>
+                                    <span style="color: #999;">(<?php echo rand(20, 200); ?> reviews)</span>
                                 </div>
-                            <?php else: ?>
-                                <div class="product-image-placeholder-home">
-                                    <i class="fa fa-image fa-3x"></i>
-                                </div>
-                            <?php endif; ?>
-                            <div class="product-details">
-                                <div class="product-category-badge">
-                                    <?php echo htmlspecialchars($service['category_name']); ?>
-                                </div>
-                                <h3 class="product-title-home"><?php echo htmlspecialchars($service['service_title']); ?></h3>
-                                <div class="product-brand-home">
-                                    <i class="fa fa-user"></i> <?php echo htmlspecialchars($service['provider_name'] ?: ($service['provider_first_name'] . ' ' . $service['provider_last_name'])); ?>
-                                </div>
-                                <div class="product-price-home">
-                                    GHS <?php echo number_format($service['base_price'], 2); ?> / <?php echo htmlspecialchars($service['pricing_unit']); ?>
+                                <div class="service-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <?php echo htmlspecialchars($service['provider_region']); ?>
                                 </div>
                             </div>
-                        </a>
-                        <button class="btn-add-cart-home ripple-btn" onclick="event.preventDefault(); alert('Please sign in to book this service');">
-                            <i class="fa fa-calendar-check"></i> Book Now
-                        </button>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="view-all-container">
-                    <a href="view/all_services.php" class="btn-view-all ripple-btn">
-                        View All Services <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-        </section>
-        <?php endif; ?>
 
-        <!-- Features Section -->
-        <section class="features-section fade-in-section">
-            <div class="features-container">
-                <h2 class="section-title">Why choose TourLink?</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fa fa-shield-alt"></i>
-                        </div>
-                        <h3>Secure Payments</h3>
-                        <p>Escrow-based payments protect both tourists and service providers</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fa fa-users"></i>
-                        </div>
-                        <h3>Verified Providers</h3>
-                        <p>All service providers are verified for your safety and peace of mind</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fa fa-star"></i>
-                        </div>
-                        <h3>Rated & Reviewed</h3>
-                        <p>Read authentic reviews from fellow tourists</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fa fa-headset"></i>
-                        </div>
-                        <h3>24/7 Support</h3>
-                        <p>Our team is here to help you anytime, anywhere</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="cta-section">
-            <div class="cta-container">
-                <h2>Ready to explore Ghana?</h2>
-                <p>Join hundreds of satisfied tourists and service providers today</p>
-                <div class="cta-buttons">
-                    <a href="login/register.php" class="btn-cta btn-cta-primary">
-                        <i class="fa fa-user-plus"></i> Register Now
-                    </a>
-                    <a href="login/login.php" class="btn-cta btn-cta-secondary">
-                        <i class="fa fa-sign-in-alt"></i> Sign In
-                    </a>
-                </div>
-            </div>
-        </section>
-    <?php else: ?>
-        <!-- Logged in user view -->
-        <section class="hero-section hero-dashboard">
-            <div class="hero-container-logged">
-                <div class="hero-content-logged">
-                    <h1 class="hero-title-logged">
-                        Welcome back, <span class="highlight"><?php echo htmlspecialchars($_SESSION['user_name']); ?>!</span> 👋
-                    </h1>
-                    <p class="hero-subtitle">
-                        Ready to explore Ghana's amazing tourism services?
-                    </p>
-
-                    <!-- Search -->
-                    <form action="view/search_services.php" method="GET" class="hero-search">
-                        <input type="text" name="q" placeholder="Search for services..." class="search-input" required>
-                        <button type="submit" class="search-btn">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <!-- Services Section for logged-in users -->
-        <?php if($featured_services && count($featured_services) > 0): ?>
-        <section class="featured-products-section">
-            <div class="featured-container">
-                <h2 class="section-title">Available Tourism Services</h2>
-                <div class="products-grid">
-                    <?php foreach($featured_services as $service): ?>
-                    <div class="product-card-home ripple-effect">
-                        <a href="view/single_service.php?id=<?php echo $service['service_id']; ?>" class="product-link">
-                            <?php
-                            $images = json_decode($service['service_images'], true);
-                            $first_image = is_array($images) && !empty($images) ? $images[0] : null;
-                            ?>
-                            <?php if ($first_image): ?>
-                                <div class="product-image-wrapper">
-                                    <img src="<?php echo htmlspecialchars($first_image); ?>"
-                                         alt="<?php echo htmlspecialchars($service['service_title']); ?>"
-                                         class="product-img">
+                            <div class="service-footer">
+                                <div class="service-price">
+                                    From
+                                    <strong>GH₵<?php echo number_format($service['base_price'], 0); ?></strong>
                                 </div>
-                            <?php else: ?>
-                                <div class="product-image-placeholder-home">
-                                    <i class="fa fa-image fa-3x"></i>
-                                </div>
-                            <?php endif; ?>
-                            <div class="product-details">
-                                <div class="product-category-badge">
-                                    <?php echo htmlspecialchars($service['category_name']); ?>
-                                </div>
-                                <h3 class="product-title-home"><?php echo htmlspecialchars($service['service_title']); ?></h3>
-                                <div class="product-brand-home">
-                                    <i class="fa fa-user"></i> <?php echo htmlspecialchars($service['provider_name'] ?: ($service['provider_first_name'] . ' ' . $service['provider_last_name'])); ?>
-                                </div>
-                                <div class="product-price-home">
-                                    GHS <?php echo number_format($service['base_price'], 2); ?> / <?php echo htmlspecialchars($service['pricing_unit']); ?>
-                                </div>
+                                <a href="view/single_service.php?id=<?php echo $service['service_id']; ?>" class="btn-view">
+                                    View Details
+                                </a>
                             </div>
-                        </a>
-                        <button class="btn-add-cart-home ripple-btn" onclick="event.preventDefault(); addToCart(<?php echo $service['service_id']; ?>);">
-                            <i class="fa fa-calendar-check"></i> Book Now
-                        </button>
+                        </div>
                     </div>
-                    <?php endforeach; ?>
-                </div>
+                <?php endforeach; ?>
             </div>
-        </section>
+        <?php else: ?>
+            <div style="text-align: center; padding: 100px 20px;">
+                <i class="fas fa-compass fa-4x" style="color: #ddd; margin-bottom: 20px;"></i>
+                <h3>No services available yet</h3>
+                <p style="color: #666;">Be the first to add a service and start connecting with tourists!</p>
+                <a href="admin/become_provider.php" class="btn-explore" style="margin-top: 20px;">
+                    Become a Provider
+                </a>
+            </div>
         <?php endif; ?>
-    <?php endif; ?>
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Text carousel
-        const carouselTexts = [
-            { text: 'Hidden Gems', color: '#679267' },
-            { text: 'Cultural Experiences', color: '#ff6b6b' },
-            { text: 'Local Guides', color: '#3b82f6' },
-            { text: 'Authentic Tours', color: '#8b5cf6' },
-            { text: 'Adventure Awaits', color: '#f59e0b' }
-        ];
-
-        let currentIndex = 0;
-        const carouselTextElement = document.getElementById('carouselText');
-
-        if (carouselTextElement) {
-            function changeCarouselText() {
-                carouselTextElement.style.opacity = '0';
-                setTimeout(() => {
-                    currentIndex = (currentIndex + 1) % carouselTexts.length;
-                    carouselTextElement.textContent = carouselTexts[currentIndex].text;
-                    carouselTextElement.style.color = carouselTexts[currentIndex].color;
-                    carouselTextElement.style.opacity = '1';
-                }, 300);
-            }
-            setInterval(changeCarouselText, 3000);
-        }
-
-        // Scroll animations
-        const fadeInObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in-visible');
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-        document.querySelectorAll('.fade-in-section').forEach(section => {
-            fadeInObserver.observe(section);
-        });
-
-        // Counter animation
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !entry.target.classList.contains('counted')) {
-                    entry.target.classList.add('counted');
-                    animateCounter(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-
-        document.querySelectorAll('.stat-number').forEach(counter => {
-            counterObserver.observe(counter);
-        });
-
-        function animateCounter(element) {
-            const target = parseInt(element.getAttribute('data-target'));
-            const duration = 2000;
-            const increment = target / (duration / 16);
-            let current = 0;
-
-            const updateCounter = () => {
-                current += increment;
-                if (current < target) {
-                    element.textContent = Math.floor(current).toLocaleString();
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    element.textContent = target.toLocaleString();
-                }
-            };
-            updateCounter();
-        }
-
-        // Parallax effect
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const scrolled = window.pageYOffset;
-                    const parallaxShapes = document.querySelectorAll('.parallax-shape');
-                    parallaxShapes.forEach((shape, index) => {
-                        const speed = 0.3 + (index * 0.1);
-                        const yPos = -(scrolled * speed);
-                        shape.style.transform = `translateY(${yPos}px)`;
-                    });
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        });
-
-        // Ripple effect
-        document.querySelectorAll('.ripple-btn, .ripple-effect').forEach(element => {
-            element.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                ripple.classList.add('ripple');
-                const rect = this.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-                this.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 600);
-            });
-        });
-
-        // Add to cart function
-        function addToCart(serviceId) {
-            // This will be implemented with actual cart functionality
-            alert('Add to cart functionality coming soon! Service ID: ' + serviceId);
-        }
-    </script>
 </body>
 </html>
