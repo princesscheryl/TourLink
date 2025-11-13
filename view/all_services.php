@@ -24,50 +24,308 @@ $categories = get_all_service_categories_ctr();
     <title>Browse Services - TourLink</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="../css/index.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .service-card {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .main-nav {
             background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 24px;
-        }
-        .service-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        }
-        .service-image {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0;
+            position: fixed;
             width: 100%;
-            height: 200px;
-            object-fit: cover;
+            top: 0;
+            z-index: 1000;
         }
-        .service-content {
-            padding: 20px;
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
         }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2d6a4f;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .logo:hover {
+            color: #1b4332;
+        }
+
+        .logo-dot {
+            color: #ffd700;
+            font-size: 2rem;
+        }
+
+        .nav-link {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #2d6a4f;
+        }
+
+        .nav-link.active {
+            color: #2d6a4f;
+            font-weight: 600;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -23px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #2d6a4f;
+        }
+
+        .btn-nav {
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-nav-join {
+            background: #2d6a4f;
+            color: white;
+        }
+
+        .btn-nav-join:hover {
+            background: #1b4332;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-nav-logout {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-nav-logout:hover {
+            background: #c82333;
+        }
+
+        .nav-user {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .cart-count {
+            background: #ffd700;
+            color: #1b4332;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 5px;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            color: white;
+            padding: 120px 0 60px;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Filter Sidebar */
         .filter-sidebar {
             background: white;
             border-radius: 12px;
             padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 90px;
         }
+
+        .filter-sidebar h5 {
+            font-weight: 700;
+            color: #1b4332;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
         .category-filter {
             display: block;
-            padding: 12px;
+            padding: 12px 16px;
             margin-bottom: 8px;
             border-radius: 8px;
             text-decoration: none;
             color: #333;
             transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
         }
+
         .category-filter:hover {
-            background: var(--primary);
+            background: #2d6a4f;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .category-filter.active {
+            background: #2d6a4f;
             color: white;
         }
-        .category-filter.active {
-            background: var(--primary);
+
+        .category-filter i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        /* Service Cards */
+        .service-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(45, 106, 79, 0.2);
+        }
+
+        .service-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .service-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .badge {
+            background: #2d6a4f !important;
             color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .service-content h5 {
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 12px 0;
+            font-size: 1.1rem;
+        }
+
+        .service-content .text-muted {
+            color: #666 !important;
+        }
+
+        .service-content .text-primary {
+            color: #2d6a4f !important;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .btn-primary {
+            background: #2d6a4f;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #1b4332;
+            transform: translateY(-2px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state i {
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h4 {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Services Count */
+        .services-count {
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .services-count strong {
+            color: #2d6a4f;
+            font-weight: 700;
+        }
+
+        /* Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px 60px;
         }
     </style>
 </head>
@@ -98,9 +356,15 @@ $categories = get_all_service_categories_ctr();
         </div>
     </nav>
 
-    <div class="container" style="margin-top: 100px;">
-        <h1 class="mb-4">Browse Tourism Services</h1>
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="main-container">
+            <h1>Browse Tourism Services</h1>
+            <p>Discover amazing experiences across Ghana</p>
+        </div>
+    </div>
 
+    <div class="main-container">
         <div class="row">
             <!-- Filter Sidebar -->
             <div class="col-md-3">
@@ -123,7 +387,7 @@ $categories = get_all_service_categories_ctr();
             <!-- Services Grid -->
             <div class="col-md-9">
                 <?php if ($services && count($services) > 0): ?>
-                    <p class="text-muted mb-4"><?php echo count($services); ?> service(s) found</p>
+                    <p class="services-count"><strong><?php echo count($services); ?></strong> service(s) found</p>
                     <div class="row">
                         <?php foreach ($services as $service): ?>
                             <div class="col-md-4">
@@ -137,7 +401,7 @@ $categories = get_all_service_categories_ctr();
                                              alt="<?php echo htmlspecialchars($service['service_title']); ?>"
                                              class="service-image">
                                     <?php else: ?>
-                                        <div class="service-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                        <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: flex; align-items: center; justify-content: center;">
                                             <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
                                         </div>
                                     <?php endif; ?>
@@ -167,12 +431,12 @@ $categories = get_all_service_categories_ctr();
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
-                    <div class="text-center py-5">
-                        <i class="fa fa-search fa-3x text-muted mb-3"></i>
+                    <div class="empty-state">
+                        <i class="fa fa-search fa-3x mb-3"></i>
                         <h4>No services found</h4>
                         <p class="text-muted">Try adjusting your filters or browse all services</p>
                         <?php if ($category_filter): ?>
-                            <a href="all_services.php" class="btn btn-primary">View All Services</a>
+                            <a href="all_services.php" class="btn btn-primary mt-3">View All Services</a>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>

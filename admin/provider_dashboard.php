@@ -47,70 +47,356 @@ if ($services) {
     <title>Provider Dashboard - TourLink</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="../css/index.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .main-nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2d6a4f;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .logo:hover {
+            color: #1b4332;
+        }
+
+        .logo-dot {
+            color: #ffd700;
+            font-size: 2rem;
+        }
+
+        .nav-link {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #2d6a4f;
+        }
+
+        .nav-link.active {
+            color: #2d6a4f;
+            font-weight: 600;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -23px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #2d6a4f;
+        }
+
+        .btn-nav {
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-nav-logout {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-nav-logout:hover {
+            background: #c82333;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 100px auto 60px;
+            padding: 0 30px;
+        }
+
+        /* Profile Completion Banner */
+        .profile-banner {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-left: 4px solid #ffd700;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+        }
+
+        .profile-banner h5 {
+            color: #856404;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .profile-banner p {
+            color: #856404;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .profile-banner ul {
+            margin: 10px 0 15px 20px;
+            color: #856404;
+        }
+
+        .profile-banner li {
+            margin-bottom: 5px;
+        }
+
+        .profile-banner .btn {
+            background: #2d6a4f;
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .profile-banner .btn:hover {
+            background: #1b4332;
+            transform: translateY(-2px);
+        }
+
+        /* Dashboard Card */
         .dashboard-card {
             background: white;
             border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             margin-bottom: 24px;
         }
+
+        .dashboard-card h2 {
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-card h4, .dashboard-card h5 {
+            font-weight: 700;
+            color: #1b4332;
+        }
+
+        /* Stat Cards */
         .stat-card {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
             color: white;
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
+            transition: transform 0.3s;
         }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
         .stat-card h3 {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 8px 0;
         }
+
         .stat-card p {
             margin: 0;
             opacity: 0.9;
-        }
-        .verification-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
             font-weight: 500;
         }
+
+        .stat-card-alt1 {
+            background: linear-gradient(135deg, #52796f 0%, #354f52 100%);
+        }
+
+        .stat-card-alt2 {
+            background: linear-gradient(135deg, #74c69d 0%, #52b788 100%);
+        }
+
+        .stat-card-alt3 {
+            background: linear-gradient(135deg, #95d5b2 0%, #74c69d 100%);
+        }
+
+        /* Verification Badge */
+        .verification-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
         .verified {
             background: #d4edda;
             color: #155724;
         }
+
         .pending {
             background: #fff3cd;
             color: #856404;
         }
+
+        /* Service Items */
         .service-item {
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #e9ecef;
             padding: 16px 0;
         }
+
         .service-item:last-child {
             border-bottom: none;
         }
+
+        .service-item h6 {
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* Quick Action Buttons */
         .quick-action-btn {
             display: block;
             width: 100%;
             padding: 16px;
             margin-bottom: 12px;
             background: white;
-            border: 2px solid var(--primary);
-            color: var(--primary);
+            border: 2px solid #2d6a4f;
+            color: #2d6a4f;
             border-radius: 8px;
             text-decoration: none;
             text-align: center;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
+
         .quick-action-btn:hover {
-            background: var(--primary);
+            background: #2d6a4f;
             color: white;
+            transform: translateX(5px);
+        }
+
+        .quick-action-btn i {
+            margin-right: 8px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: #2d6a4f;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #1b4332;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid #2d6a4f;
+            color: #2d6a4f;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-outline-primary:hover {
+            background: #2d6a4f;
+            color: white;
+            border-color: #2d6a4f;
+        }
+
+        /* Table */
+        .table thead {
+            background: #f8f9fa;
+        }
+
+        .table th {
+            font-weight: 700;
+            color: #1b4332;
+            border-bottom: 2px solid #2d6a4f;
+        }
+
+        /* Progress Bar */
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+            background: #e9ecef;
+        }
+
+        .progress-bar {
+            background: #2d6a4f;
+            border-radius: 5px;
+        }
+
+        /* Badges */
+        .badge {
+            font-weight: 600;
+            padding: 6px 12px;
+        }
+
+        .bg-success {
+            background: #2d6a4f !important;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -130,7 +416,7 @@ if ($services) {
         </div>
     </nav>
 
-    <div class="container" style="margin-top: 100px;">
+    <div class="main-container">
         <!-- Welcome Header -->
         <div class="dashboard-card">
             <div class="row align-items-center">
@@ -152,6 +438,40 @@ if ($services) {
             </div>
         </div>
 
+        <!-- Profile Completion Banner -->
+        <?php
+        $missing_fields = [];
+        if (empty($provider['languages_spoken'])) {
+            $missing_fields[] = 'Languages Spoken';
+        }
+        if (empty($provider['years_of_experience'])) {
+            $missing_fields[] = 'Years of Experience';
+        }
+        if (empty($provider['business_registration_number'])) {
+            $missing_fields[] = 'Business Registration Number';
+        }
+
+        if (count($missing_fields) > 0):
+        ?>
+        <div class="profile-banner">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <h5><i class="fa fa-exclamation-triangle"></i> Complete Your Profile</h5>
+                    <p class="mb-2">Your profile is incomplete. Please add the following information to improve your visibility and credibility:</p>
+                    <ul>
+                        <?php foreach ($missing_fields as $field): ?>
+                            <li><?php echo htmlspecialchars($field); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <a href="provider_profile.php" class="btn">
+                        <i class="fa fa-edit"></i> Update Profile
+                    </a>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; color: #856404; opacity: 0.7;"></button>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <!-- Statistics Cards -->
         <div class="row">
             <div class="col-md-3">
@@ -161,19 +481,19 @@ if ($services) {
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <div class="stat-card stat-card-alt1">
                     <h3><?php echo $statistics['total_bookings'] ?: 0; ?></h3>
                     <p>Total Bookings</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                <div class="stat-card stat-card-alt2">
                     <h3><?php echo $statistics['pending_bookings'] ?: 0; ?></h3>
                     <p>Pending Bookings</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <div class="stat-card stat-card-alt3">
                     <h3>GHS <?php echo number_format($statistics['total_earnings'] ?: 0, 2); ?></h3>
                     <p>Total Earnings</p>
                 </div>
@@ -210,9 +530,9 @@ if ($services) {
                         </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <div class="text-center py-5">
-                            <i class="fa fa-box-open fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">You haven't added any services yet.</p>
+                        <div class="empty-state">
+                            <i class="fa fa-box-open fa-3x mb-3"></i>
+                            <p>You haven't added any services yet.</p>
                             <a href="add_service.php" class="btn btn-primary">Add Your First Service</a>
                         </div>
                     <?php endif; ?>
