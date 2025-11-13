@@ -36,6 +36,7 @@
             padding: 60px;
             position: relative;
             overflow: hidden;
+            overflow-x:none;
         }
 
         .visual-content {
