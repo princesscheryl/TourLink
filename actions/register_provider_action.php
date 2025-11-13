@@ -87,12 +87,19 @@ if (!empty($errors)) {
         );
 
         if ($provider_id) {
+            // Auto-login the provider
+            $_SESSION['user_id'] = $user_id;
+            $_SESSION['user_type'] = 'provider';
+            $_SESSION['first_name'] = $first_name;
+            $_SESSION['last_name'] = $last_name;
+            $_SESSION['email'] = $email;
+            $_SESSION['provider_id'] = $provider_id;
+
             $response['status'] = 'success';
-            $response['message'] = 'Provider registration successful! Your account is pending verification and payment of GHS 20 onboarding fee.';
+            $response['message'] = 'Provider registration successful! Welcome to TourLink.';
             $response['user_id'] = $user_id;
             $response['provider_id'] = $provider_id;
-            // TODO: Redirect to payment page when ready
-            $response['redirect'] = '../login/login.php';
+            $response['redirect'] = '../admin/provider_dashboard.php';
         } else {
             // Rollback - delete user if provider creation failed
             $response['status'] = 'error';

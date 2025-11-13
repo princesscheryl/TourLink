@@ -103,6 +103,10 @@ $categories = get_all_service_categories_ctr();
             text-decoration: none;
         }
 
+        .logo-dot {
+            color: #ffd700;
+        }
+
         .nav-menu {
             display: flex;
             gap: 35px;
@@ -295,6 +299,17 @@ $categories = get_all_service_categories_ctr();
             border-radius: 10px;
             font-size: 15px;
             transition: all 0.3s;
+            background: white;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+        }
+
+        .search-field select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
         }
 
         .search-field select:focus,
@@ -817,12 +832,12 @@ $categories = get_all_service_categories_ctr();
     <!-- Main Navigation -->
     <nav class="main-nav">
         <div class="nav-container">
-            <a href="index_tourlink.php" class="logo">TourLink</a>
+            <a href="index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="index_tourlink.php">Home</a></li>
                 <li><a href="view/all_services.php">Destinations</a></li>
                 <li><a href="view/all_services.php">Tour Listing</a></li>
-                <li><a href="#about">About</a></li>
+                <li><a href="view/about.php">About</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
             <div class="nav-actions">
@@ -1147,7 +1162,7 @@ $categories = get_all_service_categories_ctr();
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer" id="contact">
         <div class="footer-container">
             <div>
                 <h4>TourLink</h4>

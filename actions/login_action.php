@@ -67,23 +67,9 @@ if ($user) {
         if ($provider) {
             $_SESSION['provider_id'] = $provider['provider_id'];
 
-            // Check verification status
-            if ($provider['verification_status'] === 'pending') {
-                // Provider is pending verification
-                $response['redirect'] = '../admin/pending_verification.php';
-                $response['message'] = 'Your account is pending verification. You will be notified once approved.';
-            }
-            else if ($provider['verification_status'] === 'verified' || $provider['verification_status'] === 'approved') {
-                // Provider is verified - redirect to dashboard
-                $response['redirect'] = '../admin/provider_dashboard.php';
-                $response['message'] = 'Welcome back, ' . $user['first_name'] . '!';
-            }
-            else {
-                // Suspended or other status
-                $response['status'] = 'error';
-                $response['message'] = 'Your provider account is currently ' . $provider['verification_status'] . '. Please contact support.';
-                session_destroy();
-            }
+            // Redirect all providers to dashboard regardless of verification status
+            $response['redirect'] = '../admin/provider_dashboard.php';
+            $response['message'] = 'Welcome back, ' . $user['first_name'] . '!';
         } else {
             // Provider account exists but no provider profile (shouldn't happen)
             $response['status'] = 'error';
