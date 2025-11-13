@@ -25,7 +25,6 @@ $user_type = 'provider'; // Always provider for this form
 
 // Business information
 $business_name = isset($_POST['business_name']) ? trim($_POST['business_name']) : '';
-$business_description = isset($_POST['business_description']) ? trim($_POST['business_description']) : '';
 $business_location = isset($_POST['business_location']) ? trim($_POST['business_location']) : '';
 $primary_region = isset($_POST['primary_region']) ? trim($_POST['primary_region']) : '';
 
@@ -49,17 +48,20 @@ if (empty($phone) || strlen($phone) > 20) {
 }
 
 // Validate business information
-if (empty($business_name) || strlen($business_name) > 100) {
-    $errors[] = 'Business name is required and must be less than 100 characters';
+if (empty($business_name) || strlen($business_name) > 255) {
+    $errors[] = 'Business name is required and must be less than 255 characters';
 }
-if (empty($business_description) || strlen($business_description) > 500) {
-    $errors[] = 'Business description is required and must be less than 500 characters';
+if (empty($business_location)) {
+    $errors[] = 'Business location is required';
 }
-if (empty($business_location) || strlen($business_location) > 100) {
-    $errors[] = 'Business location is required and must be less than 100 characters';
-}
-if (empty($primary_region) || strlen($primary_region) > 50) {
+if (empty($primary_region)) {
     $errors[] = 'Please select your primary business region';
+}
+
+// Validate region matches database ENUM
+$valid_regions = ['Greater Accra', 'Central', 'Ashanti', 'Northern'];
+if (!in_array($primary_region, $valid_regions)) {
+    $errors[] = 'Invalid region selected';
 }
 
 if (!empty($errors)) {
@@ -79,7 +81,7 @@ if (!empty($errors)) {
         $provider_id = $provider_class->create_provider(
             $user_id,
             $business_name,
-            $business_description,
+            null, // business_description not used
             $business_location,
             $primary_region
         );

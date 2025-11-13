@@ -511,7 +511,203 @@ INSERT INTO tl_system_config (config_key, config_value, config_description) VALU
 ('timezone', 'Africa/Accra', 'Platform timezone');
 
 -- ============================================
--e 
+-- VIEWS FOR COMMON QUERIES
+-- ============================================
+
+-- View for active services with provider details
+CREATE OR REPLACE VIEW vw_tl_active_services AS
+SELECT 
+    s.service_id,
+    s.service_title,
+    s.service_description,
+    s.base_price,
+    s.pricing_unit,
+    s.service_location,
+    s.is_premium_listing,
+    s.views_count,
+    sc.category_name,
+    sp.provider_id,
+    sp.business_name,
+    sp.region,
+    sp.average_rating,
+    sp.total_bookings,
+    u.first_name,
+    u.last_name,
+    u.email
+FROM tl_services s
+JOIN tl_service_categories sc ON s.category_id = sc.category_id
+JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
+JOIN tl_users u ON sp.user_id = u.user_id
+WHERE s.service_status = 'active' 
+AND s.availability_status = 'available'
+AND sp.verification_status = 'verified';
+
+-- View for provider dashboard statistics
+CREATE OR REPLACE VIEW vw_tl_provider_stats AS
+SELECT 
+    sp.provider_id,
+    sp.business_name,
+    sp.subscription_tier,
+    COUNT(DISTINCT s.service_id) as total_services,
+    COUNT(DISTINCT b.booking_id) as total_bookings,
+    SUM(CASE WHEN b.booking_status = 'completed' THEN 1 ELSE 0 END) as completed_bookings,
+    SUM(CASE WHEN b.booking_status = 'pending' THEN 1 ELSE 0 END) as pending_bookings,
+    sp.average_rating,
+    sp.total_earnings,
+    COUNT(DISTINCT r.review_id) as total_reviews
+FROM tl_service_providers sp
+LEFT JOIN tl_services s ON sp.provider_id = s.provider_id
+LEFT JOIN tl_bookings b ON sp.provider_id = b.provider_id
+LEFT JOIN tl_reviews r ON sp.provider_id = r.provider_id
+GROUP BY sp.provider_id;
+
+-- ============================================
+-- USEFUL STORED PROCEDURES
+-- ============================================
+
+DELIMITER //
+
+-- Procedure to calculate booking amounts
+DROP PROCEDURE IF EXISTS tl_calculate_booking_amounts//
+CREATE PROCEDURE tl_calculate_booking_amounts(
+    IN p_service_id INT,
+    IN p_number_of_people INT,
+    IN p_discount_id INT,
+    OUT p_original_amount DECIMAL(10,2),
+    OUT p_discount_amount DECIMAL(10,2),
+    OUT p_total_amount DECIMAL(10,2),
+    OUT p_commission_amount DECIMAL(10,2),
+    OUT p_provider_earnings DECIMAL(10,2)
+)
+BEGIN
+    DECLARE v_base_price DECIMAL(10,2);
+    DECLARE v_commission_rate DECIMAL(5,2);
+    DECLARE v_discount_percentage DECIMAL(5,2);
+    DECLARE v_max_discount DECIMAL(10,2);
+    
+    -- Get service price
+    SELECT base_price INTO v_base_price FROM tl_services WHERE service_id = p_service_id;
+    
+    -- Get commission rate
+    SELECT config_value INTO v_commission_rate FROM tl_system_config WHERE config_key = 'commission_rate';
+    
+    -- Calculate original amount
+    SET p_original_amount = v_base_price * p_number_of_people;
+    
+    -- Calculate discount if applicable
+    SET p_discount_amount = 0;
+    IF p_discount_id IS NOT NULL THEN
+        SELECT discount_percentage, max_discount_amount 
+        INTO v_discount_percentage, v_max_discount
+        FROM tl_user_discounts 
+        WHERE discount_id = p_discount_id AND is_active = TRUE;
+        
+        IF v_discount_percentage IS NOT NULL THEN
+            SET p_discount_amount = p_original_amount * (v_discount_percentage / 100);
+            IF v_max_discount IS NOT NULL AND p_discount_amount > v_max_discount THEN
+                SET p_discount_amount = v_max_discount;
+            END IF;
+        END IF;
+    END IF;
+    
+    -- Calculate final amounts
+    SET p_total_amount = p_original_amount - p_discount_amount;
+    SET p_commission_amount = p_total_amount * v_commission_rate;
+    SET p_provider_earnings = p_total_amount - p_commission_amount;
+END//
+
+-- Procedure to update provider statistics
+DROP PROCEDURE IF EXISTS tl_update_provider_stats//
+CREATE PROCEDURE tl_update_provider_stats(IN p_provider_id INT)
+BEGIN
+    DECLARE v_avg_rating DECIMAL(3,2);
+    DECLARE v_total_bookings INT;
+    DECLARE v_total_earnings DECIMAL(10,2);
+    
+    -- Calculate average rating
+    SELECT COALESCE(AVG(rating), 0) INTO v_avg_rating
+    FROM tl_reviews
+    WHERE provider_id = p_provider_id AND review_status = 'approved';
+    
+    -- Count total bookings
+    SELECT COUNT(*) INTO v_total_bookings
+    FROM tl_bookings
+    WHERE provider_id = p_provider_id AND booking_status = 'completed';
+    
+    -- Calculate total earnings
+    SELECT COALESCE(SUM(provider_earnings), 0) INTO v_total_earnings
+    FROM tl_bookings
+    WHERE provider_id = p_provider_id 
+    AND booking_status = 'completed'
+    AND payment_status = 'released';
+    
+    -- Update provider record
+    UPDATE tl_service_providers
+    SET average_rating = v_avg_rating,
+        total_bookings = v_total_bookings,
+        total_earnings = v_total_earnings
+    WHERE provider_id = p_provider_id;
+END//
+
+DELIMITER ;
+
+-- ============================================
+-- TRIGGERS
+-- ============================================
+
+DELIMITER //
+
+-- Trigger to generate booking reference
+DROP TRIGGER IF EXISTS tl_before_booking_insert//
+CREATE TRIGGER tl_before_booking_insert
+BEFORE INSERT ON tl_bookings
+FOR EACH ROW
+BEGIN
+    IF NEW.booking_reference IS NULL OR NEW.booking_reference = '' THEN
+        SET NEW.booking_reference = CONCAT('TL', YEAR(NOW()), LPAD(FLOOR(RAND() * 999999), 6, '0'));
+    END IF;
+END//
+
+-- Trigger to auto-generate invoice when booking is confirmed
+DROP TRIGGER IF EXISTS tl_after_booking_confirmed//
+CREATE TRIGGER tl_after_booking_confirmed
+AFTER UPDATE ON tl_bookings
+FOR EACH ROW
+BEGIN
+    IF NEW.booking_status = 'confirmed' AND OLD.booking_status != 'confirmed' THEN
+        INSERT INTO tl_invoices (
+            booking_id, 
+            invoice_number, 
+            subtotal, 
+            discount_amount, 
+            total_amount,
+            invoice_status
+        ) VALUES (
+            NEW.booking_id,
+            CONCAT('INV-', NEW.booking_reference),
+            NEW.original_amount,
+            NEW.discount_amount,
+            NEW.total_amount,
+            'sent'
+        );
+    END IF;
+END//
+
+-- Trigger to update service view count
+DROP TRIGGER IF EXISTS tl_after_service_view//
+CREATE TRIGGER tl_after_service_view
+AFTER INSERT ON tl_audit_log
+FOR EACH ROW
+BEGIN
+    IF NEW.action_type = 'service_viewed' AND NEW.entity_type = 'service' THEN
+        UPDATE tl_services 
+        SET views_count = views_count + 1 
+        WHERE service_id = NEW.entity_id;
+    END IF;
+END//
+
+DELIMITER ;
+
 -- ============================================
 -- ADDITIONAL INDEXES FOR PERFORMANCE
 -- ============================================
@@ -521,6 +717,25 @@ CREATE INDEX idx_tl_booking_tourist_status ON tl_bookings(tourist_id, booking_st
 CREATE INDEX idx_tl_booking_provider_status ON tl_bookings(provider_id, booking_status);
 CREATE INDEX idx_tl_service_category_status ON tl_services(category_id, service_status);
 CREATE INDEX idx_tl_payment_booking_status ON tl_payments(booking_id, payment_status);
+
+-- ============================================
+-- VERIFICATION QUERIES
+-- ============================================
+
+-- Display success message and table count
+SELECT 'TourLink tables created successfully!' as Message;
+SELECT 'All tables use prefix: tl_' as Prefix_Info;
+SELECT COUNT(*) as TourLink_Tables 
+FROM information_schema.tables 
+WHERE table_schema = DATABASE() 
+AND table_name LIKE 'tl_%';
+
+-- List all TourLink tables created
+SELECT table_name as TourLink_Tables_Created
+FROM information_schema.tables 
+WHERE table_schema = DATABASE() 
+AND table_name LIKE 'tl_%'
+ORDER BY table_name;
 
 -- ============================================
 -- END OF SCHEMA

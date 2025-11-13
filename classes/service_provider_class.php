@@ -16,25 +16,30 @@ class ServiceProvider extends db_connection
      * Create service provider profile
      * @param int $user_id
      * @param string $business_name
-     * @param string $business_description
+     * @param string $business_description (not used - for backward compatibility)
      * @param string $business_location
-     * @param string $regions_json JSON array of regions
+     * @param string $primary_region
      * @return int|bool Provider ID on success, false on failure
      */
-    public function create_provider($user_id, $business_name, $business_description = null, $business_location = null, $regions_json = null)
+    public function create_provider($user_id, $business_name, $business_description = null, $business_location = null, $primary_region = null)
     {
+        // Validate region matches ENUM values
+        $valid_regions = ['Greater Accra', 'Central', 'Ashanti', 'Northern'];
+        if (!in_array($primary_region, $valid_regions)) {
+            return false;
+        }
+
         $stmt = $this->db->prepare(
-            "INSERT INTO tl_service_providers (user_id, business_name, business_description, location_details, region, verification_status)
-            VALUES (?, ?, ?, ?, ?, 'pending')"
+            "INSERT INTO tl_service_providers (user_id, business_name, location_details, region, verification_status)
+            VALUES (?, ?, ?, ?, 'pending')"
         );
 
         $stmt->bind_param(
-            "issss",
+            "isss",
             $user_id,
             $business_name,
-            $business_description,
             $business_location,
-            $regions_json
+            $primary_region
         );
 
         if ($stmt->execute()) {

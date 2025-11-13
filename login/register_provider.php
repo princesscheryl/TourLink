@@ -397,17 +397,11 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="business_description" class="form-label">
-                            <i class="fa fa-align-left"></i> Business Description *
-                        </label>
-                        <textarea class="form-control" id="business_description" name="business_description" rows="3" placeholder="Brief description of your tourism services..." required></textarea>
-                    </div>
-
-                    <div class="mb-3">
                         <label for="business_location" class="form-label">
                             <i class="fa fa-map-marker-alt"></i> Business Location *
                         </label>
                         <input type="text" class="form-control" id="business_location" name="business_location" placeholder="e.g., Accra, Greater Accra Region" required>
+                        <small class="text-muted">Specific address or area where your business is located</small>
                     </div>
 
                     <div class="mb-4">
@@ -417,15 +411,9 @@
                         <select class="form-select" id="primary_region" name="primary_region" required>
                             <option value="">Select your primary region</option>
                             <option value="Greater Accra">Greater Accra</option>
-                            <option value="Central">Central Region</option>
-                            <option value="Ashanti">Ashanti Region</option>
-                            <option value="Northern">Northern Region</option>
-                            <option value="Volta">Volta Region</option>
-                            <option value="Eastern">Eastern Region</option>
-                            <option value="Western">Western Region</option>
-                            <option value="Upper East">Upper East Region</option>
-                            <option value="Upper West">Upper West Region</option>
-                            <option value="Bono">Bono Region</option>
+                            <option value="Central">Central</option>
+                            <option value="Ashanti">Ashanti</option>
+                            <option value="Northern">Northern</option>
                         </select>
                         <small class="text-muted">This is your main business location. You can offer services in other regions when creating listings.</small>
                     </div>
@@ -464,7 +452,6 @@
                 var phone = $('#phone').val().trim();
                 var password = $('#password').val();
                 var business_name = $('#business_name').val().trim();
-                var business_description = $('#business_description').val().trim();
                 var business_location = $('#business_location').val().trim();
                 var primary_region = $('#primary_region').val();
                 var user_type = 'provider';
@@ -479,7 +466,7 @@
                     return;
                 }
 
-                if (business_name === '' || business_description === '' || business_location === '' || primary_region === '') {
+                if (business_name === '' || business_location === '' || primary_region === '') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Missing Business Info',
@@ -547,7 +534,6 @@
                         password: password,
                         user_type: user_type,
                         business_name: business_name,
-                        business_description: business_description,
                         business_location: business_location,
                         primary_region: primary_region
                     },
