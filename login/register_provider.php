@@ -411,31 +411,23 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label">
-                            <i class="fa fa-map"></i> Regions You Operate In *
+                        <label for="primary_region" class="form-label">
+                            <i class="fa fa-map"></i> Primary Business Region *
                         </label>
-                        <div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="regions[]" value="Greater Accra" id="region1">
-                                <label class="form-check-label" for="region1">Greater Accra</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="regions[]" value="Central" id="region2">
-                                <label class="form-check-label" for="region2">Central Region</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="regions[]" value="Ashanti" id="region3">
-                                <label class="form-check-label" for="region3">Ashanti Region</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="regions[]" value="Northern" id="region4">
-                                <label class="form-check-label" for="region4">Northern Region</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="regions[]" value="Volta" id="region5">
-                                <label class="form-check-label" for="region5">Volta Region</label>
-                            </div>
-                        </div>
+                        <select class="form-select" id="primary_region" name="primary_region" required>
+                            <option value="">Select your primary region</option>
+                            <option value="Greater Accra">Greater Accra</option>
+                            <option value="Central">Central Region</option>
+                            <option value="Ashanti">Ashanti Region</option>
+                            <option value="Northern">Northern Region</option>
+                            <option value="Volta">Volta Region</option>
+                            <option value="Eastern">Eastern Region</option>
+                            <option value="Western">Western Region</option>
+                            <option value="Upper East">Upper East Region</option>
+                            <option value="Upper West">Upper West Region</option>
+                            <option value="Bono">Bono Region</option>
+                        </select>
+                        <small class="text-muted">This is your main business location. You can offer services in other regions when creating listings.</small>
                     </div>
 
                     <div class="alert alert-info">
@@ -474,10 +466,7 @@
                 var business_name = $('#business_name').val().trim();
                 var business_description = $('#business_description').val().trim();
                 var business_location = $('#business_location').val().trim();
-                var regions = [];
-                $('input[name="regions[]"]:checked').each(function() {
-                    regions.push($(this).val());
-                });
+                var primary_region = $('#primary_region').val();
                 var user_type = 'provider';
 
                 // Validation
@@ -490,20 +479,11 @@
                     return;
                 }
 
-                if (business_name === '' || business_description === '' || business_location === '') {
+                if (business_name === '' || business_description === '' || business_location === '' || primary_region === '') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Missing Business Info',
                         text: 'Please fill in all required business information!'
-                    });
-                    return;
-                }
-
-                if (regions.length === 0) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'No Regions Selected',
-                        text: 'Please select at least one region you operate in!'
                     });
                     return;
                 }
@@ -569,7 +549,7 @@
                         business_name: business_name,
                         business_description: business_description,
                         business_location: business_location,
-                        regions: regions
+                        primary_region: primary_region
                     },
                     success: function(response) {
                         if (response.status === 'success') {

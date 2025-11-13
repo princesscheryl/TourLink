@@ -27,7 +27,7 @@ $user_type = 'provider'; // Always provider for this form
 $business_name = isset($_POST['business_name']) ? trim($_POST['business_name']) : '';
 $business_description = isset($_POST['business_description']) ? trim($_POST['business_description']) : '';
 $business_location = isset($_POST['business_location']) ? trim($_POST['business_location']) : '';
-$regions = isset($_POST['regions']) && is_array($_POST['regions']) ? $_POST['regions'] : [];
+$primary_region = isset($_POST['primary_region']) ? trim($_POST['primary_region']) : '';
 
 $errors = array();
 
@@ -58,8 +58,8 @@ if (empty($business_description) || strlen($business_description) > 500) {
 if (empty($business_location) || strlen($business_location) > 100) {
     $errors[] = 'Business location is required and must be less than 100 characters';
 }
-if (empty($regions)) {
-    $errors[] = 'Please select at least one region you operate in';
+if (empty($primary_region) || strlen($primary_region) > 50) {
+    $errors[] = 'Please select your primary business region';
 }
 
 if (!empty($errors)) {
@@ -75,14 +75,13 @@ if (!empty($errors)) {
     if ($user_id) {
         // Create provider profile
         $provider_class = new ServiceProvider();
-        $regions_json = json_encode($regions);
 
         $provider_id = $provider_class->create_provider(
             $user_id,
             $business_name,
             $business_description,
             $business_location,
-            $regions_json
+            $primary_region
         );
 
         if ($provider_id) {
