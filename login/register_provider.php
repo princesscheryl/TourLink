@@ -38,35 +38,6 @@
             overflow: hidden;
         }
 
-        .auth-visual::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            top: -250px;
-            right: -250px;
-            animation: float 20s infinite ease-in-out;
-        }
-
-        .auth-visual::after {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            bottom: -200px;
-            left: -200px;
-            animation: float 15s infinite ease-in-out reverse;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(50px, 50px) scale(1.1); }
-        }
-
         .visual-content {
             position: relative;
             z-index: 1;
