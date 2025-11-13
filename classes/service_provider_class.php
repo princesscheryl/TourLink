@@ -15,23 +15,26 @@ class ServiceProvider extends db_connection
     /**
      * Create service provider profile
      * @param int $user_id
-     * @param array $data Provider data
+     * @param string $business_name
+     * @param string $business_description
+     * @param string $business_location
+     * @param string $regions_json JSON array of regions
      * @return int|bool Provider ID on success, false on failure
      */
-    public function create_provider($user_id, $data)
+    public function create_provider($user_id, $business_name, $business_description = null, $business_location = null, $regions_json = null)
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO tl_service_providers (user_id, business_name, region, location_details, languages_spoken, years_of_experience)
-            VALUES (?, ?, ?, ?, ?, ?)"
+            "INSERT INTO tl_service_providers (user_id, business_name, business_description, location_details, region, verification_status)
+            VALUES (?, ?, ?, ?, ?, 'pending')"
         );
+
         $stmt->bind_param(
-            "issssi",
+            "issss",
             $user_id,
-            $data['business_name'],
-            $data['region'],
-            $data['location_details'],
-            $data['languages_spoken'], // JSON string
-            $data['years_of_experience']
+            $business_name,
+            $business_description,
+            $business_location,
+            $regions_json
         );
 
         if ($stmt->execute()) {

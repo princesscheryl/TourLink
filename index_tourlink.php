@@ -848,7 +848,7 @@ $categories = get_all_service_categories_ctr();
                 <p>Discover tours tailored to your dream destinations — from cultural escapes to adventure getaways. Book in minutes, travel without limits.</p>
                 <div class="hero-buttons">
                     <a href="view/all_services.php" class="btn-choose">Choose a Destinations</a>
-                    <a href="admin/become_provider.php" class="btn-become">Become a Provider</a>
+                    <a href="login/register_provider.php" class="btn-become">Become a Provider</a>
                 </div>
             </div>
             <div class="hero-image">

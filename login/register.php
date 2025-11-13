@@ -382,10 +382,11 @@
                 </a>
 
                 <div class="logo-text">TourLink<span class="logo-dot">.</span></div>
-                <h2 class="form-title">Create Account</h2>
+                <h2 class="form-title">Create Tourist Account</h2>
                 <p class="form-subtitle">Join thousands of travelers exploring Ghana</p>
 
                 <form method="POST" action="" id="register-form">
+                    <input type="hidden" name="user_type" value="tourist">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">
@@ -420,7 +421,7 @@
                                placeholder="+233 24 123 4567">
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label for="password" class="form-label">
                             <i class="fa fa-lock"></i> Password
                         </label>
@@ -428,38 +429,15 @@
                                placeholder="Minimum 8 characters" required>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">
-                            <i class="fa fa-id-badge"></i> I want to
-                        </label>
-                        <div class="role-selector">
-                            <label class="role-option">
-                                <input type="radio" name="user_type" value="tourist" checked>
-                                <div class="role-content">
-                                    <i class="fa fa-suitcase-rolling"></i>
-                                    <span>Book Tours</span>
-                                    <small style="font-size: 0.75rem; color: #666;">Tourist</small>
-                                </div>
-                            </label>
-                            <label class="role-option">
-                                <input type="radio" name="user_type" value="provider">
-                                <div class="role-content">
-                                    <i class="fa fa-building"></i>
-                                    <span>Offer Services</span>
-                                    <small style="font-size: 0.75rem; color: #666;">Provider</small>
-                                </div>
-                            </label>
-                        </div>
-                        <small class="text-muted">Providers can list tourism services after account verification</small>
-                    </div>
-
                     <button type="submit" class="btn-register w-100">
-                        <span>Create Account</span>
+                        <span>Create Tourist Account</span>
                     </button>
                 </form>
 
                 <div class="auth-footer">
                     Already have an account? <a href="login.php">Sign in here</a>
+                    <br><br>
+                    <small>Are you a service provider? <a href="register_provider.php">Register as Provider</a></small>
                 </div>
             </div>
         </div>
@@ -470,21 +448,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function(){
-            // Make role selector interactive
-            document.querySelectorAll('.role-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    document.querySelectorAll('.role-option').forEach(opt => {
-                        opt.style.borderColor = '#e5e5e5';
-                        opt.style.background = 'white';
-                    });
-                    this.style.borderColor = '#2d6a4f';
-                    this.style.background = 'rgba(45, 106, 79, 0.05)';
-                });
-            });
-
-            // Set initial active state
-            document.querySelector('.role-option input[type="radio"]:checked').parentElement.click();
-
             // Handle form submission
             $('#register-form').submit(function(e){
                 e.preventDefault();
@@ -494,7 +457,7 @@
                 var email = $('#email').val().trim();
                 var phone = $('#phone').val().trim();
                 var password = $('#password').val();
-                var user_type = $('input[name="user_type"]:checked').val() || 'tourist';
+                var user_type = 'tourist'; // Fixed to tourist for this page
 
                 // Validation
                 if (first_name === '' || last_name === '' || email === '' || password === '') {
