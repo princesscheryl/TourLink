@@ -17,7 +17,7 @@ if (ini_get("session.use_cookies")) {
 // Destroy the session
 session_destroy();
 
-// Redirect to login page
-header('Location: ../login/login.php');
+// Redirect to homepage
+header('Location: ../index_tourlink.php');
 exit();
 ?>

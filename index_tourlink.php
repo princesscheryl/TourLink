@@ -827,7 +827,10 @@ $categories = get_all_service_categories_ctr();
             </ul>
             <div class="nav-actions">
                 <?php if(isset($_SESSION['user_id'])): ?>
-                    <a href="admin/provider_dashboard.php" class="btn-signin">Dashboard</a>
+                    <?php if($_SESSION['user_type'] === 'provider'): ?>
+                        <a href="admin/provider_dashboard.php" class="btn-signin">Dashboard</a>
+                    <?php endif; ?>
+                    <a href="login/logout.php" class="btn-signin" style="background: #dc3545; color: white; border-color: #dc3545;">Logout</a>
                 <?php else: ?>
                     <a href="login/login.php" class="btn-signin">Sign In</a>
                 <?php endif; ?>
