@@ -21,9 +21,9 @@
         }
 
         .auth-container {
-            min-height: 100vh;
             display: grid;
             grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
         }
 
         /* Left Side - Business Visual */
@@ -34,9 +34,10 @@
             align-items: center;
             justify-content: center;
             padding: 60px;
-            position: relative;
+            position: sticky;
+            top: 0;
+            height: 100vh;
             overflow: hidden;
-            overflow-x:none;
         }
 
         .visual-content {
