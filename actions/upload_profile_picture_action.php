@@ -89,17 +89,10 @@ if (!is_dir($upload_dir)) {
     @file_put_contents($upload_dir . '.htaccess', $htaccess_content);
 }
 
-// Final check - verify directory exists and is writable
+// Final check - verify directory exists
 if (!is_dir($upload_dir)) {
     $response['status'] = 'error';
     $response['message'] = 'Upload directory does not exist: ' . $upload_dir;
-    echo json_encode($response);
-    exit();
-}
-
-if (!is_writable($upload_dir)) {
-    $response['status'] = 'error';
-    $response['message'] = 'Upload directory is not writable. Please check permissions.';
     echo json_encode($response);
     exit();
 }
@@ -109,10 +102,30 @@ $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
 $new_filename = 'profile_' . $_SESSION['user_id'] . '_' . time() . '.' . $file_extension;
 $upload_path = $upload_dir . $new_filename;
 
-// Move uploaded file
+// Try to move uploaded file (bypass writability check - just try it)
 if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
+    // If move failed, check why
+    $error_info = error_get_last();
     $response['status'] = 'error';
-    $response['message'] = 'Failed to save uploaded file. Please check directory permissions.';
+    $response['message'] = 'Failed to upload file';
+    $response['debug'] = [
+        'upload_dir' => $upload_dir,
+        'upload_path' => $upload_path,
+        'dir_exists' => is_dir($upload_dir),
+        'dir_writable' => is_writable($upload_dir),
+        'permissions' => substr(sprintf('%o', fileperms($upload_dir)), -4),
+        'tmp_file' => $file['tmp_name'],
+        'tmp_exists' => file_exists($file['tmp_name']),
+        'error' => $error_info ? $error_info['message'] : 'No error info'
+    ];
+    echo json_encode($response);
+    exit();
+}
+
+// Verify file was uploaded successfully
+if (!file_exists($upload_path)) {
+    $response['status'] = 'error';
+    $response['message'] = 'File upload verification failed';
     echo json_encode($response);
     exit();
 }
