@@ -148,6 +148,126 @@ $categories = get_all_service_categories_ctr();
             color: white;
         }
 
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 25px;
+            transition: all 0.3s;
+            background: white;
+            border: 2px solid #2d6a4f;
+        }
+
+        .profile-trigger:hover {
+            background: #f8f9fa;
+        }
+
+        .profile-pic {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #2d6a4f;
+        }
+
+        .profile-pic-placeholder {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #2d6a4f;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-icon {
+            color: #2d6a4f;
+            font-size: 0.8rem;
+            transition: transform 0.3s;
+        }
+
+        .profile-dropdown.active .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            min-width: 220px;
+            margin-top: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .profile-dropdown.active .dropdown-menu-custom {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu-custom a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #1a1a1a;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .dropdown-menu-custom a:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .dropdown-menu-custom a:last-child {
+            border-radius: 0 0 12px 12px;
+            color: #dc3545;
+        }
+
+        .dropdown-menu-custom a:hover {
+            background: #f8f9fa;
+            padding-left: 24px;
+        }
+
+        .dropdown-menu-custom a i {
+            width: 20px;
+            color: #2d6a4f;
+        }
+
+        .dropdown-menu-custom a:last-child i {
+            color: #dc3545;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 5px 0;
+        }
+
         .hamburger {
             display: none;
             flex-direction: column;
@@ -842,10 +962,46 @@ $categories = get_all_service_categories_ctr();
             </ul>
             <div class="nav-actions">
                 <?php if(isset($_SESSION['user_id'])): ?>
-                    <?php if($_SESSION['user_type'] === 'provider'): ?>
-                        <a href="admin/provider_dashboard.php" class="btn-signin">Dashboard</a>
-                    <?php endif; ?>
-                    <a href="login/logout.php" class="btn-signin" style="background: #dc3545; color: white; border-color: #dc3545;">Logout</a>
+                    <!-- Profile Dropdown -->
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="profile-trigger" onclick="toggleProfileDropdown()">
+                            <?php if(!empty($_SESSION['profile_image'])): ?>
+                                <img src="<?php echo htmlspecialchars($_SESSION['profile_image']); ?>" alt="Profile" class="profile-pic">
+                            <?php else: ?>
+                                <div class="profile-pic-placeholder">
+                                    <?php echo strtoupper(substr($_SESSION['first_name'], 0, 1)); ?>
+                                </div>
+                            <?php endif; ?>
+                            <span class="profile-name"><?php echo htmlspecialchars($_SESSION['first_name']); ?></span>
+                            <i class="fa fa-chevron-down dropdown-icon"></i>
+                        </div>
+                        <div class="dropdown-menu-custom">
+                            <a href="view/profile_settings.php">
+                                <i class="fa fa-user-circle"></i>
+                                Profile Settings
+                            </a>
+                            <?php if($_SESSION['user_type'] === 'provider'): ?>
+                                <div class="dropdown-divider"></div>
+                                <a href="admin/provider_dashboard.php">
+                                    <i class="fa fa-th-large"></i>
+                                    Dashboard
+                                </a>
+                                <a href="admin/manage_services.php">
+                                    <i class="fa fa-briefcase"></i>
+                                    My Services
+                                </a>
+                                <a href="admin/bookings.php">
+                                    <i class="fa fa-calendar-check"></i>
+                                    Bookings
+                                </a>
+                            <?php endif; ?>
+                            <div class="dropdown-divider"></div>
+                            <a href="login/logout.php">
+                                <i class="fa fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
                 <?php else: ?>
                     <a href="login/login.php" class="btn-signin">Sign In</a>
                 <?php endif; ?>
@@ -1208,6 +1364,20 @@ $categories = get_all_service_categories_ctr();
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
             navMenu.classList.toggle('active');
+        });
+
+        // Profile Dropdown Toggle
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
         });
 
         // Close menu when clicking on a link

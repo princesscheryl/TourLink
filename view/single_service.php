@@ -1,6 +1,7 @@
 <?php
 require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
+require_once '../classes/service_provider_class.php';
 
 $service_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -18,6 +19,23 @@ if (!$service) {
 
 // Increment views
 increment_service_views_ctr($service_id);
+
+// Check if logged-in user is a provider
+$is_provider = false;
+$is_own_service = false;
+
+if (isset($_SESSION['user_id'])) {
+    $provider_class = new ServiceProvider();
+    $provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
+
+    if ($provider) {
+        $is_provider = true;
+        // Check if this is the provider's own service
+        if ($provider['provider_id'] == $service['provider_id']) {
+            $is_own_service = true;
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -358,14 +376,26 @@ increment_service_views_ctr($service_id);
 
                     <hr>
 
-                    <?php if (isset($_SESSION['user_id'])): ?>
+                    <?php if (isset($_SESSION['user_id']) && !$is_provider): ?>
+                        <!-- Tourists can book and favorite -->
                         <button class="btn btn-primary w-100 mb-3" onclick="bookService()">
                             <i class="fa fa-calendar-check"></i> Book Now
                         </button>
                         <button class="btn btn-outline-primary w-100">
                             <i class="fa fa-heart"></i> Add to Favorites
                         </button>
+                    <?php elseif ($is_own_service): ?>
+                        <!-- Provider viewing their own service -->
+                        <div class="alert alert-info" style="background: #e8f4f1; border: 1px solid #2d6a4f; color: #1b4332; border-radius: 8px; padding: 15px;">
+                            <i class="fa fa-info-circle"></i> This is your service listing
+                        </div>
+                    <?php elseif ($is_provider): ?>
+                        <!-- Provider viewing another provider's service -->
+                        <div class="alert alert-warning" style="background: #fff3cd; border: 1px solid #856404; color: #856404; border-radius: 8px; padding: 15px;">
+                            <i class="fa fa-exclamation-triangle"></i> Providers cannot book services
+                        </div>
                     <?php else: ?>
+                        <!-- Not logged in -->
                         <a href="../login/login.php" class="btn btn-primary w-100">
                             Sign in to Book
                         </a>
