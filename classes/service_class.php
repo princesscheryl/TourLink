@@ -30,7 +30,7 @@ class Service extends db_connection
     {
         $stmt = $this->db->prepare(
             "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, service_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending_approval')"
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')"
         );
         $stmt->bind_param("iissdsssis", $provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images);
 

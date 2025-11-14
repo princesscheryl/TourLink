@@ -72,7 +72,7 @@ $service_id = add_service_ctr(
 );
 
 if ($service_id) {
-    $_SESSION['success'] = "Service added successfully! It's pending approval.";
+    $_SESSION['success'] = "Service added successfully! It's now live and visible to tourists.";
     header("Location: ../admin/manage_services.php");
 } else {
     $_SESSION['error'] = "Failed to add service. Please try again.";
