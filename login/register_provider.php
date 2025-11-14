@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/accessibility.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
     <style>
         * {
             margin: 0;
@@ -281,6 +284,7 @@
     </style>
 </head>
 <body>
+    <a href="#register-provider-form" class="skip-link">Skip to provider registration form</a>
     <div class="auth-container">
         <!-- Left Side - Visual -->
         <div class="auth-visual">
@@ -345,7 +349,7 @@
                     <p style="margin-top: 8px; font-size: 0.85rem;">Your account will be reviewed and verified within 24-48 hours after payment.</p>
                 </div>
 
-                <form method="POST" action="" id="register-provider-form">
+                <form method="POST" action="" id="register-provider-form" role="form" aria-label="Provider registration form">
                     <input type="hidden" name="user_type" value="provider">
 
                     <h6 style="font-weight: 700; margin-bottom: 16px; color: #2d6a4f;">Personal Information</h6>
@@ -353,69 +357,70 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">
-                                <i class="fa fa-user"></i> First Name *
+                                <i class="fa fa-user" aria-hidden="true"></i> First Name *
                             </label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required aria-required="true">
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="last_name" class="form-label">
-                                <i class="fa fa-user"></i> Last Name *
+                                <i class="fa fa-user" aria-hidden="true"></i> Last Name *
                             </label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required aria-required="true">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">
-                            <i class="fa fa-envelope"></i> Email Address *
+                            <i class="fa fa-envelope" aria-hidden="true"></i> Email Address *
                         </label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <input type="email" class="form-control" id="email" name="email" required aria-required="true">
                     </div>
 
                     <div class="mb-3">
                         <label for="phone" class="form-label">
-                            <i class="fa fa-phone"></i> Phone Number *
+                            <i class="fa fa-phone" aria-hidden="true"></i> Phone Number *
                         </label>
-                        <input type="text" class="form-control" id="phone" name="phone" placeholder="+233 24 123 4567" required>
+                        <input type="text" class="form-control" id="phone" name="phone" placeholder="+233 24 123 4567" required aria-required="true">
                     </div>
 
                     <div class="mb-4">
                         <label for="password" class="form-label">
-                            <i class="fa fa-lock"></i> Password *
+                            <i class="fa fa-lock" aria-hidden="true"></i> Password *
                         </label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Minimum 8 characters" required>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Minimum 8 characters" required aria-required="true" aria-describedby="password-help">
+                        <span id="password-help" class="sr-only">Password must be at least 8 characters long</span>
                     </div>
 
                     <h6 style="font-weight: 700; margin-bottom: 16px; color: #2d6a4f; margin-top: 32px;">Business Information</h6>
 
                     <div class="mb-3">
                         <label for="business_name" class="form-label">
-                            <i class="fa fa-building"></i> Business/Service Name *
+                            <i class="fa fa-building" aria-hidden="true"></i> Business/Service Name *
                         </label>
-                        <input type="text" class="form-control" id="business_name" name="business_name" placeholder="e.g., Accra Tours & Adventures" required>
+                        <input type="text" class="form-control" id="business_name" name="business_name" placeholder="e.g., Accra Tours & Adventures" required aria-required="true">
                     </div>
 
                     <div class="mb-3">
                         <label for="business_location" class="form-label">
-                            <i class="fa fa-map-marker-alt"></i> Business Location *
+                            <i class="fa fa-map-marker-alt" aria-hidden="true"></i> Business Location *
                         </label>
-                        <input type="text" class="form-control" id="business_location" name="business_location" placeholder="e.g., Accra, Greater Accra Region" required>
-                        <small class="text-muted">Specific address or area where your business is located</small>
+                        <input type="text" class="form-control" id="business_location" name="business_location" placeholder="e.g., Accra, Greater Accra Region" required aria-required="true" aria-describedby="location-help">
+                        <small class="text-muted" id="location-help">Specific address or area where your business is located</small>
                     </div>
 
                     <div class="mb-4">
                         <label for="primary_region" class="form-label">
-                            <i class="fa fa-map"></i> Primary Business Region *
+                            <i class="fa fa-map" aria-hidden="true"></i> Primary Business Region *
                         </label>
-                        <select class="form-select" id="primary_region" name="primary_region" required>
+                        <select class="form-select" id="primary_region" name="primary_region" required aria-required="true" aria-describedby="region-help">
                             <option value="">Select your primary region</option>
                             <option value="Greater Accra">Greater Accra</option>
                             <option value="Central">Central</option>
                             <option value="Ashanti">Ashanti</option>
                             <option value="Northern">Northern</option>
                         </select>
-                        <small class="text-muted">This is your main business location. You can offer services in other regions when creating listings.</small>
+                        <small class="text-muted" id="region-help">This is your main business location. You can offer services in other regions when creating listings.</small>
                     </div>
 
                     <div class="alert alert-info">
@@ -423,7 +428,7 @@
                         <strong>Next Steps:</strong> After registration, you'll be redirected to pay the GHS 20 onboarding fee. Once payment is confirmed, our team will review and verify your account within 24-48 hours.
                     </div>
 
-                    <button type="submit" class="btn-register w-100">
+                    <button type="submit" class="btn-register w-100" aria-label="Register as provider">
                         <span>Register as Provider</span>
                     </button>
                 </form>
@@ -440,6 +445,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/accessibility.js"></script>
     <script>
         $(document).ready(function(){
             // Handle form submission

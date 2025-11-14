@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/accessibility.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
     <style>
         * {
             margin: 0;
@@ -313,6 +316,7 @@
     </style>
 </head>
 <body>
+    <a href="#register-form" class="skip-link">Skip to registration form</a>
     <div class="auth-container">
         <!-- Left Side - Visual -->
         <div class="auth-visual">
@@ -356,51 +360,53 @@
                 <h2 class="form-title">Create Tourist Account</h2>
                 <p class="form-subtitle">Join thousands of travelers exploring Ghana</p>
 
-                <form method="POST" action="" id="register-form">
+                <form method="POST" action="" id="register-form" role="form" aria-label="Tourist registration form">
                     <input type="hidden" name="user_type" value="tourist">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">
-                                <i class="fa fa-user"></i> First Name
+                                <i class="fa fa-user" aria-hidden="true"></i> First Name
                             </label>
                             <input type="text" class="form-control" id="first_name" name="first_name"
-                                   placeholder="John" required>
+                                   placeholder="John" required aria-required="true">
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="last_name" class="form-label">
-                                <i class="fa fa-user"></i> Last Name
+                                <i class="fa fa-user" aria-hidden="true"></i> Last Name
                             </label>
                             <input type="text" class="form-control" id="last_name" name="last_name"
-                                   placeholder="Doe" required>
+                                   placeholder="Doe" required aria-required="true">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">
-                            <i class="fa fa-envelope"></i> Email Address
+                            <i class="fa fa-envelope" aria-hidden="true"></i> Email Address
                         </label>
                         <input type="email" class="form-control" id="email" name="email"
-                               placeholder="you@example.com" required>
+                               placeholder="you@example.com" required aria-required="true">
                     </div>
 
                     <div class="mb-3">
                         <label for="phone" class="form-label">
-                            <i class="fa fa-phone"></i> Phone Number (Optional)
+                            <i class="fa fa-phone" aria-hidden="true"></i> Phone Number (Optional)
                         </label>
                         <input type="text" class="form-control" id="phone" name="phone"
-                               placeholder="+233 24 123 4567">
+                               placeholder="+233 24 123 4567" aria-describedby="phone-help">
+                        <span id="phone-help" class="sr-only">Optional phone number for contact</span>
                     </div>
 
                     <div class="mb-4">
                         <label for="password" class="form-label">
-                            <i class="fa fa-lock"></i> Password
+                            <i class="fa fa-lock" aria-hidden="true"></i> Password
                         </label>
                         <input type="password" class="form-control" id="password" name="password"
-                               placeholder="Minimum 8 characters" required>
+                               placeholder="Minimum 8 characters" required aria-required="true" aria-describedby="password-help">
+                        <span id="password-help" class="sr-only">Password must be at least 8 characters long</span>
                     </div>
 
-                    <button type="submit" class="btn-register w-100">
+                    <button type="submit" class="btn-register w-100" aria-label="Create tourist account">
                         <span>Create Tourist Account</span>
                     </button>
                 </form>
@@ -417,6 +423,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/accessibility.js"></script>
     <script>
         $(document).ready(function(){
             // Handle form submission

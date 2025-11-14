@@ -28,6 +28,7 @@ if (!$provider) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/accessibility.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
     <style>
         * {
@@ -233,8 +234,9 @@ if (!$provider) {
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <!-- Navigation -->
-    <nav class="main-nav">
+    <nav class="main-nav" role="navigation" aria-label="Provider navigation">
         <div class="nav-container">
             <div class="nav-left">
                 <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
@@ -247,21 +249,21 @@ if (!$provider) {
         </div>
     </nav>
 
-    <div class="main-container">
+    <div class="main-container" id="main-content" role="main">
         <div class="form-card">
-            <h2><i class="fa fa-user-circle"></i> Edit Profile</h2>
+            <h2><i class="fa fa-user-circle" aria-hidden="true"></i> Edit Profile</h2>
 
             <div class="info-box">
-                <i class="fa fa-info-circle"></i>
+                <i class="fa fa-info-circle" aria-hidden="true"></i>
                 Complete your profile to improve your visibility and credibility with tourists.
             </div>
 
-            <form id="profileForm">
+            <form id="profileForm" role="form" aria-label="Provider profile form">
                 <!-- Business Name -->
                 <div class="mb-3">
                     <label for="business_name" class="form-label">Business Name *</label>
                     <input type="text" class="form-control" id="business_name" name="business_name"
-                           value="<?php echo htmlspecialchars($provider['business_name']); ?>" required>
+                           value="<?php echo htmlspecialchars($provider['business_name']); ?>" required aria-required="true">
                 </div>
 
                 <!-- Business Registration Number -->
@@ -269,14 +271,14 @@ if (!$provider) {
                     <label for="business_registration_number" class="form-label">Business Registration Number</label>
                     <input type="text" class="form-control" id="business_registration_number" name="business_registration_number"
                            value="<?php echo htmlspecialchars($provider['business_registration_number'] ?? ''); ?>"
-                           placeholder="e.g., BN12345678">
-                    <small class="text-muted">Optional - Helps build trust with customers</small>
+                           placeholder="e.g., BN12345678" aria-describedby="reg-help">
+                    <small class="text-muted" id="reg-help">Optional - Helps build trust with customers</small>
                 </div>
 
                 <!-- Primary Region -->
                 <div class="mb-3">
                     <label for="region" class="form-label">Primary Business Region *</label>
-                    <select class="form-select" id="region" name="region" required>
+                    <select class="form-select" id="region" name="region" required aria-required="true">
                         <option value="Greater Accra" <?php echo $provider['region'] === 'Greater Accra' ? 'selected' : ''; ?>>Greater Accra</option>
                         <option value="Central" <?php echo $provider['region'] === 'Central' ? 'selected' : ''; ?>>Central</option>
                         <option value="Ashanti" <?php echo $provider['region'] === 'Ashanti' ? 'selected' : ''; ?>>Ashanti</option>
@@ -397,5 +399,6 @@ if (!$provider) {
             });
         });
     </script>
+    <script src="../js/accessibility.js"></script>
 </body>
 </html>

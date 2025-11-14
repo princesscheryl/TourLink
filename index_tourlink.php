@@ -24,7 +24,9 @@ $categories = get_all_service_categories_ctr();
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="css/dark-mode.css" rel="stylesheet">
+    <link href="css/accessibility.css" rel="stylesheet">
     <script src="js/dark-mode.js"></script>
+    <script src="js/accessibility.js"></script>
     <style>
         * {
             margin: 0;
@@ -928,6 +930,9 @@ $categories = get_all_service_categories_ctr();
     </style>
 </head>
 <body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="top-bar-container">
@@ -952,10 +957,10 @@ $categories = get_all_service_categories_ctr();
     </div>
 
     <!-- Main Navigation -->
-    <nav class="main-nav">
+    <nav class="main-nav" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
-            <a href="index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
-            <ul class="nav-menu" id="navMenu">
+            <a href="index_tourlink.php" class="logo" aria-label="TourLink Home">TourLink<span class="logo-dot">.</span></a>
+            <ul class="nav-menu" id="navMenu" role="menubar">
                 <li><a href="index_tourlink.php">Home</a></li>
                 <li><a href="view/all_services.php">Destinations</a></li>
                 <li><a href="view/all_services.php">Tour Listing</a></li>
@@ -1012,17 +1017,17 @@ $categories = get_all_service_categories_ctr();
                 <?php else: ?>
                     <a href="login/login.php" class="btn-signin">Sign In</a>
                 <?php endif; ?>
-                <div class="hamburger" id="hamburger">
+                <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
                     <span></span>
                     <span></span>
                     <span></span>
-                </div>
+                </button>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="main-content" role="main">
         <div class="hero-content">
             <div class="hero-text">
                 <h1>Discover Your Next Adventure with TourLink!</h1>

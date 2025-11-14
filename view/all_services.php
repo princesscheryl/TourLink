@@ -25,6 +25,9 @@ $categories = get_all_service_categories_ctr();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/accessibility.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
     <style>
         * {
             margin: 0;
@@ -330,8 +333,9 @@ $categories = get_all_service_categories_ctr();
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <!-- Navigation -->
-    <nav class="main-nav">
+    <nav class="main-nav" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
             <div class="nav-left">
                 <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
@@ -357,7 +361,7 @@ $categories = get_all_service_categories_ctr();
     </nav>
 
     <!-- Page Header -->
-    <div class="page-header">
+    <div class="page-header" id="main-content" role="main">
         <div class="main-container">
             <h1>Browse Tourism Services</h1>
             <p>Discover amazing experiences across Ghana</p>
@@ -445,5 +449,6 @@ $categories = get_all_service_categories_ctr();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/accessibility.js"></script>
 </body>
 </html>

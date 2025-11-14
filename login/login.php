@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/accessibility.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
     <style>
         * {
             margin: 0;
@@ -278,6 +281,7 @@
     </style>
 </head>
 <body>
+    <a href="#login-form" class="skip-link">Skip to login form</a>
     <div class="auth-container">
         <!-- Left Side - Visual -->
         <div class="auth-visual">
@@ -328,26 +332,28 @@
                 <h2 class="form-title">Sign In</h2>
                 <p class="form-subtitle">Enter your credentials to access your account</p>
 
-                <form method="POST" action="" id="login-form">
+                <form method="POST" action="" id="login-form" role="form" aria-label="Sign in form">
                     <div class="mb-3">
                         <label for="email" class="form-label">
-                            <i class="fa fa-envelope"></i> Email Address
+                            <i class="fa fa-envelope" aria-hidden="true"></i> Email Address
                         </label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required aria-required="true" aria-describedby="email-help">
+                        <span id="email-help" class="sr-only">Enter your email address to sign in</span>
                     </div>
 
                     <div class="mb-3">
                         <label for="password" class="form-label">
-                            <i class="fa fa-lock"></i> Password
+                            <i class="fa fa-lock" aria-hidden="true"></i> Password
                         </label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required aria-required="true" aria-describedby="password-help">
+                        <span id="password-help" class="sr-only">Enter your password to sign in</span>
                     </div>
 
                     <div class="forgot-password">
                         <a href="#forgot">Forgot Password?</a>
                     </div>
 
-                    <button type="submit" class="btn-login w-100">
+                    <button type="submit" class="btn-login w-100" aria-label="Sign in to your account">
                         <span>Sign In</span>
                     </button>
                 </form>
@@ -364,6 +370,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/accessibility.js"></script>
     <script>
         $(document).ready(function(){
             $('#login-form').submit(function(e){

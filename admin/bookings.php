@@ -34,6 +34,7 @@ $stats = $booking_class->get_provider_statistics($provider['provider_id']);
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/accessibility.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
     <style>
         * {
@@ -427,8 +428,9 @@ $stats = $booking_class->get_provider_statistics($provider['provider_id']);
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <!-- Navigation -->
-    <nav class="main-nav">
+    <nav class="main-nav" role="navigation" aria-label="Provider navigation">
         <div class="nav-container">
             <div class="nav-left">
                 <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
@@ -442,10 +444,10 @@ $stats = $booking_class->get_provider_statistics($provider['provider_id']);
         </div>
     </nav>
 
-    <div class="main-container">
+    <div class="main-container" id="main-content" role="main">
         <!-- Page Header -->
         <div class="page-header">
-            <h2><i class="fa fa-calendar-check"></i> My Bookings</h2>
+            <h2><i class="fa fa-calendar-check" aria-hidden="true"></i> My Bookings</h2>
             <p>Manage and track all your service bookings</p>
         </div>
 
@@ -744,5 +746,6 @@ $stats = $booking_class->get_provider_statistics($provider['provider_id']);
             });
         }
     </script>
+    <script src="../js/accessibility.js"></script>
 </body>
 </html>

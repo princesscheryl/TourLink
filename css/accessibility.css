@@ -1,0 +1,384 @@
+/**
+ * TourLink Accessibility Styles
+ * WCAG 2.1 AA Compliant Accessibility Features
+ */
+
+/* ===================================
+   SKIP TO CONTENT LINK
+   =================================== */
+
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #2d6a4f;
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-weight: 600;
+    z-index: 10000;
+    border-radius: 0 0 8px 0;
+    font-size: 1rem;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* ===================================
+   FOCUS INDICATORS
+   =================================== */
+
+/* Strong focus indicators for keyboard navigation */
+a:focus,
+button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+[tabindex]:focus {
+    outline: 3px solid #2d6a4f !important;
+    outline-offset: 2px !important;
+}
+
+/* Special focus for interactive elements */
+.btn:focus,
+.btn-primary:focus,
+.btn-nav:focus {
+    outline: 3px solid #ffd700 !important;
+    outline-offset: 3px !important;
+    box-shadow: 0 0 0 5px rgba(45, 106, 79, 0.2) !important;
+}
+
+/* Navigation links focus */
+.nav-link:focus {
+    outline: 2px solid #2d6a4f !important;
+    outline-offset: 4px !important;
+    background: rgba(45, 106, 79, 0.1);
+    border-radius: 4px;
+}
+
+/* Dropdown menu focus */
+.dropdown-menu-custom a:focus {
+    outline: 2px solid #ffd700 !important;
+    background: rgba(45, 106, 79, 0.2) !important;
+}
+
+/* Card and clickable element focus */
+.service-card:focus,
+.category-card:focus,
+a.card:focus {
+    outline: 3px solid #2d6a4f !important;
+    outline-offset: 4px !important;
+    transform: translateY(-2px);
+}
+
+/* ===================================
+   SCREEN READER ONLY TEXT
+   =================================== */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Show on focus for keyboard users */
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+}
+
+/* ===================================
+   HIGH CONTRAST MODE
+   =================================== */
+
+[data-contrast="high"] {
+    /* High contrast mode */
+}
+
+[data-contrast="high"] body {
+    background: #000000 !important;
+    color: #ffffff !important;
+}
+
+[data-contrast="high"] .main-nav,
+[data-contrast="high"] .card,
+[data-contrast="high"] .form-card,
+[data-contrast="high"] .table-card,
+[data-contrast="high"] .stat-card {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+}
+
+[data-contrast="high"] .btn-primary,
+[data-contrast="high"] .btn {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 3px solid #ffffff !important;
+    font-weight: 700 !important;
+}
+
+[data-contrast="high"] .btn-primary:hover,
+[data-contrast="high"] .btn:hover {
+    background: #ffff00 !important;
+    color: #000000 !important;
+}
+
+[data-contrast="high"] a {
+    color: #ffff00 !important;
+    text-decoration: underline !important;
+}
+
+[data-contrast="high"] input,
+[data-contrast="high"] textarea,
+[data-contrast="high"] select {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+}
+
+/* ===================================
+   REDUCED MOTION
+   =================================== */
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ===================================
+   KEYBOARD NAVIGATION HELPERS
+   =================================== */
+
+/* Visual indicator for keyboard users */
+body.keyboard-nav *:focus {
+    outline: 3px solid #2d6a4f !important;
+    outline-offset: 2px !important;
+}
+
+/* Hide focus outline for mouse users only */
+body.mouse-nav *:focus {
+    outline: none;
+}
+
+body.mouse-nav button:focus,
+body.mouse-nav a:focus,
+body.mouse-nav input:focus {
+    outline: 1px solid #2d6a4f;
+}
+
+/* ===================================
+   ACCESSIBLE FORM LABELS
+   =================================== */
+
+/* Required field indicator */
+.required::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Error messages */
+.error-message {
+    color: #dc3545;
+    font-weight: 600;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+[aria-invalid="true"] {
+    border-color: #dc3545 !important;
+    border-width: 2px !important;
+}
+
+/* Success messages */
+.success-message {
+    color: #198754;
+    font-weight: 600;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+/* ===================================
+   ACCESSIBLE TABLES
+   =================================== */
+
+/* Better table headers */
+table th {
+    font-weight: 700;
+    text-align: left;
+}
+
+table caption {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+/* ===================================
+   TEXT SPACING (User adjustable)
+   =================================== */
+
+[data-text-spacing="increased"] * {
+    line-height: 1.8 !important;
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.16em !important;
+}
+
+[data-text-spacing="increased"] p {
+    margin-bottom: 2em !important;
+}
+
+/* ===================================
+   FONT SIZE CONTROLS
+   =================================== */
+
+[data-font-size="small"] {
+    font-size: 14px !important;
+}
+
+[data-font-size="medium"] {
+    font-size: 16px !important;
+}
+
+[data-font-size="large"] {
+    font-size: 18px !important;
+}
+
+[data-font-size="xlarge"] {
+    font-size: 20px !important;
+}
+
+/* ===================================
+   TOUCH TARGET SIZE (Mobile)
+   =================================== */
+
+@media (max-width: 768px) {
+    button,
+    a,
+    input[type="submit"],
+    input[type="button"],
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 12px 16px;
+    }
+}
+
+/* ===================================
+   LANDMARK ROLES STYLING
+   =================================== */
+
+/* Visual separation for landmarks in high contrast */
+[data-contrast="high"] header,
+[data-contrast="high"] main,
+[data-contrast="high"] nav,
+[data-contrast="high"] footer,
+[data-contrast="high"] aside {
+    border: 3px solid #ffffff !important;
+    margin: 10px 0 !important;
+}
+
+/* ===================================
+   ACCESSIBLE TOOLTIPS
+   =================================== */
+
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 5px;
+}
+
+/* ===================================
+   LINK STYLING FOR ACCESSIBILITY
+   =================================== */
+
+/* Underline links for better visibility */
+main a:not(.btn):not(.nav-link) {
+    text-decoration: underline;
+}
+
+main a:not(.btn):not(.nav-link):hover {
+    text-decoration: none;
+}
+
+/* External links indicator */
+a[target="_blank"]::after {
+    content: " ↗";
+    font-size: 0.8em;
+    margin-left: 2px;
+}
+
+/* ===================================
+   FOCUS TRAP FOR MODALS
+   =================================== */
+
+.modal-open {
+    overflow: hidden;
+}
+
+.modal-backdrop {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* ===================================
+   LOADING STATES
+   =================================== */
+
+[aria-busy="true"] {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* ===================================
+   DARK MODE ACCESSIBILITY ADJUSTMENTS
+   =================================== */
+
+[data-theme="dark"] a:focus,
+[data-theme="dark"] button:focus,
+[data-theme="dark"] input:focus {
+    outline-color: #ffd700 !important;
+}
+
+[data-theme="dark"] .error-message {
+    color: #ff6b6b !important;
+}
+
+[data-theme="dark"] .success-message {
+    color: #51cf66 !important;
+}
