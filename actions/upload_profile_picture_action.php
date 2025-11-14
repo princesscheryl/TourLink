@@ -15,9 +15,27 @@ if (!isset($_SESSION['user_id'])) {
 require_once '../classes/tourlink_user_class.php';
 
 // Check if file was uploaded
-if (!isset($_FILES['profile_picture']) || $_FILES['profile_picture']['error'] !== UPLOAD_ERR_OK) {
+if (!isset($_FILES['profile_picture'])) {
     $response['status'] = 'error';
-    $response['message'] = 'No file uploaded or upload error occurred';
+    $response['message'] = 'No file was selected';
+    echo json_encode($response);
+    exit();
+}
+
+// Check for upload errors
+if ($_FILES['profile_picture']['error'] !== UPLOAD_ERR_OK) {
+    $error_messages = [
+        UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize in php.ini',
+        UPLOAD_ERR_FORM_SIZE => 'File exceeds MAX_FILE_SIZE in HTML form',
+        UPLOAD_ERR_PARTIAL => 'File was only partially uploaded',
+        UPLOAD_ERR_NO_FILE => 'No file was uploaded',
+        UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary upload directory',
+        UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
+        UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the upload'
+    ];
+    $error_code = $_FILES['profile_picture']['error'];
+    $response['status'] = 'error';
+    $response['message'] = isset($error_messages[$error_code]) ? $error_messages[$error_code] : 'Unknown upload error';
     echo json_encode($response);
     exit();
 }
@@ -44,10 +62,29 @@ if ($file['size'] > $max_size) {
     exit();
 }
 
+// Get absolute path to uploads directory
+$base_dir = dirname(__DIR__); // Get parent directory (tourlink)
+$upload_dir = $base_dir . '/uploads/profile_pictures/';
+
 // Create uploads directory if it doesn't exist
-$upload_dir = '../uploads/profile_pictures/';
 if (!is_dir($upload_dir)) {
-    mkdir($upload_dir, 0755, true);
+    if (!mkdir($upload_dir, 0777, true)) {
+        $response['status'] = 'error';
+        $response['message'] = 'Failed to create upload directory';
+        echo json_encode($response);
+        exit();
+    }
+}
+
+// Check if directory is writable
+if (!is_writable($upload_dir)) {
+    chmod($upload_dir, 0777);
+    if (!is_writable($upload_dir)) {
+        $response['status'] = 'error';
+        $response['message'] = 'Upload directory is not writable';
+        echo json_encode($response);
+        exit();
+    }
 }
 
 // Generate unique filename
@@ -58,7 +95,7 @@ $upload_path = $upload_dir . $new_filename;
 // Move uploaded file
 if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
     $response['status'] = 'error';
-    $response['message'] = 'Failed to save uploaded file';
+    $response['message'] = 'Failed to save uploaded file. Please check directory permissions.';
     echo json_encode($response);
     exit();
 }
@@ -68,8 +105,11 @@ $user_class = new TourlinkUser();
 $user = $user_class->get_user_by_id($_SESSION['user_id']);
 
 // Delete old profile picture if exists
-if (!empty($user['profile_image']) && file_exists('../' . $user['profile_image'])) {
-    unlink('../' . $user['profile_image']);
+if (!empty($user['profile_image'])) {
+    $old_file_path = $base_dir . '/' . $user['profile_image'];
+    if (file_exists($old_file_path)) {
+        @unlink($old_file_path); // @ suppresses warnings if deletion fails
+    }
 }
 
 // Save relative path to database

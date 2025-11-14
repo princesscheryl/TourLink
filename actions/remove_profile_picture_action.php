@@ -26,9 +26,10 @@ if (!$user) {
 
 // Delete file if exists
 if (!empty($user['profile_image'])) {
-    $file_path = '../' . $user['profile_image'];
+    $base_dir = dirname(__DIR__);
+    $file_path = $base_dir . '/' . $user['profile_image'];
     if (file_exists($file_path)) {
-        unlink($file_path);
+        @unlink($file_path);
     }
 }
 
