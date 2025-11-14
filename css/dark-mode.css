@@ -1,0 +1,231 @@
+/**
+ * Dark Mode CSS Variables and Styles for TourLink
+ * Include this file in all pages that support dark mode
+ */
+
+:root {
+    /* Light Mode Colors (Default) */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --text-muted: #999999;
+
+    --border-color: #e9ecef;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --shadow-hover: rgba(0, 0, 0, 0.15);
+
+    --card-bg: #ffffff;
+    --input-bg: #ffffff;
+    --input-border: #e9ecef;
+
+    /* Brand colors remain the same */
+    --brand-primary: #2d6a4f;
+    --brand-dark: #1b4332;
+    --brand-accent: #ffd700;
+    --brand-danger: #dc3545;
+}
+
+/* Dark Mode Colors */
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #3d3d3d;
+
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-muted: #808080;
+
+    --border-color: #404040;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --shadow-hover: rgba(0, 0, 0, 0.4);
+
+    --card-bg: #2d2d2d;
+    --input-bg: #3d3d3d;
+    --input-border: #505050;
+}
+
+/* Apply theme colors */
+body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Cards and containers */
+.card,
+.form-card,
+.service-detail-card,
+.booking-card,
+.table-card,
+.stat-card {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease;
+}
+
+/* Navigation */
+.main-nav,
+.top-bar {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+/* Text colors */
+h1, h2, h3, h4, h5, h6,
+.nav-link,
+.provider-info,
+.breadcrumb-nav a {
+    color: var(--text-primary);
+}
+
+.text-muted,
+small.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Form elements */
+.form-control,
+.form-select,
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--input-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+}
+
+/* Tables */
+table thead {
+    background-color: var(--bg-tertiary);
+}
+
+table tbody tr {
+    border-color: var(--border-color);
+}
+
+table tbody tr:hover {
+    background-color: var(--bg-tertiary);
+}
+
+/* Shadows */
+.main-nav,
+.form-card,
+.service-detail-card,
+.booking-card {
+    box-shadow: 0 2px 12px var(--shadow);
+}
+
+/* Info boxes */
+.info-box {
+    background-color: var(--bg-tertiary);
+    border-left-color: var(--brand-primary);
+}
+
+/* Dark mode toggle button */
+.theme-toggle {
+    background: transparent;
+    border: 2px solid var(--brand-primary);
+    color: var(--brand-primary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+    background: var(--brand-primary);
+    color: white;
+}
+
+.theme-toggle i {
+    font-size: 1rem;
+}
+
+/* Dropdown menu dark mode support */
+.dropdown-menu-custom {
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 20px var(--shadow-hover);
+}
+
+.dropdown-menu-custom a {
+    color: var(--text-primary);
+}
+
+.dropdown-menu-custom a:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.dropdown-divider {
+    background-color: var(--border-color);
+}
+
+/* Breadcrumb */
+.breadcrumb-nav {
+    color: var(--text-secondary);
+}
+
+/* Empty state */
+.empty-state {
+    color: var(--text-secondary);
+}
+
+.empty-state i {
+    color: var(--text-muted);
+}
+
+/* Profile picture placeholder */
+.profile-pic-placeholder {
+    background-color: var(--brand-primary);
+}
+
+/* Alerts and badges - keep original colors but adjust for dark mode */
+[data-theme="dark"] .alert-info,
+[data-theme="dark"] .info-box {
+    background-color: rgba(45, 106, 79, 0.2);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .alert-warning {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: var(--text-primary);
+}
+
+/* Service cards */
+.service-card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+/* Footer */
+footer {
+    background-color: var(--bg-primary);
+    border-top-color: var(--border-color);
+}
+
+/* Special handling for images - prevent washout in dark mode */
+[data-theme="dark"] img {
+    opacity: 0.9;
+}
+
+[data-theme="dark"] img:hover {
+    opacity: 1;
+}

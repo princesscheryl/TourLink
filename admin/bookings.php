@@ -33,6 +33,8 @@ $stats = $booking_class->get_provider_statistics($provider['provider_id']);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
     <style>
         * {
             margin: 0;

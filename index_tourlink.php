@@ -23,6 +23,8 @@ $categories = get_all_service_categories_ctr();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="css/dark-mode.css" rel="stylesheet">
+    <script src="js/dark-mode.js"></script>
     <style>
         * {
             margin: 0;
@@ -995,6 +997,11 @@ $categories = get_all_service_categories_ctr();
                                     Bookings
                                 </a>
                             <?php endif; ?>
+                            <div class="dropdown-divider"></div>
+                            <a href="javascript:void(0)" onclick="toggleTheme(); event.stopPropagation();" id="themeToggle">
+                                <i class="fa fa-moon"></i>
+                                <span class="toggle-text">Dark Mode</span>
+                            </a>
                             <div class="dropdown-divider"></div>
                             <a href="login/logout.php">
                                 <i class="fa fa-sign-out-alt"></i>
