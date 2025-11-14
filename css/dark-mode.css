@@ -400,6 +400,84 @@
     color: #e0e0e0 !important;
 }
 
+/* TESTIMONIALS SECTION */
+[data-theme="dark"] .testimonials-section,
+[data-theme="dark"] .reviews-section {
+    background: #1a1a1a !important;
+}
+
+[data-theme="dark"] .testimonial-card,
+[data-theme="dark"] .review-card {
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.5) !important;
+}
+
+[data-theme="dark"] .testimonial-card p,
+[data-theme="dark"] .review-card p {
+    color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] .testimonial-card h4,
+[data-theme="dark"] .review-card h4,
+[data-theme="dark"] .testimonial-card h5,
+[data-theme="dark"] .review-card h5 {
+    color: #ffffff !important;
+}
+
+/* WHY CHOOSE US / FEATURES SECTION */
+[data-theme="dark"] .why-choose-section,
+[data-theme="dark"] .features-section,
+[data-theme="dark"] .benefits-section {
+    background: #1a1a1a !important;
+}
+
+[data-theme="dark"] .why-choose-section h2,
+[data-theme="dark"] .features-section h2,
+[data-theme="dark"] .benefits-section h2 {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .why-choose-section p,
+[data-theme="dark"] .features-section p,
+[data-theme="dark"] .benefits-section p {
+    color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] .feature-card,
+[data-theme="dark"] .benefit-card {
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+}
+
+/* ICON BOXES */
+[data-theme="dark"] .icon-box {
+    background: #2d6a4f !important;
+}
+
+/* ALL SECTIONS WITH WHITE/LIGHT BACKGROUNDS */
+[data-theme="dark"] section {
+    background: #1a1a1a !important;
+}
+
+[data-theme="dark"] .container,
+[data-theme="dark"] .content-wrapper {
+    color: #e0e0e0 !important;
+}
+
+/* STARS (for ratings) */
+[data-theme="dark"] .stars,
+[data-theme="dark"] .rating {
+    filter: brightness(1.2);
+}
+
+/* USER INITIALS IN CIRCLES */
+[data-theme="dark"] .user-initial,
+[data-theme="dark"] .user-avatar {
+    background: #2d6a4f !important;
+    color: #ffffff !important;
+}
+
 /* SMOOTH TRANSITIONS */
 body,
 .main-nav,
@@ -409,6 +487,9 @@ body,
 input,
 textarea,
 select,
-.dropdown-menu-custom {
+.dropdown-menu-custom,
+section,
+.testimonial-card,
+.feature-card {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
 }
