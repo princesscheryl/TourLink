@@ -66,22 +66,45 @@ if ($file['size'] > $max_size) {
 $base_dir = dirname(__DIR__); // Get parent directory (tourlink)
 $upload_dir = $base_dir . '/uploads/profile_pictures/';
 
+// Set umask to allow full permissions
+$old_umask = umask(0);
+
 // Create uploads directory if it doesn't exist
 if (!is_dir($upload_dir)) {
     if (!mkdir($upload_dir, 0777, true)) {
+        umask($old_umask);
         $response['status'] = 'error';
         $response['message'] = 'Failed to create upload directory';
         echo json_encode($response);
         exit();
     }
+    // Explicitly set permissions after creation
+    @chmod($upload_dir, 0777);
+
+    // Create .htaccess for security (prevent PHP execution in uploads)
+    $htaccess_content = "# Prevent PHP execution in uploads directory\n";
+    $htaccess_content .= "php_flag engine off\n";
+    $htaccess_content .= "AddType text/plain .php .php3 .php4 .php5 .phtml .phps\n";
+    @file_put_contents($upload_dir . '.htaccess', $htaccess_content);
 }
+
+// Restore original umask
+umask($old_umask);
 
 // Check if directory is writable
 if (!is_writable($upload_dir)) {
-    chmod($upload_dir, 0777);
+    // Try to set permissions one more time
+    @chmod($upload_dir, 0777);
+
+    // If still not writable, provide detailed error
     if (!is_writable($upload_dir)) {
         $response['status'] = 'error';
-        $response['message'] = 'Upload directory is not writable';
+        $response['message'] = 'Upload directory exists but is not writable. Directory: ' . $upload_dir;
+        $response['debug'] = [
+            'exists' => is_dir($upload_dir),
+            'writable' => is_writable($upload_dir),
+            'permissions' => substr(sprintf('%o', fileperms($upload_dir)), -4)
+        ];
         echo json_encode($response);
         exit();
     }
