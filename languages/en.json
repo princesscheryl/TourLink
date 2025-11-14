@@ -1,0 +1,261 @@
+{
+  "app_name": "TourLink",
+  "tagline": "Discover Your Next Adventure in Ghana",
+
+  "nav": {
+    "home": "Home",
+    "destinations": "Browse Services",
+    "about": "About",
+    "contact": "Contact",
+    "sign_in": "Sign In",
+    "sign_up": "Sign Up",
+    "join": "Join",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "my_services": "My Services",
+    "bookings": "Bookings",
+    "profile_settings": "Profile Settings",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode"
+  },
+
+  "hero": {
+    "title": "Explore Ghana's Hidden Gems",
+    "subtitle": "Connect with local tour guides, discover authentic experiences, and create unforgettable memories across Ghana's most beautiful destinations.",
+    "cta_primary": "Explore Services",
+    "cta_secondary": "Become a Provider"
+  },
+
+  "search": {
+    "title": "Find Your Perfect Experience",
+    "category": "Category",
+    "category_placeholder": "Select category",
+    "location": "Location",
+    "location_placeholder": "Where to?",
+    "date": "Date",
+    "date_placeholder": "Select date",
+    "search_button": "Search Now"
+  },
+
+  "categories": {
+    "title": "Browse by Category",
+    "subtitle": "Explore our wide range of tourism services"
+  },
+
+  "services": {
+    "title": "Featured Services",
+    "subtitle": "Handpicked experiences from verified providers",
+    "view_all": "View All Services",
+    "view_details": "View Details",
+    "book_now": "Book Now",
+    "per_hour": "per hour",
+    "per_day": "per day",
+    "per_person": "per person",
+    "flat_rate": "flat rate",
+    "no_services": "No services found",
+    "loading": "Loading services..."
+  },
+
+  "why_choose": {
+    "title": "Why Choose TourLink?",
+    "subtitle": "Your trusted partner for authentic Ghanaian experiences",
+    "verified_providers": "Verified Providers",
+    "verified_providers_desc": "All service providers are thoroughly vetted and verified for your safety and peace of mind.",
+    "secure_booking": "Secure Booking",
+    "secure_booking_desc": "Book with confidence using our secure payment system and instant confirmation.",
+    "local_expertise": "Local Expertise",
+    "local_expertise_desc": "Connect with local experts who know the best hidden gems and authentic experiences.",
+    "24_7_support": "24/7 Support",
+    "24_7_support_desc": "Our dedicated support team is always ready to assist you with any questions or concerns."
+  },
+
+  "testimonials": {
+    "title": "What Our Travelers Say",
+    "subtitle": "Real experiences from real travelers"
+  },
+
+  "cta": {
+    "provider_title": "Are You a Service Provider?",
+    "provider_subtitle": "Join TourLink and reach thousands of tourists looking for authentic Ghanaian experiences.",
+    "provider_button": "Become a Provider",
+    "tourist_title": "Ready to Start Your Adventure?",
+    "tourist_subtitle": "Browse our services and book your next unforgettable experience in Ghana.",
+    "tourist_button": "Explore Services"
+  },
+
+  "footer": {
+    "description": "Your trusted partner for unforgettable travel experiences. We specialize in curated tours and personalized travel solutions around Ghana.",
+    "quick_links": "Quick Links",
+    "about_us": "About Us",
+    "faqs": "FAQs",
+    "contact_us": "Contact Us",
+    "privacy_policy": "Privacy Policy",
+    "terms_conditions": "Terms & Conditions",
+    "social_media": "Social Media",
+    "contact_info": "Contact Info",
+    "location": "Ashesi University, Berekuso<br>Ghana",
+    "email": "info@tourlink.com.gh",
+    "phone": "+233 50 123 4567",
+    "copyright": "© 2025 TourLink. All rights reserved."
+  },
+
+  "auth": {
+    "sign_in_title": "Sign In",
+    "sign_in_subtitle": "Enter your credentials to access your account",
+    "sign_up_title": "Create Tourist Account",
+    "sign_up_subtitle": "Join thousands of travelers exploring Ghana",
+    "provider_signup_title": "Provider Registration",
+    "provider_signup_subtitle": "Start offering your tourism services today",
+    "email": "Email Address",
+    "password": "Password",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "phone": "Phone Number",
+    "phone_optional": "Phone Number (Optional)",
+    "forgot_password": "Forgot Password?",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "sign_up_tourist": "Sign up as Tourist",
+    "sign_up_provider": "Register as Provider",
+    "sign_in_here": "Sign in here",
+    "are_you_tourist": "Are you a tourist?",
+    "are_you_provider": "Are you a service provider?",
+    "register_tourist": "Register as Tourist",
+    "register_provider": "Register as Provider",
+    "business_name": "Business/Service Name",
+    "business_location": "Business Location",
+    "primary_region": "Primary Business Region",
+    "welcome_back": "Welcome Back!",
+    "start_adventure": "Start Your Adventure!",
+    "grow_business": "Grow Your Business!"
+  },
+
+  "form": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "update": "Update",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "required": "Required",
+    "optional": "Optional",
+    "select": "Select",
+    "choose_file": "Choose File",
+    "uploading": "Uploading...",
+    "success": "Success!",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information"
+  },
+
+  "booking": {
+    "my_bookings": "My Bookings",
+    "booking_reference": "Booking Reference",
+    "service": "Service",
+    "date": "Date",
+    "status": "Status",
+    "total": "Total",
+    "actions": "Actions",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "view": "View",
+    "cancel": "Cancel Booking",
+    "no_bookings": "No bookings found"
+  },
+
+  "profile": {
+    "edit_profile": "Edit Profile",
+    "personal_info": "Personal Information",
+    "business_info": "Business Information",
+    "update_success": "Profile updated successfully!",
+    "upload_picture": "Upload Picture",
+    "change_password": "Change Password",
+    "current_password": "Current Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password"
+  },
+
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch with our team",
+    "form_title": "Send us a Message",
+    "name": "Your Name",
+    "email": "Your Email",
+    "subject": "Subject",
+    "message": "Message",
+    "send_button": "Send Message",
+    "success_message": "Thank you! Your message has been sent successfully.",
+    "error_message": "Sorry, there was an error sending your message. Please try again.",
+    "business_hours": "Business Hours",
+    "monday_friday": "Monday - Friday: 8:00 AM - 6:00 PM",
+    "saturday": "Saturday: 9:00 AM - 4:00 PM",
+    "sunday": "Sunday: Closed",
+    "find_us": "Find Us"
+  },
+
+  "common": {
+    "loading": "Loading...",
+    "no_results": "No results found",
+    "try_again": "Try again",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "page": "Page",
+    "of": "of",
+    "showing": "Showing",
+    "to": "to",
+    "results": "results",
+    "filter": "Filter",
+    "sort": "Sort",
+    "clear": "Clear",
+    "apply": "Apply",
+    "search": "Search",
+    "all": "All",
+    "select_all": "Select All",
+    "deselect_all": "Deselect All",
+    "yes": "Yes",
+    "no": "No"
+  },
+
+  "regions": {
+    "greater_accra": "Greater Accra",
+    "central": "Central",
+    "ashanti": "Ashanti",
+    "northern": "Northern",
+    "western": "Western",
+    "eastern": "Eastern",
+    "volta": "Volta",
+    "upper_east": "Upper East",
+    "upper_west": "Upper West",
+    "brong_ahafo": "Brong Ahafo"
+  },
+
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  }
+}

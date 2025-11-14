@@ -53,25 +53,43 @@
 
         // Update toggle button appearance
         updateToggleButton: function(theme) {
+            // Update profile dropdown toggle button
             const toggleBtn = document.getElementById('themeToggle');
-            if (!toggleBtn) return;
+            if (toggleBtn) {
+                const icon = toggleBtn.querySelector('i');
+                const text = toggleBtn.querySelector('.toggle-text');
 
-            const icon = toggleBtn.querySelector('i');
-            const text = toggleBtn.querySelector('.toggle-text');
+                if (theme === 'dark') {
+                    if (icon) {
+                        icon.className = 'fa fa-sun';
+                    }
+                    if (text) {
+                        text.textContent = 'Light Mode';
+                    }
+                } else {
+                    if (icon) {
+                        icon.className = 'fa fa-moon';
+                    }
+                    if (text) {
+                        text.textContent = 'Dark Mode';
+                    }
+                }
+            }
 
-            if (theme === 'dark') {
-                if (icon) {
-                    icon.className = 'fa fa-sun';
-                }
-                if (text) {
-                    text.textContent = 'Light Mode';
-                }
-            } else {
-                if (icon) {
-                    icon.className = 'fa fa-moon';
-                }
-                if (text) {
-                    text.textContent = 'Dark Mode';
+            // Update public theme toggle button
+            const publicToggleBtn = document.getElementById('publicThemeToggle');
+            if (publicToggleBtn) {
+                const icon = publicToggleBtn.querySelector('i');
+                if (theme === 'dark') {
+                    if (icon) {
+                        icon.className = 'fa fa-sun';
+                    }
+                    publicToggleBtn.setAttribute('aria-label', 'Switch to light mode');
+                } else {
+                    if (icon) {
+                        icon.className = 'fa fa-moon';
+                    }
+                    publicToggleBtn.setAttribute('aria-label', 'Switch to dark mode');
                 }
             }
         },

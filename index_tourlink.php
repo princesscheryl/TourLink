@@ -26,6 +26,7 @@ $categories = get_all_service_categories_ctr();
     <link href="css/dark-mode.css" rel="stylesheet">
     <link href="css/accessibility.css" rel="stylesheet">
     <script src="js/dark-mode.js"></script>
+    <script src="js/translator.js"></script>
     <script src="js/accessibility.js"></script>
     <style>
         * {
@@ -150,6 +151,54 @@ $categories = get_all_service_categories_ctr();
         .btn-signin:hover {
             background: #2d6a4f;
             color: white;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .language-selector:hover {
+            border-color: #2d6a4f;
+        }
+
+        .language-selector:focus {
+            outline: none;
+            border-color: #2d6a4f;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+        }
+
+        /* Public Theme Toggle Button */
+        .theme-toggle-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #1a1a1a;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: #2d6a4f;
+            background: #f8f9fa;
+        }
+
+        .theme-toggle-btn i {
+            font-size: 1.1rem;
         }
 
         /* Profile Dropdown */
@@ -904,28 +953,187 @@ $categories = get_all_service_categories_ctr();
         }
 
         @media (max-width: 768px) {
-            .hero-text h1 {
-                font-size: 42px;
+            /* Navigation */
+            .nav-container {
+                padding: 0 20px;
             }
+
+            .nav-actions {
+                gap: 8px;
+            }
+
+            .language-selector {
+                min-width: 80px;
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+
+            .theme-toggle-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .btn-signin {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .profile-name {
+                display: none; /* Hide name on mobile */
+            }
+
+            /* Hero Section */
+            .hero-text h1 {
+                font-size: 2rem;
+                line-height: 1.2;
+            }
+
+            .hero-text p {
+                font-size: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .btn-choose, .btn-become {
+                width: 100%;
+                text-align: center;
+                padding: 14px 24px;
+            }
+
+            /* Search Section */
             .search-grid {
                 grid-template-columns: 1fr;
+                gap: 12px;
             }
+
+            .search-field input,
+            .search-field select {
+                font-size: 0.9rem;
+            }
+
+            .btn-search {
+                width: 100%;
+            }
+
+            /* Grids */
             .destinations-grid {
                 grid-template-columns: 1fr;
             }
+
             .testimonials-grid {
                 grid-template-columns: 1fr;
             }
+
             .footer-container {
                 grid-template-columns: 1fr;
             }
+
             .destinations-tabs {
                 flex-wrap: wrap;
                 gap: 15px;
             }
-            .hero-buttons {
-                flex-direction: column;
+
+            /* Cards */
+            .destination-card,
+            .service-card {
+                margin: 0;
             }
+
+            /* Footer */
+            footer {
+                padding: 40px 20px 20px;
+            }
+        }
+
+        /* Very Small Screens (Phones) */
+        @media (max-width: 480px) {
+            .main-nav {
+                padding: 12px 0;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-actions {
+                gap: 6px;
+            }
+
+            .language-selector {
+                min-width: 70px;
+                font-size: 0.75rem;
+                padding: 5px 6px;
+            }
+
+            .theme-toggle-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .theme-toggle-btn i {
+                font-size: 0.9rem;
+            }
+
+            .btn-signin {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .hamburger {
+                width: 32px;
+                height: 32px;
+            }
+
+            .hamburger span {
+                height: 2px;
+            }
+
+            .hero-text h1 {
+                font-size: 1.75rem;
+            }
+
+            .hero-text p {
+                font-size: 0.9rem;
+            }
+
+            .search-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .destinations-section h2,
+            .services-section h2 {
+                font-size: 1.75rem;
+            }
+
+            .btn-choose, .btn-become {
+                font-size: 0.9rem;
+                padding: 12px 20px;
+            }
+        }
+
+        /* Dark Mode Mobile Adjustments */
+        [data-theme="dark"] .nav-menu {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .language-selector {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn:hover,
+        [data-theme="dark"] .language-selector:hover {
+            border-color: #2d6a4f !important;
         }
     </style>
 </head>
@@ -961,11 +1169,10 @@ $categories = get_all_service_categories_ctr();
         <div class="nav-container">
             <a href="index_tourlink.php" class="logo" aria-label="TourLink Home">TourLink<span class="logo-dot">.</span></a>
             <ul class="nav-menu" id="navMenu" role="menubar">
-                <li><a href="index_tourlink.php">Home</a></li>
-                <li><a href="view/all_services.php">Destinations</a></li>
-                <li><a href="view/all_services.php">Tour Listing</a></li>
-                <li><a href="view/about.php">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="index_tourlink.php" data-i18n="nav.home">Home</a></li>
+                <li><a href="view/all_services.php" data-i18n="nav.destinations">Browse Services</a></li>
+                <li><a href="view/about.php" data-i18n="nav.about">About</a></li>
+                <li><a href="view/contact.php" data-i18n="nav.contact">Contact</a></li>
             </ul>
             <div class="nav-actions">
                 <?php if(isset($_SESSION['user_id'])): ?>
@@ -1015,8 +1222,23 @@ $categories = get_all_service_categories_ctr();
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="login/login.php" class="btn-signin">Sign In</a>
+                    <a href="login/login.php" class="btn-signin" data-i18n="nav.sign_in">Sign In</a>
                 <?php endif; ?>
+
+                <!-- Language Switcher (visible to all) -->
+                <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Español</option>
+                    <option value="tw">Twi</option>
+                    <option value="ga">Ga</option>
+                </select>
+
+                <!-- Theme Toggle (visible to all) -->
+                <button onclick="toggleTheme()" class="theme-toggle-btn" id="publicThemeToggle" aria-label="Toggle dark mode">
+                    <i class="fa fa-moon"></i>
+                </button>
+
                 <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
                     <span></span>
                     <span></span>
