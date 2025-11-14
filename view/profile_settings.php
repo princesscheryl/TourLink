@@ -431,20 +431,27 @@ if (!$user) {
                             location.reload();
                         });
                     } else {
+                        // Show debug info if available
+                        let errorMessage = response.message;
+                        if (response.debug) {
+                            errorMessage += '\n\nDebug Info:\n' + JSON.stringify(response.debug, null, 2);
+                        }
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: response.message,
-                            confirmButtonColor: '#2d6a4f'
+                            html: '<pre style="text-align: left; max-height: 300px; overflow-y: auto; font-size: 12px;">' + errorMessage + '</pre>',
+                            confirmButtonColor: '#2d6a4f',
+                            width: 600
                         });
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'An error occurred. Please try again.',
-                        confirmButtonColor: '#2d6a4f'
+                        html: '<p>An error occurred. Please try again.</p><pre style="text-align: left; font-size: 12px;">Status: ' + status + '\nError: ' + error + '\nResponse: ' + xhr.responseText + '</pre>',
+                        confirmButtonColor: '#2d6a4f',
+                        width: 600
                     });
                 }
             });
