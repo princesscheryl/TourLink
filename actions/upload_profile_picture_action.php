@@ -66,19 +66,20 @@ if ($file['size'] > $max_size) {
 $base_dir = dirname(__DIR__); // Get parent directory (tourlink)
 $upload_dir = $base_dir . '/uploads/profile_pictures/';
 
-// Set umask to allow full permissions
-$old_umask = umask(0);
-
 // Create uploads directory if it doesn't exist
 if (!is_dir($upload_dir)) {
-    if (!mkdir($upload_dir, 0777, true)) {
-        umask($old_umask);
+    $old_umask = umask(0);
+    $success = @mkdir($upload_dir, 0777, true);
+    umask($old_umask);
+
+    if (!$success && !is_dir($upload_dir)) {
         $response['status'] = 'error';
-        $response['message'] = 'Failed to create upload directory';
+        $response['message'] = 'Failed to create upload directory. Please contact administrator.';
         echo json_encode($response);
         exit();
     }
-    // Explicitly set permissions after creation
+
+    // Try to set permissions
     @chmod($upload_dir, 0777);
 
     // Create .htaccess for security (prevent PHP execution in uploads)
@@ -88,26 +89,19 @@ if (!is_dir($upload_dir)) {
     @file_put_contents($upload_dir . '.htaccess', $htaccess_content);
 }
 
-// Restore original umask
-umask($old_umask);
+// Final check - verify directory exists and is writable
+if (!is_dir($upload_dir)) {
+    $response['status'] = 'error';
+    $response['message'] = 'Upload directory does not exist: ' . $upload_dir;
+    echo json_encode($response);
+    exit();
+}
 
-// Check if directory is writable
 if (!is_writable($upload_dir)) {
-    // Try to set permissions one more time
-    @chmod($upload_dir, 0777);
-
-    // If still not writable, provide detailed error
-    if (!is_writable($upload_dir)) {
-        $response['status'] = 'error';
-        $response['message'] = 'Upload directory exists but is not writable. Directory: ' . $upload_dir;
-        $response['debug'] = [
-            'exists' => is_dir($upload_dir),
-            'writable' => is_writable($upload_dir),
-            'permissions' => substr(sprintf('%o', fileperms($upload_dir)), -4)
-        ];
-        echo json_encode($response);
-        exit();
-    }
+    $response['status'] = 'error';
+    $response['message'] = 'Upload directory is not writable. Please check permissions.';
+    echo json_encode($response);
+    exit();
 }
 
 // Generate unique filename
