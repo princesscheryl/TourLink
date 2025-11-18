@@ -16,7 +16,9 @@
     "bookings": "Nkyerɛwde",
     "profile_settings": "Nsɛso",
     "dark_mode": "Sum Mode",
-    "light_mode": "Hann Mode"
+    "light_mode": "Hann Mode",
+    "cart": "Nneɛma",
+    "back_to_home": "San kɔ Fie"
   },
 
   "hero": {
@@ -150,7 +152,23 @@
     "primary_region": "Mpɔtam Titire",
     "welcome_back": "Yɛma Wo Akwaaba Bio!",
     "start_adventure": "Firi Wo Nsamanfoɔ Ase!",
-    "grow_business": "Ma Wo Adwuma Nkɔ So!"
+    "grow_business": "Ma Wo Adwuma Nkɔ So!",
+    "create_account": "Yɛ Akwantufoɔ Akontaa",
+    "provider_registration": "Adwumayɛfoɔ Nkyerɛwde",
+    "provider_subtitle": "Firi ase fa wo akwantuo nnwuma ma nnɛ",
+    "personal_info": "Wo Ankasa Ho Nsɛm",
+    "business_info": "Adwuma Ho Nsɛm",
+    "first_name_required": "Din a Ɛdi Kan *",
+    "last_name_required": "Abusua Din *",
+    "email_required": "Email *",
+    "phone_required": "Telefon Nɔma *",
+    "password_required": "Password *",
+    "select_region": "Paw wo mpɔtam titire",
+    "location_help": "Beaeɛ pɔtee anaa mpɔtam a wo adwuma wɔ",
+    "region_help": "Yei ne wo adwuma beaeɛ titire. Wobɛtumi de nnwuma ama wɔ mpɔtam foforɔ bere a woreyɛ listings.",
+    "register_as_provider": "Nkyerɛw wo din sɛ Adwumayɛfoɔ",
+    "are_you_tourist": "Woyɛ akwantufoɔ?",
+    "register_tourist": "Nkyerɛw wo din sɛ Akwantufoɔ"
   },
 
   "form": {
@@ -285,5 +303,24 @@
     "friday": "Fiada",
     "saturday": "Memeneda",
     "sunday": "Kwasiada"
+  },
+
+  "favorites": {
+    "my_favorites": "Me Favorites",
+    "page_title": "Me Favorites - TourLink",
+    "page_description": "Services a woakora ama akyire yi",
+    "services_saved": "service(s) a wɔakora",
+    "no_favorites": "Favorites biara nni hɔ",
+    "start_adding": "Hyɛ aseɛ fa services kɔ wo favorites mu na wubɛhunu wɔ ha.",
+    "browse_services": "Hwehwɛ Services",
+    "add_to_favorites": "Fa kɔ favorites mu",
+    "remove_from_favorites": "Yi fi favorites mu",
+    "added": "Wɔde akɔ favorites mu!",
+    "removed": "Wɔayi afi favorites mu"
+  },
+
+  "session": {
+    "expired_title": "Session Aba Awieeɛ",
+    "expired_message": "Wo session aba awieeɛ ɛsiane dwumadi ho asetenaseɛ nti. Yɛsrɛ wo hyɛ aseɛ bio."
   }
 }

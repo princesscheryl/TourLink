@@ -2,6 +2,7 @@
 require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
 require_once '../classes/service_provider_class.php';
+require_once '../controllers/favorite_controller.php';
 
 $service_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -35,6 +36,12 @@ if (isset($_SESSION['user_id'])) {
             $is_own_service = true;
         }
     }
+}
+
+// Check if service is favorited
+$is_favorited = false;
+if (isset($_SESSION['user_id'])) {
+    $is_favorited = is_favorited_ctr($_SESSION['user_id'], $service_id);
 }
 ?>
 <!DOCTYPE html>
@@ -296,6 +303,57 @@ if (isset($_SESSION['user_id'])) {
             border-radius: 8px;
             margin-bottom: 15px;
         }
+
+        /* Favorite Button */
+        .favorite-btn-large {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .favorite-btn-large:hover {
+            border-color: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+        }
+
+        .favorite-btn-large i {
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .favorite-btn-large.active {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .favorite-btn-large.active i {
+            color: #dc3545;
+        }
+
+        .favorite-btn-large:not(.active) i {
+            color: #999;
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .title-row h1 {
+            margin: 0;
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -327,7 +385,20 @@ if (isset($_SESSION['user_id'])) {
             <div class="col-md-8">
                 <div class="service-detail-card">
                     <span class="badge"><?php echo htmlspecialchars($service['category_name']); ?></span>
-                    <h1><?php echo htmlspecialchars($service['service_title']); ?></h1>
+
+                    <div class="title-row">
+                        <h1><?php echo htmlspecialchars($service['service_title']); ?></h1>
+
+                        <!-- Favorite Button -->
+                        <button class="favorite-btn-large <?php echo $is_favorited ? 'active' : ''; ?>"
+                                data-favorite-btn
+                                data-service-id="<?php echo $service_id; ?>"
+                                aria-label="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>"
+                                title="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>">
+                            <i class="<?php echo $is_favorited ? 'fas' : 'far'; ?> fa-heart"></i>
+                            <span><?php echo $is_favorited ? 'Saved' : 'Save'; ?></span>
+                        </button>
+                    </div>
 
                     <div class="provider-info">
                             <i class="fa fa-user"></i>
@@ -419,11 +490,33 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/favorites.js"></script>
     <script>
         function bookService() {
             alert('Booking functionality coming soon!');
         }
+
+        // Update button text when favorite is toggled
+        $(document).on('favoriteToggled', function(event, data) {
+            if (data.serviceId == <?php echo $service_id; ?>) {
+                const button = $('.favorite-btn-large');
+                const span = button.find('span');
+                const icon = button.find('i');
+
+                if (data.action === 'added') {
+                    span.text('Saved');
+                    icon.removeClass('far').addClass('fas');
+                    button.addClass('active');
+                } else {
+                    span.text('Save');
+                    icon.removeClass('fas').addClass('far');
+                    button.removeClass('active');
+                }
+            }
+        });
     </script>
 </body>
 </html>

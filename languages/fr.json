@@ -16,7 +16,9 @@
     "bookings": "Réservations",
     "profile_settings": "Paramètres du profil",
     "dark_mode": "Mode sombre",
-    "light_mode": "Mode clair"
+    "light_mode": "Mode clair",
+    "cart": "Panier",
+    "back_to_home": "Retour à l'accueil"
   },
 
   "hero": {
@@ -150,7 +152,23 @@
     "primary_region": "Région commerciale principale",
     "welcome_back": "Bienvenue de retour!",
     "start_adventure": "Commencez votre aventure!",
-    "grow_business": "Développez votre entreprise!"
+    "grow_business": "Développez votre entreprise!",
+    "create_account": "Créer un compte touriste",
+    "provider_registration": "Inscription prestataire",
+    "provider_subtitle": "Commencez à offrir vos services touristiques aujourd'hui",
+    "personal_info": "Informations personnelles",
+    "business_info": "Informations commerciales",
+    "first_name_required": "Prénom *",
+    "last_name_required": "Nom de famille *",
+    "email_required": "Adresse e-mail *",
+    "phone_required": "Numéro de téléphone *",
+    "password_required": "Mot de passe *",
+    "select_region": "Sélectionnez votre région principale",
+    "location_help": "Adresse spécifique ou zone où se trouve votre entreprise",
+    "region_help": "C'est votre emplacement commercial principal. Vous pouvez offrir des services dans d'autres régions lors de la création d'annonces.",
+    "register_as_provider": "S'inscrire en tant que prestataire",
+    "are_you_tourist": "Êtes-vous un touriste?",
+    "register_tourist": "S'inscrire en tant que touriste"
   },
 
   "form": {
@@ -285,5 +303,24 @@
     "friday": "Vendredi",
     "saturday": "Samedi",
     "sunday": "Dimanche"
+  },
+
+  "favorites": {
+    "my_favorites": "Mes Favoris",
+    "page_title": "Mes Favoris - TourLink",
+    "page_description": "Services que vous avez sauvegardés pour plus tard",
+    "services_saved": "service(s) sauvegardé(s)",
+    "no_favorites": "Pas encore de favoris",
+    "start_adding": "Commencez à ajouter des services à vos favoris pour les voir ici.",
+    "browse_services": "Parcourir les Services",
+    "add_to_favorites": "Ajouter aux favoris",
+    "remove_from_favorites": "Retirer des favoris",
+    "added": "Ajouté aux favoris!",
+    "removed": "Retiré des favoris"
+  },
+
+  "session": {
+    "expired_title": "Session Expirée",
+    "expired_message": "Votre session a expiré en raison de l'inactivité. Veuillez vous reconnecter."
   }
 }

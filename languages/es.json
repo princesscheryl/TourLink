@@ -16,7 +16,9 @@
     "bookings": "Reservas",
     "profile_settings": "Configuración del perfil",
     "dark_mode": "Modo oscuro",
-    "light_mode": "Modo claro"
+    "light_mode": "Modo claro",
+    "cart": "Carrito",
+    "back_to_home": "Volver al inicio"
   },
 
   "hero": {
@@ -150,7 +152,23 @@
     "primary_region": "Región comercial principal",
     "welcome_back": "¡Bienvenido de nuevo!",
     "start_adventure": "¡Comienza tu aventura!",
-    "grow_business": "¡Haz crecer tu negocio!"
+    "grow_business": "¡Haz crecer tu negocio!",
+    "create_account": "Crear cuenta de turista",
+    "provider_registration": "Registro de proveedor",
+    "provider_subtitle": "Comienza a ofrecer tus servicios turísticos hoy",
+    "personal_info": "Información personal",
+    "business_info": "Información comercial",
+    "first_name_required": "Nombre *",
+    "last_name_required": "Apellido *",
+    "email_required": "Correo electrónico *",
+    "phone_required": "Número de teléfono *",
+    "password_required": "Contraseña *",
+    "select_region": "Selecciona tu región principal",
+    "location_help": "Dirección específica o área donde se encuentra su negocio",
+    "region_help": "Esta es su ubicación comercial principal. Puede ofrecer servicios en otras regiones al crear listados.",
+    "register_as_provider": "Registrarse como proveedor",
+    "are_you_tourist": "¿Eres turista?",
+    "register_tourist": "Registrarse como turista"
   },
 
   "form": {
@@ -285,5 +303,24 @@
     "friday": "Viernes",
     "saturday": "Sábado",
     "sunday": "Domingo"
+  },
+
+  "favorites": {
+    "my_favorites": "Mis Favoritos",
+    "page_title": "Mis Favoritos - TourLink",
+    "page_description": "Servicios que has guardado para más tarde",
+    "services_saved": "servicio(s) guardado(s)",
+    "no_favorites": "Aún no hay favoritos",
+    "start_adding": "Comienza a agregar servicios a tus favoritos para verlos aquí.",
+    "browse_services": "Explorar Servicios",
+    "add_to_favorites": "Agregar a favoritos",
+    "remove_from_favorites": "Quitar de favoritos",
+    "added": "¡Agregado a favoritos!",
+    "removed": "Quitado de favoritos"
+  },
+
+  "session": {
+    "expired_title": "Sesión Expirada",
+    "expired_message": "Tu sesión ha expirado debido a la inactividad. Por favor, inicia sesión de nuevo."
   }
 }

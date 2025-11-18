@@ -1,9 +1,11 @@
 <?php
 session_start();
 
-
 //for header redirection
 ob_start();
+
+// Include session timeout management (15 minute auto-logout)
+require_once __DIR__ . '/session_timeout.php';
 
 //funtion to check for login
 function isLoggedIn(){

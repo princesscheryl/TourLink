@@ -1,3 +1,6 @@
+<?php
+require_once '../settings/core.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +10,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/accessibility.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
+    <script src="../js/translator.js"></script>
+    <script src="../js/accessibility.js"></script>
     <style>
         * {
             margin: 0;
@@ -92,6 +100,366 @@
 
         .btn-nav-primary:hover {
             background: #1b4332;
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #2d6a4f;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-signin {
+            background: transparent;
+            color: #2d6a4f;
+            padding: 10px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid #2d6a4f;
+            transition: all 0.3s;
+        }
+
+        .btn-signin:hover {
+            background: #2d6a4f;
+            color: white;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .language-selector:hover {
+            border-color: #2d6a4f;
+        }
+
+        .language-selector:focus {
+            outline: none;
+            border-color: #2d6a4f;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+        }
+
+        /* Public Theme Toggle Button */
+        .theme-toggle-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #1a1a1a;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: #2d6a4f;
+            background: #f8f9fa;
+        }
+
+        .theme-toggle-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 25px;
+            transition: all 0.3s;
+            background: white;
+            border: 2px solid #2d6a4f;
+        }
+
+        .profile-trigger:hover {
+            background: #f8f9fa;
+        }
+
+        .profile-pic {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #2d6a4f;
+        }
+
+        .profile-pic-placeholder {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #2d6a4f;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-icon {
+            color: #2d6a4f;
+            font-size: 0.8rem;
+            transition: transform 0.3s;
+        }
+
+        .profile-dropdown.active .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            min-width: 220px;
+            margin-top: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .profile-dropdown.active .dropdown-menu-custom {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu-custom a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #1a1a1a;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .dropdown-menu-custom a:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .dropdown-menu-custom a:last-child {
+            border-radius: 0 0 12px 12px;
+            color: #dc3545;
+        }
+
+        .dropdown-menu-custom a:hover {
+            background: #f8f9fa;
+            padding-left: 24px;
+        }
+
+        .dropdown-menu-custom a i {
+            width: 20px;
+            color: #2d6a4f;
+        }
+
+        .dropdown-menu-custom a:last-child i {
+            color: #dc3545;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 5px 0;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #2d6a4f;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 68px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 68px);
+                background: white;
+                flex-direction: column;
+                padding: 40px;
+                gap: 20px;
+                transition: left 0.3s;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Navigation */
+            .nav-container {
+                padding: 0 20px;
+            }
+
+            .nav-actions {
+                gap: 8px;
+            }
+
+            .language-selector {
+                min-width: 80px;
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+
+            .theme-toggle-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .btn-signin {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .profile-name {
+                display: none; /* Hide name on mobile */
+            }
+        }
+
+        /* Very Small Screens (Phones) */
+        @media (max-width: 480px) {
+            .main-nav {
+                padding: 12px 0;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-actions {
+                gap: 6px;
+            }
+
+            .language-selector {
+                min-width: 70px;
+                font-size: 0.75rem;
+                padding: 5px 6px;
+            }
+
+            .theme-toggle-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .theme-toggle-btn i {
+                font-size: 0.9rem;
+            }
+
+            .btn-signin {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .hamburger {
+                width: 32px;
+                height: 32px;
+            }
+
+            .hamburger span {
+                height: 2px;
+            }
+        }
+
+        /* Dark Mode Mobile Adjustments */
+        [data-theme="dark"] .nav-menu {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .language-selector {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn:hover,
+        [data-theme="dark"] .language-selector:hover {
+            border-color: #2d6a4f !important;
         }
 
         /* Page Header */
@@ -217,17 +585,89 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="main-nav">
+    <nav class="main-nav" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
-            <div class="nav-left">
-                <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
-            </div>
-            <div class="nav-right">
-                <a href="../index_tourlink.php" class="nav-link">Home</a>
-                <a href="all_services.php" class="nav-link">Browse Services</a>
-                <a href="about.php" class="nav-link active">About</a>
-                <a href="../index_tourlink.php#contact" class="nav-link">Contact</a>
-                <a href="../login/login.php" class="btn-nav btn-nav-primary">Sign In</a>
+            <a href="../index_tourlink.php" class="logo" aria-label="TourLink Home">TourLink<span class="logo-dot">.</span></a>
+            <ul class="nav-menu" id="navMenu" role="menubar">
+                <li><a href="../index_tourlink.php" data-i18n="nav.home">Home</a></li>
+                <li><a href="all_services.php" data-i18n="nav.destinations">Browse Services</a></li>
+                <li><a href="about.php" class="active" data-i18n="nav.about">About</a></li>
+                <li><a href="contact.php" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+            <div class="nav-actions">
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <!-- Profile Dropdown -->
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="profile-trigger" onclick="toggleProfileDropdown()">
+                            <?php if(!empty($_SESSION['profile_image'])): ?>
+                                <img src="<?php echo htmlspecialchars($_SESSION['profile_image']); ?>" alt="Profile" class="profile-pic">
+                            <?php else: ?>
+                                <div class="profile-pic-placeholder">
+                                    <?php echo strtoupper(substr($_SESSION['first_name'], 0, 1)); ?>
+                                </div>
+                            <?php endif; ?>
+                            <span class="profile-name"><?php echo htmlspecialchars($_SESSION['first_name']); ?></span>
+                            <i class="fa fa-chevron-down dropdown-icon"></i>
+                        </div>
+                        <div class="dropdown-menu-custom">
+                            <a href="profile_settings.php">
+                                <i class="fa fa-user-circle"></i>
+                                Profile Settings
+                            </a>
+                            <a href="my_favorites.php">
+                                <i class="fas fa-heart"></i>
+                                <span data-i18n="favorites.my_favorites">My Favorites</span>
+                            </a>
+                            <?php if($_SESSION['user_type'] === 'provider'): ?>
+                                <div class="dropdown-divider"></div>
+                                <a href="../admin/provider_dashboard.php">
+                                    <i class="fa fa-th-large"></i>
+                                    Dashboard
+                                </a>
+                                <a href="../admin/manage_services.php">
+                                    <i class="fa fa-briefcase"></i>
+                                    My Services
+                                </a>
+                                <a href="../admin/bookings.php">
+                                    <i class="fa fa-calendar-check"></i>
+                                    Bookings
+                                </a>
+                            <?php endif; ?>
+                            <div class="dropdown-divider"></div>
+                            <a href="javascript:void(0)" onclick="toggleTheme(); event.stopPropagation();" id="themeToggle">
+                                <i class="fa fa-moon"></i>
+                                <span class="toggle-text">Dark Mode</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="../login/logout.php">
+                                <i class="fa fa-sign-out-alt"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <a href="../login/login.php" class="btn-signin" data-i18n="nav.sign_in">Sign In</a>
+                <?php endif; ?>
+
+                <!-- Language Switcher (visible to all) -->
+                <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Español</option>
+                    <option value="tw">Twi</option>
+                    <option value="ga">Ga</option>
+                </select>
+
+                <!-- Theme Toggle (visible to all) -->
+                <button onclick="toggleTheme()" class="theme-toggle-btn" id="publicThemeToggle" aria-label="Toggle dark mode">
+                    <i class="fa fa-moon"></i>
+                </button>
+
+                <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </div>
     </nav>
@@ -309,5 +749,45 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Profile Dropdown Toggle
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>

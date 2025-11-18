@@ -286,5 +286,24 @@
     "friday": "Friday",
     "saturday": "Saturday",
     "sunday": "Sunday"
+  },
+
+  "favorites": {
+    "my_favorites": "My Favorites",
+    "page_title": "My Favorites - TourLink",
+    "page_description": "Services you've saved for later",
+    "services_saved": "service(s) saved",
+    "no_favorites": "No favorites yet",
+    "start_adding": "Start adding services to your favorites to see them here.",
+    "browse_services": "Browse Services",
+    "add_to_favorites": "Add to favorites",
+    "remove_from_favorites": "Remove from favorites",
+    "added": "Added to favorites!",
+    "removed": "Removed from favorites"
+  },
+
+  "session": {
+    "expired_title": "Session Expired",
+    "expired_message": "Your session has expired due to inactivity. Please sign in again."
   }
 }

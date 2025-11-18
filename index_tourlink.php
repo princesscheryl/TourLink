@@ -1194,6 +1194,10 @@ $categories = get_all_service_categories_ctr();
                                 <i class="fa fa-user-circle"></i>
                                 Profile Settings
                             </a>
+                            <a href="view/my_favorites.php">
+                                <i class="fas fa-heart"></i>
+                                <span data-i18n="favorites.my_favorites">My Favorites</span>
+                            </a>
                             <?php if($_SESSION['user_type'] === 'provider'): ?>
                                 <div class="dropdown-divider"></div>
                                 <a href="admin/provider_dashboard.php">

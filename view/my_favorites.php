@@ -1,40 +1,24 @@
 <?php
 require_once '../settings/core.php';
-require_once '../controllers/service_controller.php';
-require_once '../controllers/service_category_controller.php';
 require_once '../controllers/favorite_controller.php';
 
-// Get filter parameters
-$category_filter = isset($_GET['category']) ? (int)$_GET['category'] : null;
-
-// Get services
-if ($category_filter) {
-    $services = get_services_by_category_ctr($category_filter);
-} else {
-    $services = get_all_services_ctr();
+// Check if user is logged in - redirect if not
+if (!isLoggedIn()) {
+    header("Location: ../login/login.php");
+    exit();
 }
 
-// Get all categories for filter
-$categories = get_all_service_categories_ctr();
+$user_id = getUserID();
 
-// Get user's favorites if logged in
-$user_favorites = [];
-if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
-    $favorites_list = get_user_favorites_ctr($user_id);
-    if ($favorites_list) {
-        foreach ($favorites_list as $fav) {
-            $user_favorites[] = $fav['service_id'];
-        }
-    }
-}
+// Get user's favorites
+$favorites = get_user_favorites_ctr($user_id);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse Services - TourLink</title>
+    <title data-i18n="favorites.page_title">My Favorites - TourLink</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -137,17 +121,6 @@ if (isset($_SESSION['user_id'])) {
             transition: all 0.3s;
         }
 
-        .btn-nav-join {
-            background: #2d6a4f;
-            color: white;
-        }
-
-        .btn-nav-join:hover {
-            background: #1b4332;
-            transform: translateY(-2px);
-            color: white;
-        }
-
         .btn-nav-logout {
             background: #dc3545;
             color: white;
@@ -227,51 +200,6 @@ if (isset($_SESSION['user_id'])) {
             opacity: 0.9;
         }
 
-        /* Filter Sidebar */
-        .filter-sidebar {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            position: sticky;
-            top: 90px;
-        }
-
-        .filter-sidebar h5 {
-            font-weight: 700;
-            color: #1b4332;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-        }
-
-        .category-filter {
-            display: block;
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #333;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .category-filter:hover {
-            background: #2d6a4f;
-            color: white;
-            transform: translateX(5px);
-        }
-
-        .category-filter.active {
-            background: #2d6a4f;
-            color: white;
-        }
-
-        .category-filter i {
-            margin-right: 10px;
-            width: 20px;
-        }
-
         /* Service Cards */
         .service-card {
             background: white;
@@ -289,44 +217,6 @@ if (isset($_SESSION['user_id'])) {
         .service-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 8px 24px rgba(45, 106, 79, 0.2);
-        }
-
-        /* Favorite Button */
-        .favorite-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            transition: all 0.3s;
-            z-index: 10;
-        }
-
-        .favorite-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .favorite-btn i {
-            color: #dc3545;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-        }
-
-        .favorite-btn.active i {
-            color: #dc3545;
-        }
-
-        .favorite-btn:not(.active) i {
-            color: #999;
         }
 
         .service-image {
@@ -384,21 +274,68 @@ if (isset($_SESSION['user_id'])) {
             transform: translateY(-2px);
         }
 
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
+        /* Favorite Button */
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            z-index: 10;
         }
 
-        .empty-state i {
+        .favorite-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .favorite-btn i {
+            color: #dc3545;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .favorite-btn.active i,
+        .favorite-btn i.fas {
+            color: #dc3545;
+        }
+
+        .favorite-btn:not(.active) i {
+            color: #999;
+        }
+
+        /* Empty State */
+        .empty-favorites {
+            text-align: center;
+            padding: 100px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .empty-favorites i {
             color: #ddd;
             margin-bottom: 20px;
         }
 
-        .empty-state h4 {
+        .empty-favorites h3 {
             color: #333;
             font-weight: 700;
             margin-bottom: 10px;
+        }
+
+        .empty-favorites p {
+            color: #666;
+            margin-bottom: 30px;
         }
 
         /* Services Count */
@@ -464,32 +401,28 @@ if (isset($_SESSION['user_id'])) {
             background: linear-gradient(135deg, #1b4332 0%, #0d2418 100%) !important;
         }
 
-        [data-theme="dark"] .filter-section {
-            background: #2d2d2d !important;
-        }
-
-        [data-theme="dark"] .filter-btn {
-            background: #3d3d3d !important;
-            color: #e0e0e0 !important;
-            border-color: #505050 !important;
-        }
-
-        [data-theme="dark"] .filter-btn.active {
-            background: #52b788 !important;
-            border-color: #52b788 !important;
-            color: #1a1a1a !important;
-        }
-
         [data-theme="dark"] .service-card {
             background: #2d2d2d !important;
             border-color: #404040 !important;
         }
 
-        [data-theme="dark"] .service-card h3 {
+        [data-theme="dark"] .service-card h5 {
             color: #e0e0e0 !important;
         }
 
         [data-theme="dark"] .service-card p {
+            color: #b0b0b0 !important;
+        }
+
+        [data-theme="dark"] .empty-favorites {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .empty-favorites h3 {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .empty-favorites p {
             color: #b0b0b0 !important;
         }
 
@@ -547,7 +480,8 @@ if (isset($_SESSION['user_id'])) {
     </style>
 </head>
 <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#main-content" class="skip-link" data-i18n="accessibility.skip_to_content">Skip to main content</a>
+
     <!-- Navigation -->
     <nav class="main-nav" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
@@ -555,7 +489,10 @@ if (isset($_SESSION['user_id'])) {
                 <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
             </div>
             <div class="nav-right">
-                <a href="all_services.php" class="nav-link active" data-i18n="nav.destinations">Browse Services</a>
+                <a href="all_services.php" class="nav-link" data-i18n="nav.destinations">Browse Services</a>
+                <a href="my_favorites.php" class="nav-link active">
+                    <i class="fas fa-heart"></i> <span data-i18n="favorites.my_favorites">My Favorites</span>
+                </a>
                 <a href="cart.php" class="nav-link">
                     <i class="fa fa-shopping-cart"></i> <span data-i18n="nav.cart">Cart</span>
                     <span class="cart-count">0</span>
@@ -575,16 +512,11 @@ if (isset($_SESSION['user_id'])) {
                     <i class="fa fa-moon"></i>
                 </button>
 
-                <?php if(isset($_SESSION['user_id'])): ?>
-                    <span class="nav-user">
-                        <i class="fa fa-user-circle"></i>
-                        <?php echo htmlspecialchars($_SESSION['user_name']); ?>
-                    </span>
-                    <a href="../login/logout.php" class="btn-nav btn-nav-logout" data-i18n="nav.logout">Logout</a>
-                <?php else: ?>
-                    <a href="../login/login.php" class="nav-link" data-i18n="nav.sign_in">Sign in</a>
-                    <a href="../login/register.php" class="btn-nav btn-nav-join" data-i18n="nav.join">Join</a>
-                <?php endif; ?>
+                <span class="nav-user">
+                    <i class="fa fa-user-circle"></i>
+                    <?php echo htmlspecialchars($_SESSION['user_name']); ?>
+                </span>
+                <a href="../login/logout.php" class="btn-nav btn-nav-logout" data-i18n="nav.logout">Logout</a>
             </div>
         </div>
     </nav>
@@ -592,105 +524,89 @@ if (isset($_SESSION['user_id'])) {
     <!-- Page Header -->
     <div class="page-header" id="main-content" role="main">
         <div class="main-container">
-            <h1>Browse Tourism Services</h1>
-            <p>Discover amazing experiences across Ghana</p>
+            <h1 data-i18n="favorites.my_favorites">My Favorites</h1>
+            <p data-i18n="favorites.page_description">Services you've saved for later</p>
         </div>
     </div>
 
     <div class="main-container">
-        <div class="row">
-            <!-- Filter Sidebar -->
-            <div class="col-md-3">
-                <div class="filter-sidebar">
-                    <h5 class="mb-3">Categories</h5>
-                    <a href="all_services.php" class="category-filter <?php echo !$category_filter ? 'active' : ''; ?>">
-                        <i class="fa fa-list"></i> All Services
-                    </a>
-                    <?php if ($categories): ?>
-                        <?php foreach ($categories as $category): ?>
-                            <a href="all_services.php?category=<?php echo $category['category_id']; ?>"
-                               class="category-filter <?php echo $category_filter == $category['category_id'] ? 'active' : ''; ?>">
-                                <?php echo htmlspecialchars($category['category_name']); ?>
-                            </a>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
+        <?php if ($favorites && count($favorites) > 0): ?>
+            <p class="services-count">
+                <strong><?php echo count($favorites); ?></strong>
+                <span data-i18n="favorites.services_saved">service(s) saved</span>
+            </p>
+            <div class="row favorites-grid">
+                <?php foreach ($favorites as $favorite): ?>
+                    <div class="col-md-4">
+                        <div class="service-card" data-service-id="<?php echo $favorite['service_id']; ?>">
+                            <!-- Favorite Button -->
+                            <button class="favorite-btn active"
+                                    data-favorite-btn
+                                    data-service-id="<?php echo $favorite['service_id']; ?>"
+                                    aria-label="Remove from favorites"
+                                    title="Remove from favorites">
+                                <i class="fas fa-heart"></i>
+                            </button>
 
-            <!-- Services Grid -->
-            <div class="col-md-9">
-                <?php if ($services && count($services) > 0): ?>
-                    <p class="services-count"><strong><?php echo count($services); ?></strong> service(s) found</p>
-                    <div class="row">
-                        <?php foreach ($services as $service): ?>
-                            <div class="col-md-4">
-                                <div class="service-card">
-                                    <?php
-                                    // Check if service is favorited
-                                    $is_favorited = in_array($service['service_id'], $user_favorites);
-                                    $heart_class = $is_favorited ? 'fas' : 'far';
-                                    $btn_class = $is_favorited ? 'active' : '';
-                                    ?>
+                            <?php
+                            // Handle service_image (single) or service_images (array)
+                            $service_image = $favorite['service_image'] ?? null;
 
-                                    <!-- Favorite Button -->
-                                    <button class="favorite-btn <?php echo $btn_class; ?>"
-                                            data-favorite-btn
-                                            data-service-id="<?php echo $service['service_id']; ?>"
-                                            aria-label="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>"
-                                            title="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>">
-                                        <i class="<?php echo $heart_class; ?> fa-heart"></i>
-                                    </button>
+                            if ($service_image && file_exists('../' . $service_image)) {
+                                $image_url = '../' . $service_image;
+                            } else {
+                                $image_url = null;
+                            }
+                            ?>
 
-                                    <?php
-                                    $images = json_decode($service['service_images'], true);
-                                    $first_image = is_array($images) && !empty($images) ? $images[0] : null;
-                                    ?>
-                                    <?php if ($first_image): ?>
-                                        <img src="<?php echo htmlspecialchars($first_image); ?>"
-                                             alt="<?php echo htmlspecialchars($service['service_title']); ?>"
-                                             class="service-image">
-                                    <?php else: ?>
-                                        <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: flex; align-items: center; justify-content: center;">
-                                            <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
-                                        </div>
-                                    <?php endif; ?>
+                            <?php if ($image_url): ?>
+                                <img src="<?php echo htmlspecialchars($image_url); ?>"
+                                     alt="<?php echo htmlspecialchars($favorite['service_name']); ?>"
+                                     class="service-image">
+                            <?php else: ?>
+                                <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
+                                </div>
+                            <?php endif; ?>
 
-                                    <div class="service-content">
-                                        <span class="badge bg-primary mb-2"><?php echo htmlspecialchars($service['category_name']); ?></span>
-                                        <h5><?php echo htmlspecialchars($service['service_title']); ?></h5>
-                                        <p class="text-muted small">
-                                            <i class="fa fa-user"></i>
-                                            <?php echo htmlspecialchars($service['provider_name'] ?: ($service['provider_first_name'] . ' ' . $service['provider_last_name'])); ?>
-                                        </p>
-                                        <p class="text-muted small mb-3">
-                                            <?php echo htmlspecialchars(substr($service['service_description'], 0, 100)); ?>...
-                                        </p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <strong class="text-primary">GHS <?php echo number_format($service['base_price'], 2); ?></strong>
-                                                <br><small class="text-muted"><?php echo str_replace('_', ' ', $service['pricing_unit']); ?></small>
-                                            </div>
-                                            <a href="single_service.php?id=<?php echo $service['service_id']; ?>" class="btn btn-sm btn-primary">
-                                                View Details
-                                            </a>
-                                        </div>
+                            <div class="service-content">
+                                <span class="badge bg-primary mb-2"><?php echo htmlspecialchars($favorite['category_name']); ?></span>
+                                <h5><?php echo htmlspecialchars($favorite['service_name']); ?></h5>
+                                <p class="text-muted small">
+                                    <i class="fa fa-map-marker-alt"></i>
+                                    <?php echo htmlspecialchars($favorite['location'] . ', ' . $favorite['region']); ?>
+                                </p>
+                                <p class="text-muted small">
+                                    <i class="fa fa-user"></i>
+                                    <?php echo htmlspecialchars($favorite['business_name']); ?>
+                                </p>
+                                <p class="text-muted small mb-3">
+                                    <?php echo htmlspecialchars(substr($favorite['service_description'], 0, 100)); ?>...
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <div>
+                                        <strong class="text-primary">GHS <?php echo number_format($favorite['base_price'], 2); ?></strong>
+                                        <br><small class="text-muted"><?php echo ucfirst(str_replace('_', ' ', $favorite['pricing_type'])); ?></small>
                                     </div>
+                                    <a href="single_service.php?id=<?php echo $favorite['service_id']; ?>"
+                                       class="btn btn-sm btn-primary"
+                                       data-i18n="service.view_details">
+                                        View Details
+                                    </a>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        </div>
                     </div>
-                <?php else: ?>
-                    <div class="empty-state">
-                        <i class="fa fa-search fa-3x mb-3"></i>
-                        <h4>No services found</h4>
-                        <p class="text-muted">Try adjusting your filters or browse all services</p>
-                        <?php if ($category_filter): ?>
-                            <a href="all_services.php" class="btn btn-primary mt-3">View All Services</a>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
+                <?php endforeach; ?>
             </div>
-        </div>
+        <?php else: ?>
+            <div class="empty-favorites">
+                <i class="far fa-heart fa-4x"></i>
+                <h3 data-i18n="favorites.no_favorites">No favorites yet</h3>
+                <p data-i18n="favorites.start_adding">Start adding services to your favorites to see them here.</p>
+                <a href="all_services.php" class="btn btn-primary" data-i18n="favorites.browse_services">Browse Services</a>
+            </div>
+        <?php endif; ?>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

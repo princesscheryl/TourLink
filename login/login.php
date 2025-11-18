@@ -494,6 +494,30 @@
     <script src="../js/accessibility.js"></script>
     <script>
         $(document).ready(function(){
+            // Check for session timeout
+            <?php if(isset($_SESSION['timeout_message'])): ?>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Session Expired',
+                    text: '<?php echo $_SESSION['timeout_message']; ?>',
+                    confirmButtonColor: '#2d6a4f'
+                });
+                <?php unset($_SESSION['timeout_message']); ?>
+            <?php endif; ?>
+
+            // Check for timeout URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('timeout') === '1') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Session Expired',
+                    text: 'Your session has expired due to inactivity. Please sign in again.',
+                    confirmButtonColor: '#2d6a4f'
+                });
+                // Remove timeout parameter from URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
             $('#login-form').submit(function(e){
                 e.preventDefault();
 
