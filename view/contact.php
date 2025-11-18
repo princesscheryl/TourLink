@@ -10,6 +10,7 @@ require_once '../settings/core.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../css/navigation.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
@@ -563,40 +564,7 @@ require_once '../settings/core.php';
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="main-nav">
-        <div class="nav-container">
-            <a href="../index_tourlink.php" class="logo" data-i18n="app_name">TourLink</a>
-
-            <ul class="nav-menu">
-                <li><a href="../index_tourlink.php" data-i18n="nav.home">Home</a></li>
-                <li><a href="all_services.php" data-i18n="nav.destinations">Browse Services</a></li>
-                <li><a href="about.php" data-i18n="nav.about">About</a></li>
-                <li><a href="contact.php" data-i18n="nav.contact">Contact</a></li>
-            </ul>
-
-            <div class="nav-actions">
-                <!-- Language Switcher -->
-                <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
-                    <option value="en">English</option>
-                    <option value="fr">Français</option>
-                    <option value="es">Español</option>
-                    <option value="tw">Twi</option>
-                    <option value="ga">Ga</option>
-                </select>
-
-                <!-- Theme Toggle -->
-                <button onclick="toggleTheme()" class="theme-toggle-btn" id="publicThemeToggle" aria-label="Toggle dark mode">
-                    <i class="fa fa-moon"></i>
-                </button>
-
-                <?php if (isset($_SESSION['customer_id'])): ?>
-                    <a href="../admin/dashboard.php" class="btn-sign-in" data-i18n="nav.dashboard">Dashboard</a>
-                <?php else: ?>
-                    <a href="../login/login.php" class="btn-sign-in" data-i18n="nav.sign_in">Sign In</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </nav>
+    <?php include '../includes/navigation.php'; ?>
 
     <!-- Page Header -->
     <section class="page-header">
@@ -647,8 +615,8 @@ require_once '../settings/core.php';
                         <i class="fa fa-map-marker-alt"></i>
                     </div>
                     <div class="info-content">
-                        <h3 data-i18n="footer.location_title">Location</h3>
-                        <p data-i18n="footer.location">Ashesi University, Berekuso<br>Ghana</p>
+                        <h3 data-i18n="contact.location_title">Location</h3>
+                        <p>Ashesi University, Berekuso<br>Ghana</p>
                     </div>
                 </div>
 

@@ -2,7 +2,6 @@
 require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
 require_once '../controllers/service_category_controller.php';
-require_once '../controllers/favorite_controller.php';
 
 // Get filter parameters
 $category_filter = isset($_GET['category']) ? (int)$_GET['category'] : null;
@@ -17,15 +16,25 @@ if ($category_filter) {
 // Get all categories for filter
 $categories = get_all_service_categories_ctr();
 
-// Get user's favorites if logged in
+// Get user's favorites if logged in (wrapped in try-catch to prevent errors)
 $user_favorites = [];
+$favorites_enabled = false;
+
 if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
-    $favorites_list = get_user_favorites_ctr($user_id);
-    if ($favorites_list) {
-        foreach ($favorites_list as $fav) {
-            $user_favorites[] = $fav['service_id'];
+    try {
+        require_once '../controllers/favorite_controller.php';
+        $user_id = $_SESSION['user_id'];
+        $favorites_list = get_user_favorites_ctr($user_id);
+        if ($favorites_list) {
+            foreach ($favorites_list as $fav) {
+                $user_favorites[] = $fav['service_id'];
+            }
         }
+        $favorites_enabled = true;
+    } catch (Exception $e) {
+        // Favorites feature not available - continue without it
+        $user_favorites = [];
+        $favorites_enabled = false;
     }
 }
 ?>
@@ -625,21 +634,23 @@ if (isset($_SESSION['user_id'])) {
                         <?php foreach ($services as $service): ?>
                             <div class="col-md-4">
                                 <div class="service-card">
-                                    <?php
-                                    // Check if service is favorited
-                                    $is_favorited = in_array($service['service_id'], $user_favorites);
-                                    $heart_class = $is_favorited ? 'fas' : 'far';
-                                    $btn_class = $is_favorited ? 'active' : '';
-                                    ?>
+                                    <?php if ($favorites_enabled): ?>
+                                        <?php
+                                        // Check if service is favorited
+                                        $is_favorited = in_array($service['service_id'], $user_favorites);
+                                        $heart_class = $is_favorited ? 'fas' : 'far';
+                                        $btn_class = $is_favorited ? 'active' : '';
+                                        ?>
 
-                                    <!-- Favorite Button -->
-                                    <button class="favorite-btn <?php echo $btn_class; ?>"
-                                            data-favorite-btn
-                                            data-service-id="<?php echo $service['service_id']; ?>"
-                                            aria-label="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>"
-                                            title="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>">
-                                        <i class="<?php echo $heart_class; ?> fa-heart"></i>
-                                    </button>
+                                        <!-- Favorite Button -->
+                                        <button class="favorite-btn <?php echo $btn_class; ?>"
+                                                data-favorite-btn
+                                                data-service-id="<?php echo $service['service_id']; ?>"
+                                                aria-label="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>"
+                                                title="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>">
+                                            <i class="<?php echo $heart_class; ?> fa-heart"></i>
+                                        </button>
+                                    <?php endif; ?>
 
                                     <?php
                                     $images = json_decode($service['service_images'], true);
