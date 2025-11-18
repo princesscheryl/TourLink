@@ -19,13 +19,15 @@ if ($in_view_folder || $in_admin_folder) {
 
 <!-- Navigation -->
 <nav class="main-nav" role="navigation" aria-label="Main navigation">
-    <ul class="nav-menu" id="navMenu">
-        <li><a href="<?php echo $base_path; ?>index_tourlink.php" data-i18n="nav.home">Home</a></li>
-        <li><a href="<?php echo $base_path; ?>view/all_services.php" data-i18n="nav.destinations">Browse Services</a></li>
-        <li><a href="<?php echo $base_path; ?>view/about.php" data-i18n="nav.about">About</a></li>
-        <li><a href="<?php echo $base_path; ?>view/contact.php" data-i18n="nav.contact">Contact</a></li>
-    </ul>
-    <div class="nav-actions">
+    <div class="nav-container">
+        <a href="<?php echo $base_path; ?>index_tourlink.php" class="logo" aria-label="TourLink Home">TourLink<span class="logo-dot">.</span></a>
+        <ul class="nav-menu" id="navMenu" role="menubar">
+            <li><a href="<?php echo $base_path; ?>index_tourlink.php" data-i18n="nav.home">Home</a></li>
+            <li><a href="<?php echo $base_path; ?>view/all_services.php" data-i18n="nav.destinations">Browse Services</a></li>
+            <li><a href="<?php echo $base_path; ?>view/about.php" data-i18n="nav.about">About</a></li>
+            <li><a href="<?php echo $base_path; ?>view/contact.php" data-i18n="nav.contact">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
         <?php if(isset($_SESSION['user_id'])): ?>
             <!-- Profile Dropdown -->
             <div class="profile-dropdown" id="profileDropdown">
@@ -43,7 +45,7 @@ if ($in_view_folder || $in_admin_folder) {
                 <div class="dropdown-menu-custom">
                     <a href="<?php echo $base_path; ?>view/profile_settings.php">
                         <i class="fa fa-user-circle"></i>
-                        <span data-i18n="nav.profile_settings">Profile Settings</span>
+                        Profile Settings
                     </a>
                     <a href="<?php echo $base_path; ?>view/my_favorites.php">
                         <i class="fas fa-heart"></i>
@@ -53,32 +55,31 @@ if ($in_view_folder || $in_admin_folder) {
                         <div class="dropdown-divider"></div>
                         <a href="<?php echo $base_path; ?>admin/provider_dashboard.php">
                             <i class="fa fa-th-large"></i>
-                            <span data-i18n="nav.dashboard">Dashboard</span>
+                            Dashboard
                         </a>
                         <a href="<?php echo $base_path; ?>admin/manage_services.php">
                             <i class="fa fa-briefcase"></i>
-                            <span data-i18n="nav.my_services">My Services</span>
+                            My Services
                         </a>
                         <a href="<?php echo $base_path; ?>admin/bookings.php">
                             <i class="fa fa-calendar-check"></i>
-                            <span data-i18n="nav.bookings">Bookings</span>
+                            Bookings
                         </a>
                     <?php endif; ?>
                     <div class="dropdown-divider"></div>
                     <a href="javascript:void(0)" onclick="toggleTheme(); event.stopPropagation();" id="themeToggle">
                         <i class="fa fa-moon"></i>
-                        <span class="toggle-text" data-i18n="nav.dark_mode">Dark Mode</span>
+                        <span class="toggle-text">Dark Mode</span>
                     </a>
                     <div class="dropdown-divider"></div>
                     <a href="<?php echo $base_path; ?>login/logout.php">
                         <i class="fa fa-sign-out-alt"></i>
-                        <span data-i18n="nav.logout">Logout</span>
+                        Logout
                     </a>
                 </div>
             </div>
         <?php else: ?>
             <a href="<?php echo $base_path; ?>login/login.php" class="btn-signin" data-i18n="nav.sign_in">Sign In</a>
-            <a href="<?php echo $base_path; ?>login/register.php" class="btn-join" data-i18n="nav.join">Join</a>
         <?php endif; ?>
 
         <!-- Language Switcher -->
@@ -96,16 +97,40 @@ if ($in_view_folder || $in_admin_folder) {
         </button>
 
         <!-- Hamburger Menu (Mobile) -->
-        <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+        <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
             <span></span>
             <span></span>
             <span></span>
         </button>
+        </div>
     </div>
 </nav>
 
 <script>
-// Profile dropdown toggle
+document.addEventListener('DOMContentLoaded', function() {
+    // Hamburger Menu Toggle
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
+
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
+
+    // Close menu when clicking on a link
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (hamburger && navMenu) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    });
+});
+
+// Profile Dropdown Toggle
 function toggleProfileDropdown() {
     const dropdown = document.getElementById('profileDropdown');
     dropdown.classList.toggle('active');
@@ -118,12 +143,4 @@ document.addEventListener('click', function(event) {
         dropdown.classList.remove('active');
     }
 });
-
-// Mobile menu toggle
-function toggleMobileMenu() {
-    const navMenu = document.getElementById('navMenu');
-    const hamburger = document.getElementById('hamburger');
-    navMenu.classList.toggle('active');
-    hamburger.classList.toggle('active');
-}
 </script>
