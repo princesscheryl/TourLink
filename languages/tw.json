@@ -32,9 +32,28 @@
     "category_placeholder": "Yi akyɛde",
     "location": "Beaeɛ",
     "location_placeholder": "Wobɛkɔ he?",
+    "all_regions": "Mpɔtam Nyinaa",
+    "all_services": "Adwuma Nyinaa",
     "date": "Da",
     "date_placeholder": "Yi da",
+    "travelers": "Akwantufoɔ Dodoɔ",
     "search_button": "Hwehwɛ Mprempren"
+  },
+
+  "trust": {
+    "reviews": "4.8/5 (10K+ Nsusuwii)",
+    "travelers": "Akwantufoɔ 500K+ Gye Di",
+    "secure": "Nkyerɛwde a Ɛwɔ Banbɔ"
+  },
+
+  "destinations": {
+    "title": "Mmeae a Wɔpɛ",
+    "subtitle": "Hwehwɛ yɛn akwantuo mmeae a wɔhwehwɛ paa wɔ Ghana",
+    "beach": "Mpoano",
+    "mountain": "Bepɔ",
+    "cultural": "Amammerɛ",
+    "adventure": "Nsamanfoɔ",
+    "historical": "Abakɔsɛm"
   },
 
   "categories": {
@@ -58,15 +77,19 @@
 
   "why_choose": {
     "title": "Adɛn Nti na Wobɛyi TourLink?",
-    "subtitle": "Wo nnamfonom a wɔgye di wɔ Ghana amaneɛ ankasa mu",
-    "verified_providers": "Wɔn a Wɔahwɛ Wɔn Ho",
+    "subtitle": "Yɛmfa akwantuo nkyerɛw nkutoo — yɛyɛ amaneɛ a wɔrɛnkae da. Efi adwuma a wɔayɛ ma wo nkutoo kɔsi akwantuo ho aboafoɔ a wɔayi wɔn, yɛhwɛ sɛ wo akwantuo fa biara yɛ mmerɛw, banbɔ wom, na ɛkanyan.",
+    "verified_providers": "Akwantuo Ho Aboafoɔ a Wɔahwɛ Wɔn Ho",
     "verified_providers_desc": "Wɔahwɛ wɔn a wɔma adwuma nyinaa yie ama wo banbɔ ne wo adwene mu asomdwoe.",
     "secure_booking": "Nkyerɛwde a Ɛwɔ Banbɔ",
     "secure_booking_desc": "Kyerɛw wo din wɔ ahotɔsoɔ mu denam yɛn sika tuatua nhyehyɛe a ɛwɔ banbɔ ne ntɛmpɛ siesie so.",
     "local_expertise": "Mpɔtam Hɔ Nimdeɛ",
     "local_expertise_desc": "Fa wo ho bɔ animuonyamfoɔ a wɔwɔ mpɔtam hɔ a wɔnim adenneɛ pa ne amaneɛ ankasa.",
-    "24_7_support": "Mmoa 24/7",
-    "24_7_support_desc": "Yɛn mmoa kuo a wɔde wɔn ho ma no asiesie bere nyinaa sɛ wɔbɛboa wo wɔ nsɛm anaa nsɛmmisa biara mu."
+    "24_7_support": "Adetɔfoɔ Mmoa 24/7",
+    "24_7_support_desc": "Yɛn mmoa kuo a wɔde wɔn ho ma no asiesie bere nyinaa sɛ wɔbɛboa wo wɔ nsɛm anaa nsɛmmisa biara mu.",
+    "best_price": "Bo a Ɛyɛ Sen Biara Guarantee",
+    "best_price_desc": "Woahunu bo a ɛyɛ sen wɔ beaeɛ foforɔ? Yɛbɛyɛ no saa na yɛama wo 10% ɛho nkate wɔ wo nkyerɛwde ho.",
+    "flexible_booking": "Nkyerɛwde a Ɛyɛ Mmerɛw",
+    "flexible_booking_desc": "Nkyerɛwde a wotumi twa to wɔ nkyerɛwde pii mu a wobɛsan anya sika nyinaa kɔsi nnɔnhwerew 48 ansa na wobɛtu kwan."
   },
 
   "testimonials": {
@@ -185,8 +208,12 @@
     "form_title": "Fa Nkrasɛm Brɛ Yɛn",
     "name": "Wo Din",
     "email": "Wo Email",
+    "email_title": "Email",
     "subject": "Asɛmti",
     "message": "Nkrasɛm",
+    "phone_title": "Telefon",
+    "location_title": "Beaeɛ",
+    "contact_info": "Nkitahodi Ho Nsɛm",
     "send_button": "Fa Nkrasɛm Kɔ",
     "success_message": "Yɛda Wo Ase! Wɔafa wo nkrasɛm akɔ yie.",
     "error_message": "Yɛpa Wo Kyɛw, mfomso bi bae wɔ wo nkrasɛm a wɔde rekɔ no mu. Yɛ Sɛ Wo Sɔ Hwɛ Bio.",
@@ -194,6 +221,7 @@
     "monday_friday": "Dwoada - Fiada: 8:00 AM - 6:00 PM",
     "saturday": "Memeneda: 9:00 AM - 4:00 PM",
     "sunday": "Kwasiada: Wɔato",
+    "closed": "Wɔato",
     "find_us": "Hunu Yɛn"
   },
 

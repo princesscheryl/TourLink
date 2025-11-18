@@ -10,6 +10,8 @@
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
+    <script src="../js/translator.js"></script>
+    <script src="../js/accessibility.js"></script>
     <style>
         * {
             margin: 0;
@@ -264,6 +266,107 @@
             color: #2d6a4f;
         }
 
+        .language-selector {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .language-selector:hover {
+            border-color: #2d6a4f;
+        }
+
+        .theme-toggle-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #1a1a1a;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: #2d6a4f;
+            background: #f0f7f4;
+        }
+
+        /* Dark Mode for language/theme controls */
+        [data-theme="dark"] .language-selector {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn:hover {
+            background: #4d4d4d !important;
+        }
+
+        /* Header controls container */
+        .header-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .language-selector {
+                min-width: 80px;
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+
+            .theme-toggle-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .header-controls {
+                top: 15px;
+                right: 15px;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .language-selector {
+                min-width: 70px;
+                font-size: 0.75rem;
+                padding: 5px 6px;
+            }
+
+            .theme-toggle-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .header-controls {
+                top: 10px;
+                right: 10px;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 992px) {
             .auth-container {
@@ -282,6 +385,24 @@
 </head>
 <body>
     <a href="#login-form" class="skip-link">Skip to login form</a>
+
+    <!-- Header Controls -->
+    <div class="header-controls">
+        <!-- Language Switcher -->
+        <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="tw">Twi</option>
+            <option value="ga">Ga</option>
+        </select>
+
+        <!-- Theme Toggle -->
+        <button onclick="toggleTheme()" class="theme-toggle-btn" id="publicThemeToggle" aria-label="Toggle dark mode">
+            <i class="fa fa-moon"></i>
+        </button>
+    </div>
+
     <div class="auth-container">
         <!-- Left Side - Visual -->
         <div class="auth-visual">
@@ -325,17 +446,17 @@
         <div class="auth-form-side">
             <div class="form-container">
                 <a href="../index_tourlink.php" class="back-link">
-                    <i class="fa fa-arrow-left"></i> Back to Home
+                    <i class="fa fa-arrow-left"></i> <span data-i18n="nav.back_to_home">Back to Home</span>
                 </a>
 
                 <div class="logo-text">TourLink<span class="logo-dot">.</span></div>
-                <h2 class="form-title">Sign In</h2>
-                <p class="form-subtitle">Enter your credentials to access your account</p>
+                <h2 class="form-title" data-i18n="auth.sign_in_title">Sign In</h2>
+                <p class="form-subtitle" data-i18n="auth.sign_in_subtitle">Enter your credentials to access your account</p>
 
                 <form method="POST" action="" id="login-form" role="form" aria-label="Sign in form">
                     <div class="mb-3">
                         <label for="email" class="form-label">
-                            <i class="fa fa-envelope" aria-hidden="true"></i> Email Address
+                            <i class="fa fa-envelope" aria-hidden="true"></i> <span data-i18n="auth.email">Email Address</span>
                         </label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required aria-required="true" aria-describedby="email-help">
                         <span id="email-help" class="sr-only">Enter your email address to sign in</span>
@@ -343,25 +464,25 @@
 
                     <div class="mb-3">
                         <label for="password" class="form-label">
-                            <i class="fa fa-lock" aria-hidden="true"></i> Password
+                            <i class="fa fa-lock" aria-hidden="true"></i> <span data-i18n="auth.password">Password</span>
                         </label>
                         <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required aria-required="true" aria-describedby="password-help">
                         <span id="password-help" class="sr-only">Enter your password to sign in</span>
                     </div>
 
                     <div class="forgot-password">
-                        <a href="#forgot">Forgot Password?</a>
+                        <a href="#forgot" data-i18n="auth.forgot_password">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="btn-login w-100" aria-label="Sign in to your account">
-                        <span>Sign In</span>
+                        <span data-i18n="auth.sign_in">Sign In</span>
                     </button>
                 </form>
 
                 <div class="auth-footer">
-                    Don't have an account? <a href="register.php">Sign up as Tourist</a>
+                    <span data-i18n="auth.no_account">Don't have an account?</span> <a href="register.php" data-i18n="auth.sign_up_tourist">Sign up as Tourist</a>
                     <br><br>
-                    <small>Are you a service provider? <a href="register_provider.php">Register as Provider</a></small>
+                    <small><span data-i18n="auth.are_you_provider">Are you a service provider?</span> <a href="register_provider.php" data-i18n="auth.register_provider">Register as Provider</a></small>
                 </div>
             </div>
         </div>

@@ -16,7 +16,8 @@
     "bookings": "Bookings",
     "profile_settings": "Profile Settings",
     "dark_mode": "Dark Mode",
-    "light_mode": "Light Mode"
+    "light_mode": "Light Mode",
+    "cart": "Cart"
   },
 
   "hero": {
@@ -32,9 +33,28 @@
     "category_placeholder": "Select category",
     "location": "Location",
     "location_placeholder": "Where to?",
+    "all_regions": "All Regions",
+    "all_services": "All Services",
     "date": "Date",
     "date_placeholder": "Select date",
+    "travelers": "Number of Travelers",
     "search_button": "Search Now"
+  },
+
+  "trust": {
+    "reviews": "4.8/5 (10K+ Reviews)",
+    "travelers": "Trusted by 500K+ Travelers",
+    "secure": "Secure Booking"
+  },
+
+  "destinations": {
+    "title": "Popular Destinations",
+    "subtitle": "Explore our most sought-after travel locations around Ghana",
+    "beach": "Beach",
+    "mountain": "Mountain",
+    "cultural": "Cultural",
+    "adventure": "Adventure",
+    "historical": "Historical"
   },
 
   "categories": {
@@ -58,15 +78,19 @@
 
   "why_choose": {
     "title": "Why Choose TourLink?",
-    "subtitle": "Your trusted partner for authentic Ghanaian experiences",
-    "verified_providers": "Verified Providers",
-    "verified_providers_desc": "All service providers are thoroughly vetted and verified for your safety and peace of mind.",
+    "subtitle": "We don't just book trips — we create unforgettable experiences. From personalized service to handpicked travel partners, we ensure every part of your journey is smooth, safe, and inspiring.",
+    "verified_providers": "Verified Travel Partners",
+    "verified_providers_desc": "Each hotel, guide, and experience partner is carefully vetted to meet our quality and safety standards.",
     "secure_booking": "Secure Booking",
     "secure_booking_desc": "Book with confidence using our secure payment system and instant confirmation.",
     "local_expertise": "Local Expertise",
     "local_expertise_desc": "Connect with local experts who know the best hidden gems and authentic experiences.",
-    "24_7_support": "24/7 Support",
-    "24_7_support_desc": "Our dedicated support team is always ready to assist you with any questions or concerns."
+    "24_7_support": "24/7 Customer Support",
+    "24_7_support_desc": "Our travel experts are available round-the-clock to assist you, no matter where you are in the world.",
+    "best_price": "Best Price Guarantee",
+    "best_price_desc": "Found a better price elsewhere? We'll match it and give you an additional 10% off your booking.",
+    "flexible_booking": "Flexible Booking Options",
+    "flexible_booking_desc": "Flexible cancellation policies on most bookings with full refunds up to 48 hours before travel."
   },
 
   "testimonials": {
@@ -185,8 +209,12 @@
     "form_title": "Send us a Message",
     "name": "Your Name",
     "email": "Your Email",
+    "email_title": "Email",
     "subject": "Subject",
     "message": "Message",
+    "phone_title": "Phone",
+    "location_title": "Location",
+    "contact_info": "Contact Information",
     "send_button": "Send Message",
     "success_message": "Thank you! Your message has been sent successfully.",
     "error_message": "Sorry, there was an error sending your message. Please try again.",
@@ -194,6 +222,7 @@
     "monday_friday": "Monday - Friday: 8:00 AM - 6:00 PM",
     "saturday": "Saturday: 9:00 AM - 4:00 PM",
     "sunday": "Sunday: Closed",
+    "closed": "Closed",
     "find_us": "Find Us"
   },
 

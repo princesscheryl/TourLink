@@ -79,6 +79,42 @@ require_once '../settings/core.php';
             color: white;
         }
 
+        .language-selector {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .language-selector:hover {
+            border-color: #2d6a4f;
+        }
+
+        .theme-toggle-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #1a1a1a;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: #2d6a4f;
+            background: #f0f7f4;
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
@@ -545,6 +581,47 @@ require_once '../settings/core.php';
             .cta-section {
                 padding: 60px 20px;
             }
+
+            .language-selector {
+                min-width: 80px;
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+
+            .theme-toggle-btn {
+                width: 36px;
+                height: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .language-selector {
+                min-width: 70px;
+                font-size: 0.75rem;
+                padding: 5px 6px;
+            }
+
+            .theme-toggle-btn {
+                width: 32px;
+                height: 32px;
+            }
+        }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] .language-selector {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn:hover {
+            background: #4d4d4d !important;
         }
     </style>
 </head>
@@ -554,6 +631,20 @@ require_once '../settings/core.php';
         <div class="nav-container">
             <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
             <div class="nav-actions">
+                <!-- Language Switcher -->
+                <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Español</option>
+                    <option value="tw">Twi</option>
+                    <option value="ga">Ga</option>
+                </select>
+
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="theme-toggle-btn" id="publicThemeToggle" aria-label="Toggle dark mode">
+                    <i class="fa fa-moon"></i>
+                </button>
+
                 <?php if(isset($_SESSION['user_id'])): ?>
                     <a href="../admin/provider_dashboard.php" class="btn-signin">Dashboard</a>
                 <?php else: ?>

@@ -32,9 +32,28 @@
     "category_placeholder": "Kpa kɛlɛ",
     "location": "Bɛɛ",
     "location_placeholder": "Bɛɛkɛ?",
+    "all_regions": "Gbɛɛmɛi Maŋmaŋ",
+    "all_services": "Shikpɔŋmɛi Maŋmaŋ",
     "date": "Shiibii",
     "date_placeholder": "Kpa shiibii",
+    "travelers": "Akwantuomɔi Dodoɔ",
     "search_button": "Lɛ Jooni"
+  },
+
+  "trust": {
+    "reviews": "4.8/5 (10K+ Nsusuwii)",
+    "travelers": "Akwantuomɔi 500K+ Lɛ Yɛɛ Nuŋshɛ",
+    "secure": "Ŋmaa Yuushishi Ani Jiitɛŋ"
+  },
+
+  "destinations": {
+    "title": "Beei Ani Lɛ Paa",
+    "subtitle": "Lɛ yɛɛ akwantuo beei ani lɛ paa wɔ Ghana",
+    "beach": "Nshɔ Gbɛɛ",
+    "mountain": "Gbɛɛ Tsitshɛɛ",
+    "cultural": "Amammerɛ",
+    "adventure": "Akwantuo",
+    "historical": "Abakɔsɛm"
   },
 
   "categories": {
@@ -58,15 +77,19 @@
 
   "why_choose": {
     "title": "Etse He Ni Kpa TourLink?",
-    "subtitle": "Wo nuŋshɛdiiamɔ ani lɛ wɔ Ghana oshikpɔŋ ankasai kɛ",
-    "verified_providers": "Ojinɛɛ Ani Lɛi",
+    "subtitle": "Yɛɛ ko ŋmaa yuu akwantuo kɛkɛ — yɛɛ kɛ oshikpɔŋ ji ɔhee efemɔ. Tsɛɛ shikpɔŋ ji kɛ wo ankasa kɛsi akwantuo aboafoɔ ji kpai, yɛɛ lɛ sɛ wo akwantuo fa maŋmaŋ yɛ mmerɛw, jiitɛŋ wom, ni kanyan.",
+    "verified_providers": "Akwantuo Aboafoɔ Ani Lɛi",
     "verified_providers_desc": "Wa lɛ ojinɛɛ shikpɔŋ mamɛi maŋmaŋ lelɛilɛ ehe wo jiitɛŋ ni abasamɔ.",
     "secure_booking": "Ŋmaa Yuushishi Ani Jiitɛŋ",
     "secure_booking_desc": "Ŋmaa yuu ni afimɔ yɛɛ sika feeji ani jiitɛŋ ni asiesie gbɛɛkɛ.",
     "local_expertise": "Gbɛɛ Kɛ Nishishi",
     "local_expertise_desc": "Kɛ ni animuonyamɔ bɛɛ kɛ ni lɛ hiɛmɔ lelɛilɛi ni oshikpɔŋ ankasai.",
-    "24_7_support": "Gbɛkɛ 24/7",
-    "24_7_support_desc": "Yɛɛ gbɛkɛ kuu ni afimɔ asiesie boni tsɔɔ ehe wo gbɛkɛ wɔ onimiɛmɛi."
+    "24_7_support": "Adetɔfoɔ Gbɛkɛ 24/7",
+    "24_7_support_desc": "Yɛɛ gbɛkɛ kuu ni afimɔ asiesie boni tsɔɔ ehe wo gbɛkɛ wɔ onimiɛmɛi.",
+    "best_price": "Owo Lelɛilɛ Guarantee",
+    "best_price_desc": "E lɛ owo lelɛilɛ wɔ bɛɛ foforɔ? Yɛɛ bɛ kɛ no saa ni yɛɛ ma wo 10% ɛho nkate wɔ wo ŋmaa yuu ho.",
+    "flexible_booking": "Ŋmaa Yuu Ji Yɛ Mmerɛw",
+    "flexible_booking_desc": "Ŋmaa yuu ji tumi twa to wɔ ŋmaa yuu pii mu ni sika nyinaa san ba kɔsi nnɔnhwerew 48 ansa akwantuo."
   },
 
   "testimonials": {
@@ -185,8 +208,12 @@
     "form_title": "Fa Nkrasɛm Brɛ Yɛn",
     "name": "Wo Yuu",
     "email": "Wo Email",
+    "email_title": "Email",
     "subject": "Asɛmti",
     "message": "Nkrasɛm",
+    "phone_title": "Telefon",
+    "location_title": "Bɛɛ",
+    "contact_info": "Nɔŋmɛ Nsɛmii",
     "send_button": "Fa Nkrasɛm Kɔ",
     "success_message": "Yɛ Da Wo Ase! Wa fa wo nkrasɛm akɔ yie.",
     "error_message": "Yɛ Pa Wo Kyɛw, njɛ bi bae wɔ wo nkrasɛm kɔ mu. Yɛ Sɛ Wo Sɔ Hwɛ Bio.",
@@ -194,6 +221,7 @@
     "monday_friday": "Dwoada - Fiada: 8:00 AM - 6:00 PM",
     "saturday": "Memeneda: 9:00 AM - 4:00 PM",
     "sunday": "Kwasiada: Wa to",
+    "closed": "Wa to",
     "find_us": "Lɛ Yɛn"
   },
 

@@ -32,9 +32,28 @@
     "category_placeholder": "Seleccionar categoría",
     "location": "Ubicación",
     "location_placeholder": "¿A dónde?",
+    "all_regions": "Todas las regiones",
+    "all_services": "Todos los servicios",
     "date": "Fecha",
     "date_placeholder": "Seleccionar fecha",
+    "travelers": "Número de viajeros",
     "search_button": "Buscar ahora"
+  },
+
+  "trust": {
+    "reviews": "4.8/5 (10K+ Reseñas)",
+    "travelers": "Confiado por 500K+ viajeros",
+    "secure": "Reserva segura"
+  },
+
+  "destinations": {
+    "title": "Destinos populares",
+    "subtitle": "Explora nuestros destinos de viaje más buscados en Ghana",
+    "beach": "Playa",
+    "mountain": "Montaña",
+    "cultural": "Cultural",
+    "adventure": "Aventura",
+    "historical": "Histórico"
   },
 
   "categories": {
@@ -58,15 +77,19 @@
 
   "why_choose": {
     "title": "¿Por qué elegir TourLink?",
-    "subtitle": "Tu socio de confianza para experiencias ghanesas auténticas",
-    "verified_providers": "Proveedores verificados",
+    "subtitle": "No solo reservamos viajes, creamos experiencias inolvidables. Desde servicio personalizado hasta socios de viaje seleccionados, nos aseguramos de que cada parte de tu viaje sea fluida, segura e inspiradora.",
+    "verified_providers": "Socios de viaje verificados",
     "verified_providers_desc": "Todos los proveedores de servicios están completamente verificados para tu seguridad y tranquilidad.",
     "secure_booking": "Reserva segura",
     "secure_booking_desc": "Reserva con confianza usando nuestro sistema de pago seguro y confirmación instantánea.",
     "local_expertise": "Experiencia local",
     "local_expertise_desc": "Conéctate con expertos locales que conocen las mejores joyas ocultas y experiencias auténticas.",
-    "24_7_support": "Soporte 24/7",
-    "24_7_support_desc": "Nuestro equipo de soporte dedicado siempre está listo para ayudarte con cualquier pregunta o inquietud."
+    "24_7_support": "Atención al cliente 24/7",
+    "24_7_support_desc": "Nuestro equipo de soporte dedicado siempre está listo para ayudarte con cualquier pregunta o inquietud.",
+    "best_price": "Garantía del mejor precio",
+    "best_price_desc": "¿Encontraste un mejor precio en otro lugar? Lo igualaremos y te daremos un 10% adicional de descuento en tu reserva.",
+    "flexible_booking": "Opciones de reserva flexibles",
+    "flexible_booking_desc": "Políticas de cancelación flexibles en la mayoría de las reservas con reembolsos completos hasta 48 horas antes del viaje."
   },
 
   "testimonials": {
@@ -185,8 +208,12 @@
     "form_title": "Envíanos un mensaje",
     "name": "Tu nombre",
     "email": "Tu correo electrónico",
+    "email_title": "Correo electrónico",
     "subject": "Asunto",
     "message": "Mensaje",
+    "phone_title": "Teléfono",
+    "location_title": "Ubicación",
+    "contact_info": "Información de contacto",
     "send_button": "Enviar mensaje",
     "success_message": "¡Gracias! Tu mensaje ha sido enviado con éxito.",
     "error_message": "Lo sentimos, hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo.",
@@ -194,6 +221,7 @@
     "monday_friday": "Lunes - Viernes: 8:00 AM - 6:00 PM",
     "saturday": "Sábado: 9:00 AM - 4:00 PM",
     "sunday": "Domingo: Cerrado",
+    "closed": "Cerrado",
     "find_us": "Encuéntranos"
   },
 

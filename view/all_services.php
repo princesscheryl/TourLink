@@ -28,6 +28,8 @@ $categories = get_all_service_categories_ctr();
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
+    <script src="../js/translator.js"></script>
+    <script src="../js/accessibility.js"></script>
     <style>
         * {
             margin: 0;
@@ -140,6 +142,42 @@ $categories = get_all_service_categories_ctr();
 
         .btn-nav-logout:hover {
             background: #c82333;
+        }
+
+        .language-selector {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .language-selector:hover {
+            border-color: #2d6a4f;
+        }
+
+        .theme-toggle-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #1a1a1a;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: #2d6a4f;
+            background: #f0f7f4;
         }
 
         .nav-user {
@@ -330,6 +368,130 @@ $categories = get_all_service_categories_ctr();
             margin: 0 auto;
             padding: 0 30px 60px;
         }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] body {
+            background: #1a1a1a !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .main-nav {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .logo {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .nav-link {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .nav-link:hover,
+        [data-theme="dark"] .nav-link.active {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .language-selector {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn:hover {
+            background: #4d4d4d !important;
+        }
+
+        [data-theme="dark"] .page-header {
+            background: linear-gradient(135deg, #1b4332 0%, #0d2418 100%) !important;
+        }
+
+        [data-theme="dark"] .filter-section {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .filter-btn {
+            background: #3d3d3d !important;
+            color: #e0e0e0 !important;
+            border-color: #505050 !important;
+        }
+
+        [data-theme="dark"] .filter-btn.active {
+            background: #52b788 !important;
+            border-color: #52b788 !important;
+            color: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .service-card {
+            background: #2d2d2d !important;
+            border-color: #404040 !important;
+        }
+
+        [data-theme="dark"] .service-card h3 {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .service-card p {
+            color: #b0b0b0 !important;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 20px;
+            }
+
+            .nav-left, .nav-right {
+                gap: 10px;
+            }
+
+            .language-selector {
+                min-width: 80px;
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+
+            .theme-toggle-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .nav-link {
+                font-size: 0.85rem;
+            }
+
+            .btn-nav {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .language-selector {
+                min-width: 70px;
+                font-size: 0.75rem;
+                padding: 5px 6px;
+            }
+
+            .theme-toggle-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .nav-link:not(.active) {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -341,20 +503,35 @@ $categories = get_all_service_categories_ctr();
                 <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
             </div>
             <div class="nav-right">
-                <a href="all_services.php" class="nav-link active">Browse Services</a>
+                <a href="all_services.php" class="nav-link active" data-i18n="nav.destinations">Browse Services</a>
                 <a href="cart.php" class="nav-link">
-                    <i class="fa fa-shopping-cart"></i> Cart
+                    <i class="fa fa-shopping-cart"></i> <span data-i18n="nav.cart">Cart</span>
                     <span class="cart-count">0</span>
                 </a>
+
+                <!-- Language Switcher -->
+                <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Español</option>
+                    <option value="tw">Twi</option>
+                    <option value="ga">Ga</option>
+                </select>
+
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="theme-toggle-btn" id="publicThemeToggle" aria-label="Toggle dark mode">
+                    <i class="fa fa-moon"></i>
+                </button>
+
                 <?php if(isset($_SESSION['user_id'])): ?>
                     <span class="nav-user">
                         <i class="fa fa-user-circle"></i>
                         <?php echo htmlspecialchars($_SESSION['user_name']); ?>
                     </span>
-                    <a href="../login/logout.php" class="btn-nav btn-nav-logout">Logout</a>
+                    <a href="../login/logout.php" class="btn-nav btn-nav-logout" data-i18n="nav.logout">Logout</a>
                 <?php else: ?>
-                    <a href="../login/login.php" class="nav-link">Sign in</a>
-                    <a href="../login/register.php" class="btn-nav btn-nav-join">Join</a>
+                    <a href="../login/login.php" class="nav-link" data-i18n="nav.sign_in">Sign in</a>
+                    <a href="../login/register.php" class="btn-nav btn-nav-join" data-i18n="nav.join">Join</a>
                 <?php endif; ?>
             </div>
         </div>

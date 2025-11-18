@@ -1252,11 +1252,11 @@ $categories = get_all_service_categories_ctr();
     <section class="hero" id="main-content" role="main">
         <div class="hero-content">
             <div class="hero-text">
-                <h1>Discover Your Next Adventure with TourLink!</h1>
-                <p>Discover tours tailored to your dream destinations — from cultural escapes to adventure getaways. Book in minutes, travel without limits.</p>
+                <h1 data-i18n="hero.title">Discover Your Next Adventure with TourLink!</h1>
+                <p data-i18n="hero.subtitle">Discover tours tailored to your dream destinations — from cultural escapes to adventure getaways. Book in minutes, travel without limits.</p>
                 <div class="hero-buttons">
-                    <a href="view/all_services.php" class="btn-choose">Choose a Destinations</a>
-                    <a href="view/become_provider.php" class="btn-become">Become a Provider</a>
+                    <a href="view/all_services.php" class="btn-choose" data-i18n="hero.cta_primary">Choose a Destinations</a>
+                    <a href="view/become_provider.php" class="btn-become" data-i18n="hero.cta_secondary">Become a Provider</a>
                 </div>
             </div>
             <div class="hero-image">
@@ -1270,19 +1270,19 @@ $categories = get_all_service_categories_ctr();
         <form action="view/search_services.php" method="GET">
             <div class="search-grid">
                 <div class="search-field">
-                    <label><i class="fas fa-map-marker-alt"></i> Destination</label>
+                    <label><i class="fas fa-map-marker-alt"></i> <span data-i18n="search.location">Destination</span></label>
                     <select name="region">
-                        <option value="">All Regions</option>
-                        <option value="Greater Accra">Greater Accra</option>
-                        <option value="Central">Central Region</option>
-                        <option value="Ashanti">Ashanti Region</option>
-                        <option value="Northern">Northern Region</option>
+                        <option value="" data-i18n="search.all_regions">All Regions</option>
+                        <option value="Greater Accra" data-i18n="regions.greater_accra">Greater Accra</option>
+                        <option value="Central" data-i18n="regions.central">Central Region</option>
+                        <option value="Ashanti" data-i18n="regions.ashanti">Ashanti Region</option>
+                        <option value="Northern" data-i18n="regions.northern">Northern Region</option>
                     </select>
                 </div>
                 <div class="search-field">
-                    <label><i class="fas fa-th-large"></i> Tour Type</label>
+                    <label><i class="fas fa-th-large"></i> <span data-i18n="search.category">Tour Type</span></label>
                     <select name="category">
-                        <option value="">All Services</option>
+                        <option value="" data-i18n="search.all_services">All Services</option>
                         <?php if ($categories): ?>
                             <?php foreach ($categories as $category): ?>
                                 <option value="<?php echo $category['category_id']; ?>">
@@ -1293,16 +1293,16 @@ $categories = get_all_service_categories_ctr();
                     </select>
                 </div>
                 <div class="search-field">
-                    <label><i class="fas fa-calendar"></i> Date</label>
+                    <label><i class="fas fa-calendar"></i> <span data-i18n="search.date">Date</span></label>
                     <input type="date" name="date" min="<?php echo date('Y-m-d'); ?>">
                 </div>
                 <div class="search-field">
-                    <label><i class="fas fa-users"></i> Number of Travelers</label>
+                    <label><i class="fas fa-users"></i> <span data-i18n="search.travelers">Number of Travelers</span></label>
                     <input type="number" name="people" placeholder="1" min="1" value="1">
                 </div>
                 <button type="submit" class="btn-search">
                     <i class="fas fa-search"></i>
-                    Search
+                    <span data-i18n="search.search_button">Search</span>
                 </button>
             </div>
         </form>
@@ -1312,31 +1312,31 @@ $categories = get_all_service_categories_ctr();
     <div class="trust-section">
         <div class="trust-item">
             <i class="fas fa-star"></i>
-            <strong>4.8/5 (10K+ Reviews)</strong>
+            <strong data-i18n="trust.reviews">4.8/5 (10K+ Reviews)</strong>
         </div>
         <div class="trust-item">
             <i class="fas fa-users"></i>
-            <strong>Trusted by 500K+ Travelers</strong>
+            <strong data-i18n="trust.travelers">Trusted by 500K+ Travelers</strong>
         </div>
         <div class="trust-item">
             <i class="fas fa-lock"></i>
-            <strong>Secure Booking</strong>
+            <strong data-i18n="trust.secure">Secure Booking</strong>
         </div>
     </div>
 
     <!-- Popular Destinations -->
     <section class="destinations-section">
         <div class="section-header">
-            <h2>Popular Destinations</h2>
-            <p>Explore our most sought-after travel locations around Ghana</p>
+            <h2 data-i18n="destinations.title">Popular Destinations</h2>
+            <p data-i18n="destinations.subtitle">Explore our most sought-after travel locations around Ghana</p>
         </div>
 
         <div class="destinations-tabs">
-            <button class="tab-btn active">Beach</button>
-            <button class="tab-btn">Mountain</button>
-            <button class="tab-btn">Cultural</button>
-            <button class="tab-btn">Adventure</button>
-            <button class="tab-btn">Historical</button>
+            <button class="tab-btn active" data-i18n="destinations.beach">Beach</button>
+            <button class="tab-btn" data-i18n="destinations.mountain">Mountain</button>
+            <button class="tab-btn" data-i18n="destinations.cultural">Cultural</button>
+            <button class="tab-btn" data-i18n="destinations.adventure">Adventure</button>
+            <button class="tab-btn" data-i18n="destinations.historical">Historical</button>
         </div>
 
         <div class="destinations-grid">
@@ -1428,8 +1428,8 @@ $categories = get_all_service_categories_ctr();
     <section class="why-choose">
         <div class="why-choose-container">
             <div>
-                <h2>Why Choose TourLink?</h2>
-                <p>We don't just book trips — we create unforgettable experiences. From personalized service to handpicked travel partners, we ensure every part of your journey is smooth, safe, and inspiring.</p>
+                <h2 data-i18n="why_choose.title">Why Choose TourLink?</h2>
+                <p data-i18n="why_choose.subtitle">We don't just book trips — we create unforgettable experiences. From personalized service to handpicked travel partners, we ensure every part of your journey is smooth, safe, and inspiring.</p>
             </div>
             <div class="features-list">
                 <div class="feature-item">
@@ -1437,8 +1437,8 @@ $categories = get_all_service_categories_ctr();
                         <i class="fas fa-dollar-sign"></i>
                     </div>
                     <div class="feature-text">
-                        <h4>Best Price Guarantee</h4>
-                        <p>Found a better price elsewhere? We'll match it and give you an additional 10% off your booking.</p>
+                        <h4 data-i18n="why_choose.best_price">Best Price Guarantee</h4>
+                        <p data-i18n="why_choose.best_price_desc">Found a better price elsewhere? We'll match it and give you an additional 10% off your booking.</p>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -1446,8 +1446,8 @@ $categories = get_all_service_categories_ctr();
                         <i class="fas fa-headset"></i>
                     </div>
                     <div class="feature-text">
-                        <h4>24/7 Customer Support</h4>
-                        <p>Our travel experts are available round-the-clock to assist you, no matter where you are in the world.</p>
+                        <h4 data-i18n="why_choose.24_7_support">24/7 Customer Support</h4>
+                        <p data-i18n="why_choose.24_7_support_desc">Our travel experts are available round-the-clock to assist you, no matter where you are in the world.</p>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -1455,8 +1455,8 @@ $categories = get_all_service_categories_ctr();
                         <i class="fas fa-calendar-check"></i>
                     </div>
                     <div class="feature-text">
-                        <h4>Flexible Booking Options</h4>
-                        <p>Flexible cancellation policies on most bookings with full refunds up to 48 hours before travel.</p>
+                        <h4 data-i18n="why_choose.flexible_booking">Flexible Booking Options</h4>
+                        <p data-i18n="why_choose.flexible_booking_desc">Flexible cancellation policies on most bookings with full refunds up to 48 hours before travel.</p>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -1464,8 +1464,8 @@ $categories = get_all_service_categories_ctr();
                         <i class="fas fa-shield-alt"></i>
                     </div>
                     <div class="feature-text">
-                        <h4>Verified Travel Partners</h4>
-                        <p>Each hotel, guide, and experience partner is carefully vetted to meet our quality and safety standards.</p>
+                        <h4 data-i18n="why_choose.verified_providers">Verified Travel Partners</h4>
+                        <p data-i18n="why_choose.verified_providers_desc">Each hotel, guide, and experience partner is carefully vetted to meet our quality and safety standards.</p>
                     </div>
                 </div>
             </div>
@@ -1476,8 +1476,8 @@ $categories = get_all_service_categories_ctr();
     <section class="testimonials">
         <div class="testimonials-container">
             <div class="section-header">
-                <h2>What Our Travelers Say</h2>
-                <p>Don't just take our word for it - hear from our satisfied customers</p>
+                <h2 data-i18n="testimonials.title">What Our Travelers Say</h2>
+                <p data-i18n="testimonials.subtitle">Don't just take our word for it - hear from our satisfied customers</p>
             </div>
 
             <div class="testimonials-grid">
@@ -1555,21 +1555,21 @@ $categories = get_all_service_categories_ctr();
     <footer class="footer" id="contact">
         <div class="footer-container">
             <div>
-                <h4>TourLink</h4>
-                <p>Your trusted partner for unforgettable travel experiences. We specialize in curated tours and personalized travel solutions around Ghana.</p>
+                <h4 data-i18n="app_name">TourLink</h4>
+                <p data-i18n="footer.description">Your trusted partner for unforgettable travel experiences. We specialize in curated tours and personalized travel solutions around Ghana.</p>
             </div>
             <div>
-                <h4>Quick Links</h4>
+                <h4 data-i18n="footer.quick_links">Quick Links</h4>
                 <ul>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#faq">FAQs</a></li>
-                    <li><a href="#contact">Contact Us</a></li>
-                    <li><a href="#privacy">Privacy Policy</a></li>
-                    <li><a href="#terms">Terms & Conditions</a></li>
+                    <li><a href="#about" data-i18n="footer.about_us">About Us</a></li>
+                    <li><a href="#faq" data-i18n="footer.faqs">FAQs</a></li>
+                    <li><a href="view/contact.php" data-i18n="footer.contact_us">Contact Us</a></li>
+                    <li><a href="#privacy" data-i18n="footer.privacy_policy">Privacy Policy</a></li>
+                    <li><a href="#terms" data-i18n="footer.terms_conditions">Terms & Conditions</a></li>
                 </ul>
             </div>
             <div>
-                <h4>Social Media</h4>
+                <h4 data-i18n="footer.social_media">Social Media</h4>
                 <ul>
                     <li><a href="#">Facebook</a></li>
                     <li><a href="#">Instagram</a></li>
@@ -1578,14 +1578,14 @@ $categories = get_all_service_categories_ctr();
                 </ul>
             </div>
             <div>
-                <h4>Contact Info</h4>
-                <p>Ashesi University, Berekuso<br>Ghana</p>
-                <p>info@tourlink.com.gh</p>
-                <p>+233 50 123 4567</p>
+                <h4 data-i18n="footer.contact_info">Contact Info</h4>
+                <p data-i18n="footer.location">Ashesi University, Berekuso<br>Ghana</p>
+                <p data-i18n="footer.email">info@tourlink.com.gh</p>
+                <p data-i18n="footer.phone">+233 50 123 4567</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 TourLink. All rights reserved.</p>
+            <p>&copy; 2025 <span data-i18n="app_name">TourLink</span>. <span data-i18n="footer.copyright">All rights reserved.</span></p>
         </div>
     </footer>
 
