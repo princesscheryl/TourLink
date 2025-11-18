@@ -1,0 +1,104 @@
+/**
+ * Modular Footer Styles
+ * Shared across all pages
+ */
+
+.footer {
+    background: #1a1a1a;
+    color: white;
+    padding: 60px 40px 30px;
+    margin-top: auto; /* Push footer to bottom if using flexbox */
+}
+
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 40px;
+}
+
+.footer h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.footer p {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.8;
+    margin-bottom: 12px;
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer ul li {
+    margin-bottom: 12px;
+}
+
+.footer ul a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer ul a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 30px;
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+/* Dark Mode - Footer stays dark */
+[data-theme="dark"] .footer {
+    background: #0d0d0d;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .footer-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer {
+        padding: 40px 20px 20px;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer {
+        padding: 30px 15px 15px;
+    }
+
+    .footer h4 {
+        font-size: 16px;
+    }
+
+    .footer p,
+    .footer ul a {
+        font-size: 14px;
+    }
+}

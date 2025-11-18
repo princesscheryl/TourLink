@@ -45,6 +45,31 @@
             localStorage.setItem('tourlink-language', lang);
         },
 
+        // Get base path to root directory
+        getBasePath: function() {
+            const currentPath = window.location.pathname;
+            const pathParts = currentPath.split('/').filter(part => part.length > 0);
+
+            // Find 'tourlink' in the path
+            const tourlinkIndex = pathParts.indexOf('tourlink');
+
+            if (tourlinkIndex === -1) {
+                // If not found, assume we're in root
+                return '';
+            }
+
+            // Calculate how many directories deep we are after 'tourlink'
+            const depth = pathParts.length - tourlinkIndex - 2; // -2 for tourlink itself and the file
+
+            // If depth is 0 or negative, we're at root or in tourlink folder
+            if (depth <= 0) {
+                return '';
+            }
+
+            // Build the relative path back to root
+            return '../'.repeat(depth);
+        },
+
         // Load translation JSON file
         loadTranslations: async function(lang) {
             // If already loaded, return
@@ -54,18 +79,7 @@
 
             try {
                 // Determine correct path based on current location
-                let basePath = '';
-                const currentPath = window.location.pathname;
-
-                if (currentPath.includes('/view/')) {
-                    basePath = '../';
-                } else if (currentPath.includes('/admin/')) {
-                    basePath = '../';
-                } else if (currentPath.includes('/login/')) {
-                    basePath = '../';
-                } else if (currentPath.includes('/actions/')) {
-                    basePath = '../';
-                }
+                let basePath = this.getBasePath();
 
                 const response = await fetch(`${basePath}languages/${lang}.json`);
 

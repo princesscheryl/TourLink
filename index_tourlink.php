@@ -23,6 +23,7 @@ $categories = get_all_service_categories_ctr();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="css/footer.css" rel="stylesheet">
     <link href="css/dark-mode.css" rel="stylesheet">
     <link href="css/accessibility.css" rel="stylesheet">
     <script src="js/dark-mode.js"></script>
@@ -1556,42 +1557,7 @@ $categories = get_all_service_categories_ctr();
     </section>
 
     <!-- Footer -->
-    <footer class="footer" id="contact">
-        <div class="footer-container">
-            <div>
-                <h4 data-i18n="app_name">TourLink</h4>
-                <p data-i18n="footer.description">Your trusted partner for unforgettable travel experiences. We specialize in curated tours and personalized travel solutions around Ghana.</p>
-            </div>
-            <div>
-                <h4 data-i18n="footer.quick_links">Quick Links</h4>
-                <ul>
-                    <li><a href="#about" data-i18n="footer.about_us">About Us</a></li>
-                    <li><a href="#faq" data-i18n="footer.faqs">FAQs</a></li>
-                    <li><a href="view/contact.php" data-i18n="footer.contact_us">Contact Us</a></li>
-                    <li><a href="#privacy" data-i18n="footer.privacy_policy">Privacy Policy</a></li>
-                    <li><a href="#terms" data-i18n="footer.terms_conditions">Terms & Conditions</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 data-i18n="footer.social_media">Social Media</h4>
-                <ul>
-                    <li><a href="#">Facebook</a></li>
-                    <li><a href="#">Instagram</a></li>
-                    <li><a href="#">Twitter</a></li>
-                    <li><a href="#">LinkedIn</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 data-i18n="footer.contact_info">Contact Info</h4>
-                <p data-i18n="footer.location">Ashesi University, Berekuso<br>Ghana</p>
-                <p data-i18n="footer.email">info@tourlink.com.gh</p>
-                <p data-i18n="footer.phone">+233 50 123 4567</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 <span data-i18n="app_name">TourLink</span>. <span data-i18n="footer.copyright">All rights reserved.</span></p>
-        </div>
-    </footer>
+    <?php include 'includes/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>

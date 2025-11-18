@@ -11,6 +11,7 @@ require_once '../settings/core.php';
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../css/navigation.css" rel="stylesheet">
+    <link href="../css/footer.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
@@ -30,113 +31,12 @@ require_once '../settings/core.php';
             overflow-x: hidden;
         }
 
-        /* Navigation */
-        .main-nav {
-            background: white;
-            padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #2d6a4f;
-            text-decoration: none;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: #1a1a1a;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-menu a:hover {
-            color: #2d6a4f;
-        }
-
-        .nav-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .language-selector {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1a1a1a;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-width: 100px;
-        }
-
-        .language-selector:hover {
-            border-color: #2d6a4f;
-        }
-
-        .theme-toggle-btn {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #1a1a1a;
-        }
-
-        .theme-toggle-btn:hover {
-            border-color: #2d6a4f;
-            background: #f0f7f4;
-        }
-
-        .btn-sign-in {
-            padding: 10px 24px;
-            background: transparent;
-            color: #2d6a4f;
-            border: 2px solid #2d6a4f;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-sign-in:hover {
-            background: #2d6a4f;
-            color: white;
-        }
-
         /* Page Header */
         .page-header {
             background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
             color: white;
-            padding: 80px 0 60px;
+            padding: 120px 0 60px; /* Extra padding for fixed nav */
+            margin-top: 70px; /* Height of fixed navigation */
             text-align: center;
         }
 
@@ -387,49 +287,6 @@ require_once '../settings/core.php';
             color: #e0e0e0 !important;
         }
 
-        [data-theme="dark"] .main-nav {
-            background: #2d2d2d !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
-        }
-
-        [data-theme="dark"] .logo {
-            color: #52b788 !important;
-        }
-
-        [data-theme="dark"] .nav-menu a {
-            color: #e0e0e0 !important;
-        }
-
-        [data-theme="dark"] .nav-menu a:hover {
-            color: #52b788 !important;
-        }
-
-        [data-theme="dark"] .language-selector {
-            background: #3d3d3d !important;
-            border-color: #505050 !important;
-            color: #e0e0e0 !important;
-        }
-
-        [data-theme="dark"] .theme-toggle-btn {
-            background: #3d3d3d !important;
-            border-color: #505050 !important;
-            color: #e0e0e0 !important;
-        }
-
-        [data-theme="dark"] .theme-toggle-btn:hover {
-            background: #4d4d4d !important;
-        }
-
-        [data-theme="dark"] .btn-sign-in {
-            color: #52b788 !important;
-            border-color: #52b788 !important;
-        }
-
-        [data-theme="dark"] .btn-sign-in:hover {
-            background: #52b788 !important;
-            color: #1a1a1a !important;
-        }
-
         [data-theme="dark"] .contact-form-container,
         [data-theme="dark"] .contact-info-container,
         [data-theme="dark"] .map-container {
@@ -675,11 +532,7 @@ require_once '../settings/core.php';
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
-            <p>&copy; 2025 <span data-i18n="app_name">TourLink</span>. <span data-i18n="footer.copyright">All rights reserved.</span></p>
-        </div>
-    </footer>
+    <?php include '../includes/footer.php'; ?>
 
     <script>
         // Form submission handler
