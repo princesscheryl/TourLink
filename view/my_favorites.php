@@ -22,6 +22,8 @@ $favorites = get_user_favorites_ctr($user_id);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../css/navigation.css" rel="stylesheet">
+    <link href="../css/footer.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
@@ -38,147 +40,6 @@ $favorites = get_user_favorites_ctr($user_id);
             font-family: 'Poppins', sans-serif;
             background: #f8f9fa;
             min-height: 100vh;
-        }
-
-        /* Navigation */
-        .main-nav {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
-        }
-
-        .nav-left, .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #2d6a4f;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .logo:hover {
-            color: #1b4332;
-        }
-
-        .logo-dot {
-            color: #ffd700;
-            font-size: 2rem;
-        }
-
-        .nav-link {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-            position: relative;
-        }
-
-        .nav-link:hover {
-            color: #2d6a4f;
-        }
-
-        .nav-link.active {
-            color: #2d6a4f;
-            font-weight: 600;
-        }
-
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -23px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: #2d6a4f;
-        }
-
-        .btn-nav {
-            padding: 10px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .btn-nav-logout {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-nav-logout:hover {
-            background: #c82333;
-        }
-
-        .language-selector {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1a1a1a;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-width: 100px;
-        }
-
-        .language-selector:hover {
-            border-color: #2d6a4f;
-        }
-
-        .theme-toggle-btn {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #1a1a1a;
-        }
-
-        .theme-toggle-btn:hover {
-            border-color: #2d6a4f;
-            background: #f0f7f4;
-        }
-
-        .nav-user {
-            color: #333;
-            font-weight: 500;
-        }
-
-        .cart-count {
-            background: #ffd700;
-            color: #1b4332;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-left: 5px;
         }
 
         /* Page Header */
@@ -483,43 +344,7 @@ $favorites = get_user_favorites_ctr($user_id);
     <a href="#main-content" class="skip-link" data-i18n="accessibility.skip_to_content">Skip to main content</a>
 
     <!-- Navigation -->
-    <nav class="main-nav" role="navigation" aria-label="Main navigation">
-        <div class="nav-container">
-            <div class="nav-left">
-                <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
-            </div>
-            <div class="nav-right">
-                <a href="all_services.php" class="nav-link" data-i18n="nav.destinations">Browse Services</a>
-                <a href="my_favorites.php" class="nav-link active">
-                    <i class="fas fa-heart"></i> <span data-i18n="favorites.my_favorites">My Favorites</span>
-                </a>
-                <a href="cart.php" class="nav-link">
-                    <i class="fa fa-shopping-cart"></i> <span data-i18n="nav.cart">Cart</span>
-                    <span class="cart-count">0</span>
-                </a>
-
-                <!-- Language Switcher -->
-                <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
-                    <option value="en">English</option>
-                    <option value="fr">Français</option>
-                    <option value="es">Español</option>
-                    <option value="tw">Twi</option>
-                    <option value="ga">Ga</option>
-                </select>
-
-                <!-- Theme Toggle -->
-                <button onclick="toggleTheme()" class="theme-toggle-btn" id="publicThemeToggle" aria-label="Toggle dark mode">
-                    <i class="fa fa-moon"></i>
-                </button>
-
-                <span class="nav-user">
-                    <i class="fa fa-user-circle"></i>
-                    <?php echo htmlspecialchars($_SESSION['user_name']); ?>
-                </span>
-                <a href="../login/logout.php" class="btn-nav btn-nav-logout" data-i18n="nav.logout">Logout</a>
-            </div>
-        </div>
-    </nav>
+    <?php include '../includes/navigation.php'; ?>
 
     <!-- Page Header -->
     <div class="page-header" id="main-content" role="main">
@@ -608,6 +433,9 @@ $favorites = get_user_favorites_ctr($user_id);
             </div>
         <?php endif; ?>
     </div>
+
+    <!-- Footer -->
+    <?php include '../includes/footer.php'; ?>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

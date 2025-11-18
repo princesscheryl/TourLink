@@ -27,6 +27,24 @@ if ($in_view_folder || $in_admin_folder) {
             <li><a href="<?php echo $base_path; ?>view/about.php" data-i18n="nav.about">About</a></li>
             <li><a href="<?php echo $base_path; ?>view/contact.php" data-i18n="nav.contact">Contact</a></li>
         </ul>
+
+        <!-- Search Bar -->
+        <div class="nav-search">
+            <form action="<?php echo $base_path; ?>view/search_services.php" method="GET" class="search-form">
+                <div class="search-input-container">
+                    <i class="fa fa-search search-icon"></i>
+                    <input type="text"
+                           name="q"
+                           id="navSearchInput"
+                           class="search-input"
+                           placeholder="Search destinations, tours..."
+                           data-i18n-placeholder="search.placeholder"
+                           autocomplete="off">
+                    <div class="search-suggestions" id="searchSuggestions"></div>
+                </div>
+            </form>
+        </div>
+
         <div class="nav-actions">
         <?php if(isset($_SESSION['user_id'])): ?>
             <!-- Profile Dropdown -->
@@ -143,4 +161,115 @@ document.addEventListener('click', function(event) {
         dropdown.classList.remove('active');
     }
 });
+
+// Search Autocomplete
+const searchInput = document.getElementById('navSearchInput');
+const searchSuggestions = document.getElementById('searchSuggestions');
+let searchTimeout;
+
+if (searchInput) {
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            searchSuggestions.innerHTML = '';
+            searchSuggestions.classList.remove('active');
+            return;
+        }
+
+        // Debounce the search
+        searchTimeout = setTimeout(() => {
+            fetchSearchSuggestions(query);
+        }, 300);
+    });
+
+    // Close suggestions when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!searchInput.contains(event.target) && !searchSuggestions.contains(event.target)) {
+            searchSuggestions.classList.remove('active');
+        }
+    });
+
+    // Handle form submission
+    searchInput.closest('form').addEventListener('submit', function(e) {
+        if (!searchInput.value.trim()) {
+            e.preventDefault();
+        }
+    });
+}
+
+function fetchSearchSuggestions(query) {
+    // Create base path for AJAX request
+    const currentPath = window.location.pathname;
+    const isInSubdir = currentPath.includes('/view/') || currentPath.includes('/admin/') || currentPath.includes('/login/');
+    const basePath = isInSubdir ? '../' : '';
+
+    fetch(`${basePath}actions/search_suggestions.php?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            displaySearchSuggestions(data);
+        })
+        .catch(error => {
+            console.error('Search suggestions error:', error);
+        });
+}
+
+function displaySearchSuggestions(data) {
+    if (!data || data.length === 0) {
+        searchSuggestions.innerHTML = '<div class="search-no-results">No results found</div>';
+        searchSuggestions.classList.add('active');
+        return;
+    }
+
+    let html = '';
+
+    // Group by type
+    const services = data.filter(item => item.type === 'service');
+    const categories = data.filter(item => item.type === 'category');
+    const recent = data.filter(item => item.type === 'recent');
+
+    if (recent.length > 0) {
+        html += '<div class="suggestions-group"><div class="suggestions-header">Recent Searches</div>';
+        recent.forEach(item => {
+            html += `<a href="view/search_services.php?q=${encodeURIComponent(item.text)}" class="suggestion-item recent">
+                <i class="fa fa-history"></i>
+                <span>${escapeHtml(item.text)}</span>
+            </a>`;
+        });
+        html += '</div>';
+    }
+
+    if (services.length > 0) {
+        html += '<div class="suggestions-group"><div class="suggestions-header">Services</div>';
+        services.slice(0, 5).forEach(item => {
+            html += `<a href="view/single_service.php?id=${item.id}" class="suggestion-item service">
+                <i class="fa fa-map-marker-alt"></i>
+                <span>${escapeHtml(item.text)}</span>
+                <span class="suggestion-category">${escapeHtml(item.category || '')}</span>
+            </a>`;
+        });
+        html += '</div>';
+    }
+
+    if (categories.length > 0) {
+        html += '<div class="suggestions-group"><div class="suggestions-header">Categories</div>';
+        categories.forEach(item => {
+            html += `<a href="view/all_services.php?category=${item.id}" class="suggestion-item category">
+                <i class="fa fa-th-large"></i>
+                <span>${escapeHtml(item.text)}</span>
+            </a>`;
+        });
+        html += '</div>';
+    }
+
+    searchSuggestions.innerHTML = html;
+    searchSuggestions.classList.add('active');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 </script>
