@@ -3,6 +3,7 @@ require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
 require_once '../classes/service_provider_class.php';
 require_once '../controllers/favorite_controller.php';
+require_once '../controllers/review_controller.php';
 
 $service_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -42,6 +43,24 @@ if (isset($_SESSION['user_id'])) {
 $is_favorited = false;
 if (isset($_SESSION['user_id'])) {
     $is_favorited = is_favorited_ctr($_SESSION['user_id'], $service_id);
+}
+
+// Get reviews and statistics
+$reviews = get_service_reviews_ctr($service_id);
+$review_stats = get_service_review_stats_ctr($service_id);
+
+// Check if user can submit a review (has completed bookings)
+$user_can_review = false;
+$user_bookings = [];
+if (isset($_SESSION['user_id']) && !$is_provider) {
+    $user_bookings = get_user_completed_bookings_ctr($_SESSION['user_id'], $service_id);
+    // Check if there's at least one booking without a review
+    foreach ($user_bookings as $booking) {
+        if ($booking['has_review'] == 0) {
+            $user_can_review = true;
+            break;
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -354,6 +373,204 @@ if (isset($_SESSION['user_id'])) {
             margin: 0;
             flex: 1;
         }
+
+        /* Reviews Section */
+        .reviews-section {
+            margin-top: 30px;
+        }
+
+        .review-stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .rating-overview {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .rating-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #2d6a4f;
+        }
+
+        .rating-stars {
+            color: #ffd700;
+            font-size: 1.5rem;
+        }
+
+        .rating-breakdown {
+            margin-top: 10px;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .rating-bar-label {
+            min-width: 60px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .rating-bar-container {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .rating-bar-fill {
+            height: 100%;
+            background: #ffd700;
+            transition: width 0.3s;
+        }
+
+        .rating-bar-count {
+            min-width: 30px;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: right;
+        }
+
+        /* Review Form */
+        .review-form {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 5px;
+            margin: 15px 0;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            cursor: pointer;
+            font-size: 2rem;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #ffd700;
+        }
+
+        /* Individual Review */
+        .review-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .reviewer-info h6 {
+            margin: 0 0 5px 0;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .reviewer-info .text-muted {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .review-rating {
+            color: #ffd700;
+            font-size: 1.1rem;
+        }
+
+        .review-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .review-text {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .provider-response {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #2d6a4f;
+            margin-top: 15px;
+        }
+
+        .provider-response-label {
+            font-weight: 600;
+            color: #2d6a4f;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .provider-response-text {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .response-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d1e7dd;
+            border: 1px solid #badbcc;
+            color: #0f5132;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c2c7;
+            color: #842029;
+        }
+
+        .alert-info {
+            background: #cff4fc;
+            border: 1px solid #b6effb;
+            color: #055160;
+        }
     </style>
 </head>
 <body>
@@ -486,6 +703,214 @@ if (isset($_SESSION['user_id'])) {
                         <?php endif; ?>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="row mt-5" id="reviews">
+            <div class="col-12">
+                <h3><i class="fa fa-star text-warning"></i> Reviews & Ratings</h3>
+
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success">
+                        <i class="fa fa-check-circle"></i> <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger">
+                        <i class="fa fa-exclamation-circle"></i> <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($review_stats && $review_stats['total_reviews'] > 0): ?>
+                    <!-- Rating Overview -->
+                    <div class="service-detail-card review-stats">
+                        <div class="rating-overview">
+                            <div class="rating-number">
+                                <?php echo number_format($review_stats['average_rating'], 1); ?>
+                            </div>
+                            <div>
+                                <div class="rating-stars">
+                                    <?php
+                                    $avg = round($review_stats['average_rating']);
+                                    for ($i = 1; $i <= 5; $i++) {
+                                        echo $i <= $avg ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+                                    }
+                                    ?>
+                                </div>
+                                <p class="mb-0 text-muted"><?php echo $review_stats['total_reviews']; ?> review(s)</p>
+                            </div>
+                        </div>
+
+                        <!-- Rating Breakdown -->
+                        <div class="rating-breakdown">
+                            <?php
+                            for ($star = 5; $star >= 1; $star--) {
+                                $count = $review_stats[$star == 5 ? 'five_star' : ($star == 4 ? 'four_star' : ($star == 3 ? 'three_star' : ($star == 2 ? 'two_star' : 'one_star')))];
+                                $percentage = $review_stats['total_reviews'] > 0 ? ($count / $review_stats['total_reviews']) * 100 : 0;
+                            ?>
+                                <div class="rating-bar">
+                                    <span class="rating-bar-label"><?php echo $star; ?> star</span>
+                                    <div class="rating-bar-container">
+                                        <div class="rating-bar-fill" style="width: <?php echo $percentage; ?>%"></div>
+                                    </div>
+                                    <span class="rating-bar-count"><?php echo $count; ?></span>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Review Submission Form -->
+                <?php if ($user_can_review): ?>
+                    <div class="review-form">
+                        <h4><i class="fa fa-edit"></i> Write a Review</h4>
+                        <p class="text-muted">Share your experience with this service</p>
+
+                        <form action="../actions/submit_review_action.php" method="POST">
+                            <input type="hidden" name="service_id" value="<?php echo $service_id; ?>">
+
+                            <!-- Booking Selection -->
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Select Booking to Review</strong></label>
+                                <select name="booking_id" class="form-select" required>
+                                    <option value="">Choose a booking...</option>
+                                    <?php foreach ($user_bookings as $booking): ?>
+                                        <?php if ($booking['has_review'] == 0): ?>
+                                            <option value="<?php echo $booking['booking_id']; ?>">
+                                                <?php echo $booking['booking_reference']; ?> -
+                                                <?php echo date('M d, Y', strtotime($booking['service_date'])); ?>
+                                            </option>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <!-- Star Rating -->
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Your Rating</strong></label>
+                                <div class="star-rating">
+                                    <input type="radio" name="rating" value="5" id="star5" required>
+                                    <label for="star5"><i class="fas fa-star"></i></label>
+                                    <input type="radio" name="rating" value="4" id="star4">
+                                    <label for="star4"><i class="fas fa-star"></i></label>
+                                    <input type="radio" name="rating" value="3" id="star3">
+                                    <label for="star3"><i class="fas fa-star"></i></label>
+                                    <input type="radio" name="rating" value="2" id="star2">
+                                    <label for="star2"><i class="fas fa-star"></i></label>
+                                    <input type="radio" name="rating" value="1" id="star1">
+                                    <label for="star1"><i class="fas fa-star"></i></label>
+                                </div>
+                            </div>
+
+                            <!-- Review Title -->
+                            <div class="mb-3">
+                                <label for="review_title" class="form-label"><strong>Review Title</strong></label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="review_title"
+                                       name="review_title"
+                                       placeholder="Summarize your experience"
+                                       maxlength="100"
+                                       required>
+                            </div>
+
+                            <!-- Review Text -->
+                            <div class="mb-3">
+                                <label for="review_text" class="form-label"><strong>Your Review</strong></label>
+                                <textarea class="form-control"
+                                          id="review_text"
+                                          name="review_text"
+                                          rows="5"
+                                          placeholder="Tell others about your experience with this service..."
+                                          required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-paper-plane"></i> Submit Review
+                            </button>
+                        </form>
+                    </div>
+                <?php elseif (isset($_SESSION['user_id']) && !$is_provider): ?>
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i> You can write a review after completing a booking for this service.
+                    </div>
+                <?php elseif (!isset($_SESSION['user_id'])): ?>
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i> Please <a href="../login/login.php">sign in</a> to write a review.
+                    </div>
+                <?php endif; ?>
+
+                <!-- Display Reviews -->
+                <?php if ($reviews && count($reviews) > 0): ?>
+                    <h4 class="mt-4 mb-3">Customer Reviews (<?php echo count($reviews); ?>)</h4>
+
+                    <?php foreach ($reviews as $review): ?>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <h6><?php echo htmlspecialchars($review['tourist_first_name'] . ' ' . $review['tourist_last_name']); ?></h6>
+                                    <p class="text-muted mb-0">
+                                        <?php echo date('F j, Y', strtotime($review['review_date'])); ?>
+                                        <?php if ($review['service_date']): ?>
+                                            | Service Date: <?php echo date('M j, Y', strtotime($review['service_date'])); ?>
+                                        <?php endif; ?>
+                                    </p>
+                                </div>
+                                <div class="review-rating">
+                                    <?php
+                                    for ($i = 1; $i <= 5; $i++) {
+                                        echo $i <= $review['rating'] ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+
+                            <h5 class="review-title"><?php echo htmlspecialchars($review['review_title']); ?></h5>
+                            <p class="review-text"><?php echo nl2br(htmlspecialchars($review['review_text'])); ?></p>
+
+                            <!-- Provider Response -->
+                            <?php if ($review['provider_response']): ?>
+                                <div class="provider-response">
+                                    <div class="provider-response-label">
+                                        <i class="fa fa-reply"></i> Provider Response
+                                    </div>
+                                    <p class="provider-response-text mb-0">
+                                        <?php echo nl2br(htmlspecialchars($review['provider_response'])); ?>
+                                    </p>
+                                    <small class="text-muted">
+                                        <?php echo date('F j, Y', strtotime($review['response_date'])); ?>
+                                    </small>
+                                </div>
+                            <?php elseif ($is_own_service): ?>
+                                <!-- Provider can respond -->
+                                <div class="response-form">
+                                    <form action="../actions/respond_to_review_action.php" method="POST">
+                                        <input type="hidden" name="review_id" value="<?php echo $review['review_id']; ?>">
+                                        <input type="hidden" name="service_id" value="<?php echo $service_id; ?>">
+
+                                        <label class="form-label"><strong>Respond to this review</strong></label>
+                                        <textarea class="form-control mb-2"
+                                                  name="provider_response"
+                                                  rows="3"
+                                                  placeholder="Thank your customer and address their feedback..."
+                                                  required></textarea>
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="fa fa-reply"></i> Post Response
+                                        </button>
+                                    </form>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php elseif (!$user_can_review): ?>
+                    <div class="service-detail-card text-center py-5">
+                        <i class="far fa-comments fa-3x text-muted mb-3"></i>
+                        <h5>No reviews yet</h5>
+                        <p class="text-muted">Be the first to review this service!</p>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

@@ -260,7 +260,7 @@ $categories = get_all_service_categories_ctr();
         <div class="form-card">
             <h2>Add New Service</h2>
 
-                        <form action="../actions/add_service_action.php" method="POST" id="addServiceForm">
+                        <form action="../actions/add_service_action.php" method="POST" enctype="multipart/form-data" id="addServiceForm">
                             <!-- Service Title -->
                             <div class="mb-3">
                                 <label for="service_title" class="form-label">Service Title *</label>
@@ -344,12 +344,250 @@ $categories = get_all_service_categories_ctr();
                                 <small class="text-muted">How many people can you serve at once?</small>
                             </div>
 
-                            <!-- Service Images (Placeholder for now) -->
+                            <!-- Service Images -->
                             <div class="mb-3">
-                                <label for="service_images" class="form-label">Service Image URLs (Optional)</label>
-                                <textarea class="form-control" id="service_images" name="service_images" rows="3" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"></textarea>
-                                <small class="text-muted">Enter image URLs, one per line. These should be publicly accessible images.</small>
+                                <label for="service_images" class="form-label">
+                                    <i class="fa fa-images"></i> Service Images (3-5 recommended)
+                                </label>
+                                <div class="image-upload-container">
+                                    <div class="upload-box" id="uploadBox">
+                                        <i class="fa fa-cloud-upload-alt fa-3x mb-3"></i>
+                                        <p><strong>Click to upload</strong> or drag and drop</p>
+                                        <p class="text-muted small">JPG, PNG or WEBP (Max 5MB each, 3-5 images)</p>
+                                        <input type="file"
+                                               id="service_images"
+                                               name="service_images[]"
+                                               accept="image/jpeg,image/jpg,image/png,image/webp"
+                                               multiple
+                                               style="display: none;">
+                                    </div>
+                                    <div class="image-preview-container" id="imagePreviewContainer"></div>
+                                </div>
                             </div>
+
+                            <style>
+                                .image-upload-container {
+                                    margin-bottom: 20px;
+                                }
+
+                                .upload-box {
+                                    border: 2px dashed #2d6a4f;
+                                    border-radius: 12px;
+                                    padding: 40px;
+                                    text-align: center;
+                                    cursor: pointer;
+                                    transition: all 0.3s;
+                                    background: #f8fdf9;
+                                }
+
+                                .upload-box:hover {
+                                    border-color: #1b4332;
+                                    background: #f0f7f4;
+                                }
+
+                                .upload-box.dragover {
+                                    border-color: #1b4332;
+                                    background: #e8f3ed;
+                                    transform: scale(1.02);
+                                }
+
+                                .image-preview-container {
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                                    gap: 15px;
+                                    margin-top: 20px;
+                                }
+
+                                .image-preview-item {
+                                    position: relative;
+                                    border-radius: 8px;
+                                    overflow: hidden;
+                                    border: 2px solid #e0e0e0;
+                                }
+
+                                .image-preview-item img {
+                                    width: 100%;
+                                    height: 150px;
+                                    object-fit: cover;
+                                }
+
+                                .image-preview-item.main-image {
+                                    border-color: #2d6a4f;
+                                    border-width: 3px;
+                                }
+
+                                .main-badge {
+                                    position: absolute;
+                                    top: 8px;
+                                    left: 8px;
+                                    background: #2d6a4f;
+                                    color: white;
+                                    padding: 4px 10px;
+                                    border-radius: 4px;
+                                    font-size: 0.75rem;
+                                    font-weight: 600;
+                                }
+
+                                .remove-image {
+                                    position: absolute;
+                                    top: 8px;
+                                    right: 8px;
+                                    background: rgba(220, 53, 69, 0.9);
+                                    color: white;
+                                    border: none;
+                                    width: 28px;
+                                    height: 28px;
+                                    border-radius: 50%;
+                                    cursor: pointer;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    transition: all 0.3s;
+                                }
+
+                                .remove-image:hover {
+                                    background: #c82333;
+                                    transform: scale(1.1);
+                                }
+
+                                .set-main-image {
+                                    position: absolute;
+                                    bottom: 8px;
+                                    left: 8px;
+                                    background: rgba(45, 106, 79, 0.9);
+                                    color: white;
+                                    border: none;
+                                    padding: 4px 10px;
+                                    border-radius: 4px;
+                                    font-size: 0.7rem;
+                                    cursor: pointer;
+                                    transition: all 0.3s;
+                                }
+
+                                .set-main-image:hover {
+                                    background: #1b4332;
+                                }
+
+                                .image-count-badge {
+                                    display: inline-block;
+                                    background: #2d6a4f;
+                                    color: white;
+                                    padding: 4px 12px;
+                                    border-radius: 20px;
+                                    font-size: 0.85rem;
+                                    margin-left: 10px;
+                                }
+                            </style>
+
+                            <script>
+                                const uploadBox = document.getElementById('uploadBox');
+                                const fileInput = document.getElementById('service_images');
+                                const previewContainer = document.getElementById('imagePreviewContainer');
+                                let selectedFiles = [];
+                                let mainImageIndex = 0;
+                                const MAX_FILES = 5;
+                                const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+                                // Click to upload
+                                uploadBox.addEventListener('click', () => fileInput.click());
+
+                                // Drag and drop
+                                uploadBox.addEventListener('dragover', (e) => {
+                                    e.preventDefault();
+                                    uploadBox.classList.add('dragover');
+                                });
+
+                                uploadBox.addEventListener('dragleave', () => {
+                                    uploadBox.classList.remove('dragover');
+                                });
+
+                                uploadBox.addEventListener('drop', (e) => {
+                                    e.preventDefault();
+                                    uploadBox.classList.remove('dragover');
+                                    const files = Array.from(e.dataTransfer.files);
+                                    handleFiles(files);
+                                });
+
+                                // File input change
+                                fileInput.addEventListener('change', (e) => {
+                                    const files = Array.from(e.target.files);
+                                    handleFiles(files);
+                                });
+
+                                function handleFiles(files) {
+                                    // Filter valid image files
+                                    const validFiles = files.filter(file => {
+                                        if (!file.type.startsWith('image/')) {
+                                            alert(`${file.name} is not a valid image file`);
+                                            return false;
+                                        }
+                                        if (file.size > MAX_FILE_SIZE) {
+                                            alert(`${file.name} is too large (max 5MB)`);
+                                            return false;
+                                        }
+                                        return true;
+                                    });
+
+                                    // Check total count
+                                    if (selectedFiles.length + validFiles.length > MAX_FILES) {
+                                        alert(`Maximum ${MAX_FILES} images allowed`);
+                                        return;
+                                    }
+
+                                    selectedFiles = [...selectedFiles, ...validFiles];
+                                    displayPreviews();
+                                }
+
+                                function displayPreviews() {
+                                    previewContainer.innerHTML = '';
+
+                                    selectedFiles.forEach((file, index) => {
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            const previewItem = document.createElement('div');
+                                            previewItem.className = 'image-preview-item' + (index === mainImageIndex ? ' main-image' : '');
+
+                                            previewItem.innerHTML = `
+                                                <img src="${e.target.result}" alt="Preview">
+                                                ${index === mainImageIndex ? '<span class="main-badge">Main</span>' : ''}
+                                                <button type="button" class="remove-image" onclick="removeImage(${index})">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                                ${index !== mainImageIndex ? `<button type="button" class="set-main-image" onclick="setMainImage(${index})">Set as Main</button>` : ''}
+                                            `;
+
+                                            previewContainer.appendChild(previewItem);
+                                        };
+                                        reader.readAsDataURL(file);
+                                    });
+
+                                    // Update file input
+                                    const dataTransfer = new DataTransfer();
+                                    selectedFiles.forEach(file => dataTransfer.items.add(file));
+                                    fileInput.files = dataTransfer.files;
+
+                                    // Update upload box text
+                                    if (selectedFiles.length > 0) {
+                                        uploadBox.querySelector('p:first-of-type').innerHTML =
+                                            `<strong>${selectedFiles.length} image(s) selected</strong><br>Click or drag to add more (max ${MAX_FILES})`;
+                                    }
+                                }
+
+                                function removeImage(index) {
+                                    selectedFiles.splice(index, 1);
+                                    if (mainImageIndex === index) {
+                                        mainImageIndex = 0;
+                                    } else if (mainImageIndex > index) {
+                                        mainImageIndex--;
+                                    }
+                                    displayPreviews();
+                                }
+
+                                function setMainImage(index) {
+                                    mainImageIndex = index;
+                                    displayPreviews();
+                                }
+                            </script>
 
                             <div class="alert alert-info">
                                 <i class="fa fa-info-circle"></i>

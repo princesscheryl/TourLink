@@ -41,13 +41,167 @@ if (isset($_POST['regions']) && is_array($_POST['regions'])) {
     $available_regions = json_encode($_POST['regions']);
 }
 
-// Handle service images (URLs)
+// Handle service image uploads
 $service_images = null;
-if (isset($_POST['service_images']) && !empty(trim($_POST['service_images']))) {
-    $image_urls = array_filter(array_map('trim', explode("\n", $_POST['service_images'])));
-    if (!empty($image_urls)) {
-        $service_images = json_encode($image_urls);
+if (isset($_FILES['service_images']) && !empty($_FILES['service_images']['name'][0])) {
+    $uploaded_images = handleImageUploads($_FILES['service_images'], $provider_id);
+    if (!empty($uploaded_images)) {
+        $service_images = json_encode($uploaded_images);
     }
+}
+
+/**
+ * Handle multiple image uploads
+ * @param array $files - $_FILES array
+ * @param int $provider_id
+ * @return array - Array of uploaded file paths
+ */
+function handleImageUploads($files, $provider_id) {
+    $uploaded_paths = [];
+    $max_files = 5;
+    $max_size = 5 * 1024 * 1024; // 5MB
+    $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
+    // Create upload directory if it doesn't exist
+    $upload_dir = '../uploads/services/' . $provider_id . '/';
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+
+    // Process each file
+    $file_count = is_array($files['name']) ? count($files['name']) : 1;
+    $file_count = min($file_count, $max_files);
+
+    for ($i = 0; $i < $file_count; $i++) {
+        // Get file info
+        $file_name = is_array($files['name']) ? $files['name'][$i] : $files['name'];
+        $file_tmp = is_array($files['tmp_name']) ? $files['tmp_name'][$i] : $files['tmp_name'];
+        $file_size = is_array($files['size']) ? $files['size'][$i] : $files['size'];
+        $file_type = is_array($files['type']) ? $files['type'][$i] : $files['type'];
+        $file_error = is_array($files['error']) ? $files['error'][$i] : $files['error'];
+
+        // Skip if no file or error
+        if ($file_error !== UPLOAD_ERR_OK || empty($file_name)) {
+            continue;
+        }
+
+        // Validate file type
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_file($finfo, $file_tmp);
+        finfo_close($finfo);
+
+        if (!in_array($mime_type, $allowed_types)) {
+            continue; // Skip invalid file types
+        }
+
+        // Validate file size
+        if ($file_size > $max_size) {
+            continue; // Skip files that are too large
+        }
+
+        // Generate unique filename
+        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
+        $new_filename = uniqid('service_' . $provider_id . '_', true) . '.' . $extension;
+        $destination = $upload_dir . $new_filename;
+
+        // Resize and optimize image
+        if (resizeImage($file_tmp, $destination, 1200, 800, 85)) {
+            // Store relative path (from project root)
+            $relative_path = 'uploads/services/' . $provider_id . '/' . $new_filename;
+            $uploaded_paths[] = $relative_path;
+
+            // Create thumbnail
+            $thumb_dir = $upload_dir . 'thumbs/';
+            if (!file_exists($thumb_dir)) {
+                mkdir($thumb_dir, 0755, true);
+            }
+            $thumb_destination = $thumb_dir . 'thumb_' . $new_filename;
+            resizeImage($destination, $thumb_destination, 400, 300, 80);
+        }
+    }
+
+    return $uploaded_paths;
+}
+
+/**
+ * Resize and optimize image
+ * @param string $source - Source file path
+ * @param string $destination - Destination file path
+ * @param int $max_width - Maximum width
+ * @param int $max_height - Maximum height
+ * @param int $quality - JPEG quality (1-100)
+ * @return bool - Success status
+ */
+function resizeImage($source, $destination, $max_width, $max_height, $quality = 85) {
+    // Get image info
+    $image_info = getimagesize($source);
+    if ($image_info === false) {
+        return false;
+    }
+
+    list($orig_width, $orig_height, $image_type) = $image_info;
+
+    // Load image based on type
+    switch ($image_type) {
+        case IMAGETYPE_JPEG:
+            $image = imagecreatefromjpeg($source);
+            break;
+        case IMAGETYPE_PNG:
+            $image = imagecreatefrompng($source);
+            break;
+        case IMAGETYPE_WEBP:
+            $image = imagecreatefromwebp($source);
+            break;
+        default:
+            return false;
+    }
+
+    if ($image === false) {
+        return false;
+    }
+
+    // Calculate new dimensions
+    $ratio = min($max_width / $orig_width, $max_height / $orig_height);
+
+    // Don't upscale images
+    if ($ratio > 1) {
+        $ratio = 1;
+    }
+
+    $new_width = round($orig_width * $ratio);
+    $new_height = round($orig_height * $ratio);
+
+    // Create new image
+    $new_image = imagecreatetruecolor($new_width, $new_height);
+
+    // Preserve transparency for PNG and WEBP
+    if ($image_type == IMAGETYPE_PNG || $image_type == IMAGETYPE_WEBP) {
+        imagealphablending($new_image, false);
+        imagesavealpha($new_image, true);
+    }
+
+    // Resize
+    imagecopyresampled($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $orig_width, $orig_height);
+
+    // Save image
+    $success = false;
+    switch ($image_type) {
+        case IMAGETYPE_JPEG:
+            $success = imagejpeg($new_image, $destination, $quality);
+            break;
+        case IMAGETYPE_PNG:
+            $success = imagepng($new_image, $destination, 9);
+            break;
+        case IMAGETYPE_WEBP:
+            $success = imagewebp($new_image, $destination, $quality);
+            break;
+    }
+
+    // Free memory
+    imagedestroy($image);
+    imagedestroy($new_image);
+
+    return $success;
 }
 
 // Validate required fields

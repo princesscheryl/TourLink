@@ -1,6 +1,9 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once '../settings/core.php';
-require_once '../controllers/favorite_controller.php';
 
 // Check if user is logged in - redirect if not
 if (!isLoggedIn()) {
@@ -10,8 +13,18 @@ if (!isLoggedIn()) {
 
 $user_id = getUserID();
 
-// Get user's favorites
-$favorites = get_user_favorites_ctr($user_id);
+// Get user's favorites - with error handling
+$favorites = [];
+try {
+    require_once '../controllers/favorite_controller.php';
+    $favorites = get_user_favorites_ctr($user_id);
+    if (!$favorites) {
+        $favorites = [];
+    }
+} catch (Exception $e) {
+    error_log("Favorites error: " . $e->getMessage());
+    $favorites = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

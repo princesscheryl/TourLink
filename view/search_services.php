@@ -1,13 +1,91 @@
 <?php
 require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
+require_once '../controllers/service_category_controller.php';
 
+// Get search parameters
 $search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
-$services = [];
+$category_filter = isset($_GET['category']) ? (int)$_GET['category'] : null;
+$region_filter = isset($_GET['region']) ? trim($_GET['region']) : '';
+$min_price = isset($_GET['min_price']) ? (float)$_GET['min_price'] : null;
+$max_price = isset($_GET['max_price']) ? (float)$_GET['max_price'] : null;
+$sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'relevance';
 
+// Get services
+$services = [];
 if ($search_query) {
     $services = search_services_ctr($search_query);
+} else if ($category_filter) {
+    $services = get_services_by_category_ctr($category_filter);
+} else {
+    $services = get_all_services_ctr();
 }
+
+// Apply filters
+if ($services && is_array($services)) {
+    // Category filter
+    if ($category_filter) {
+        $services = array_filter($services, function($service) use ($category_filter) {
+            return $service['category_id'] == $category_filter;
+        });
+    }
+
+    // Region filter
+    if ($region_filter) {
+        $services = array_filter($services, function($service) use ($region_filter) {
+            return stripos($service['service_location'], $region_filter) !== false;
+        });
+    }
+
+    // Price range filter
+    if ($min_price !== null) {
+        $services = array_filter($services, function($service) use ($min_price) {
+            return $service['base_price'] >= $min_price;
+        });
+    }
+
+    if ($max_price !== null) {
+        $services = array_filter($services, function($service) use ($max_price) {
+            return $service['base_price'] <= $max_price;
+        });
+    }
+
+    // Sorting
+    switch ($sort_by) {
+        case 'price_low':
+            usort($services, function($a, $b) {
+                return $a['base_price'] <=> $b['base_price'];
+            });
+            break;
+        case 'price_high':
+            usort($services, function($a, $b) {
+                return $b['base_price'] <=> $a['base_price'];
+            });
+            break;
+        case 'rating':
+            usort($services, function($a, $b) {
+                $rating_a = $a['provider_rating'] ?? 0;
+                $rating_b = $b['provider_rating'] ?? 0;
+                return $rating_b <=> $rating_a;
+            });
+            break;
+        case 'newest':
+            usort($services, function($a, $b) {
+                return strtotime($b['date_created'] ?? '0') <=> strtotime($a['date_created'] ?? '0');
+            });
+            break;
+        case 'relevance':
+        default:
+            // Keep original order (relevance)
+            break;
+    }
+}
+
+// Get all categories for filter
+$all_categories = get_all_service_categories_ctr();
+
+// Available regions
+$regions = ['Greater Accra', 'Central', 'Ashanti', 'Northern', 'Western', 'Eastern', 'Volta', 'Upper East', 'Upper West', 'Bono'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,161 +96,163 @@ if ($search_query) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../css/navigation.css" rel="stylesheet">
+    <link href="../css/footer.css" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
+    <script src="../js/translator.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: 'Poppins', sans-serif;
             background: #f8f9fa;
             min-height: 100vh;
+            padding-top: 70px;
         }
 
-        /* Navigation */
-        .main-nav {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
+        .search-container {
             max-width: 1400px;
-            margin: 0 auto;
+            margin: 30px auto;
             padding: 0 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
         }
 
-        .nav-left, .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 30px;
+        /* Search Header */
+        .search-header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        .logo {
+        .search-header h1 {
             font-size: 1.8rem;
-            font-weight: 800;
-            color: #2d6a4f;
-            text-decoration: none;
-            transition: all 0.3s;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #1a1a1a;
         }
 
-        .logo:hover {
-            color: #1b4332;
-        }
-
-        .logo-dot {
-            color: #ffd700;
-            font-size: 2rem;
-        }
-
-        .nav-link {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
+        .search-header .result-count {
+            color: #666;
             font-size: 0.95rem;
-            transition: color 0.3s;
         }
 
-        .nav-link:hover {
-            color: #2d6a4f;
+        /* Search and Filter Bar */
+        .filter-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        .btn-nav {
-            padding: 10px 24px;
-            border-radius: 8px;
-            text-decoration: none;
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
             font-weight: 600;
+            font-size: 0.85rem;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
             font-size: 0.9rem;
             transition: all 0.3s;
         }
 
-        .btn-nav-logout {
-            background: #dc3545;
-            color: white;
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #2d6a4f;
         }
 
-        .btn-nav-logout:hover {
-            background: #c82333;
-        }
-
-        /* Page Header */
-        .page-header {
-            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
-            color: white;
-            padding: 120px 0 60px;
-            margin-bottom: 40px;
-        }
-
-        .page-header h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-
-        .page-header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        /* Search Box */
-        .search-box {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
+        .price-range {
             display: flex;
             gap: 10px;
-            max-width: 600px;
-            margin-top: 20px;
         }
 
-        .search-box input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
+        .price-range input {
+            width: 100px;
         }
 
-        .search-box button {
-            background: #2d6a4f;
-            color: white;
-            border: none;
-            padding: 10px 24px;
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-filter {
+            padding: 10px 20px;
             border-radius: 8px;
             font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .search-box button:hover {
+        .btn-apply {
+            background: #2d6a4f;
+            color: white;
+        }
+
+        .btn-apply:hover {
             background: #1b4332;
         }
 
-        /* Main Container */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 30px 60px;
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
         }
 
-        /* Service Cards */
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        /* Sort Bar */
+        .sort-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .sort-bar select {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+        }
+
+        /* Service Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
         .service-card {
             background: white;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
-            margin-bottom: 24px;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -216,25 +296,38 @@ if ($search_query) {
 
         .service-content .text-muted {
             color: #666 !important;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
         }
 
-        .service-content .text-primary {
+        .service-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 15px;
+        }
+
+        .service-price {
             color: #2d6a4f !important;
             font-size: 1.3rem;
             font-weight: 800;
         }
 
-        .btn-primary {
+        .btn-view {
             background: #2d6a4f;
-            border: none;
-            padding: 10px 20px;
+            color: white;
+            padding: 8px 16px;
             border-radius: 8px;
+            text-decoration: none;
             font-weight: 600;
+            font-size: 0.85rem;
             transition: all 0.3s;
         }
 
-        .btn-primary:hover {
+        .btn-view:hover {
             background: #1b4332;
+            color: white;
             transform: translateY(-2px);
         }
 
@@ -242,6 +335,8 @@ if ($search_query) {
         .empty-state {
             text-align: center;
             padding: 80px 20px;
+            background: white;
+            border-radius: 12px;
         }
 
         .empty-state i {
@@ -255,83 +350,197 @@ if ($search_query) {
             margin-bottom: 10px;
         }
 
-        /* Services Count */
-        .services-count {
-            color: #666;
-            font-weight: 500;
-            margin-bottom: 24px;
-            font-size: 0.95rem;
+        .empty-state .btn-primary {
+            background: #2d6a4f;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 20px;
         }
 
-        .services-count strong {
-            color: #2d6a4f;
-            font-weight: 700;
+        /* Rating Stars */
+        .rating-stars {
+            color: #ffd700;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-container {
+                padding: 0 15px;
+            }
+
+            .filter-row {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sort-bar {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="main-nav">
-        <div class="nav-container">
-            <div class="nav-left">
-                <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
-            </div>
-            <div class="nav-right">
-                <a href="all_services.php" class="nav-link">Browse Services</a>
-                <?php if(isset($_SESSION['user_id'])): ?>
-                    <a href="../login/logout.php" class="btn-nav btn-nav-logout">Logout</a>
+    <!-- Navigation -->
+    <?php include '../includes/navigation.php'; ?>
+
+    <div class="search-container">
+        <!-- Search Header -->
+        <div class="search-header">
+            <h1>
+                <?php if ($search_query): ?>
+                    Search Results for "<?php echo htmlspecialchars($search_query); ?>"
                 <?php else: ?>
-                    <a href="../login/login.php" class="nav-link">Sign in</a>
+                    Browse Services
                 <?php endif; ?>
-            </div>
+            </h1>
+            <p class="result-count">
+                <strong><?php echo $services ? count($services) : 0; ?></strong> service(s) found
+            </p>
         </div>
-    </nav>
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="main-container">
-            <h1>Search Results</h1>
-            <p>Showing results for "<?php echo htmlspecialchars($search_query); ?>"</p>
+        <!-- Advanced Filters -->
+        <div class="filter-bar">
+            <form method="GET" action="search_services.php" id="filterForm">
+                <input type="hidden" name="q" value="<?php echo htmlspecialchars($search_query); ?>">
 
-            <!-- Search Again Box -->
-            <form action="search_services.php" method="GET" class="search-box">
-                <input type="text" name="q" placeholder="Search for services..." value="<?php echo htmlspecialchars($search_query); ?>" required>
-                <button type="submit"><i class="fa fa-search"></i> Search</button>
+                <div class="filter-row">
+                    <!-- Category Filter -->
+                    <div class="filter-group">
+                        <label><i class="fa fa-th-large"></i> Category</label>
+                        <select name="category" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            <?php if ($all_categories): ?>
+                                <?php foreach ($all_categories as $cat): ?>
+                                    <option value="<?php echo $cat['category_id']; ?>"
+                                            <?php echo $category_filter == $cat['category_id'] ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($cat['category_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+
+                    <!-- Region Filter -->
+                    <div class="filter-group">
+                        <label><i class="fa fa-map-marker-alt"></i> Region</label>
+                        <select name="region" onchange="this.form.submit()">
+                            <option value="">All Regions</option>
+                            <?php foreach ($regions as $region): ?>
+                                <option value="<?php echo $region; ?>"
+                                        <?php echo $region_filter == $region ? 'selected' : ''; ?>>
+                                    <?php echo $region; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="filter-group">
+                        <label><i class="fa fa-money-bill-wave"></i> Price Range (GHS)</label>
+                        <div class="price-range">
+                            <input type="number" name="min_price" placeholder="Min"
+                                   value="<?php echo $min_price ?? ''; ?>" min="0" step="10">
+                            <input type="number" name="max_price" placeholder="Max"
+                                   value="<?php echo $max_price ?? ''; ?>" min="0" step="10">
+                        </div>
+                    </div>
+
+                    <!-- Filter Actions -->
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-filter btn-apply">
+                            <i class="fa fa-filter"></i> Apply
+                        </button>
+                        <a href="search_services.php?q=<?php echo htmlspecialchars($search_query); ?>"
+                           class="btn-filter btn-clear">
+                            <i class="fa fa-times"></i> Clear
+                        </a>
+                    </div>
+                </div>
             </form>
         </div>
-    </div>
 
-    <div class="main-container">
+        <!-- Sort Bar -->
+        <div class="sort-bar">
+            <span><strong><?php echo $services ? count($services) : 0; ?></strong> results</span>
+            <form method="GET" action="search_services.php" style="display: inline;">
+                <input type="hidden" name="q" value="<?php echo htmlspecialchars($search_query); ?>">
+                <input type="hidden" name="category" value="<?php echo $category_filter ?? ''; ?>">
+                <input type="hidden" name="region" value="<?php echo $region_filter ?? ''; ?>">
+                <input type="hidden" name="min_price" value="<?php echo $min_price ?? ''; ?>">
+                <input type="hidden" name="max_price" value="<?php echo $max_price ?? ''; ?>">
+                <label style="font-weight: 600; font-size: 0.9rem; margin-right: 10px;">Sort by:</label>
+                <select name="sort" onchange="this.form.submit()" style="padding: 8px 15px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    <option value="relevance" <?php echo $sort_by == 'relevance' ? 'selected' : ''; ?>>Relevance</option>
+                    <option value="price_low" <?php echo $sort_by == 'price_low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                    <option value="price_high" <?php echo $sort_by == 'price_high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                    <option value="rating" <?php echo $sort_by == 'rating' ? 'selected' : ''; ?>>Highest Rated</option>
+                    <option value="newest" <?php echo $sort_by == 'newest' ? 'selected' : ''; ?>>Newest First</option>
+                </select>
+            </form>
+        </div>
+
+        <!-- Services Grid -->
         <?php if ($services && count($services) > 0): ?>
-            <p class="services-count"><strong><?php echo count($services); ?></strong> service(s) found</p>
-            <div class="row">
+            <div class="services-grid">
                 <?php foreach ($services as $service): ?>
-                    <div class="col-md-4">
-                        <div class="service-card">
-                            <?php
-                            $images = json_decode($service['service_images'], true);
-                            $first_image = is_array($images) && !empty($images) ? $images[0] : null;
-                            ?>
-                            <?php if ($first_image): ?>
-                                <img src="<?php echo htmlspecialchars($first_image); ?>"
-                                     alt="<?php echo htmlspecialchars($service['service_title']); ?>"
-                                     class="service-image">
-                            <?php else: ?>
-                                <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: flex; align-items: center; justify-content: center;">
-                                    <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
+                    <div class="service-card">
+                        <?php
+                        $images = json_decode($service['service_images'], true);
+                        $first_image = is_array($images) && !empty($images) ? $images[0] : null;
+                        ?>
+                        <?php if ($first_image): ?>
+                            <img src="<?php echo htmlspecialchars($first_image); ?>"
+                                 alt="<?php echo htmlspecialchars($service['service_title']); ?>"
+                                 class="service-image">
+                        <?php else: ?>
+                            <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: flex; align-items: center; justify-content: center;">
+                                <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="service-content">
+                            <span class="badge"><?php echo htmlspecialchars($service['category_name']); ?></span>
+                            <h5><?php echo htmlspecialchars($service['service_title']); ?></h5>
+
+                            <p class="text-muted">
+                                <i class="fa fa-map-marker-alt"></i>
+                                <?php echo htmlspecialchars($service['service_location']); ?>
+                            </p>
+
+                            <?php if (isset($service['provider_rating']) && $service['provider_rating'] > 0): ?>
+                                <div class="rating-stars">
+                                    <?php
+                                    $rating = round($service['provider_rating']);
+                                    for ($i = 0; $i < 5; $i++) {
+                                        echo $i < $rating ? '<i class="fa fa-star"></i>' : '<i class="far fa-star"></i>';
+                                    }
+                                    ?>
+                                    <span style="color: #666; font-size: 0.85rem;">
+                                        (<?php echo number_format($service['provider_rating'], 1); ?>)
+                                    </span>
                                 </div>
                             <?php endif; ?>
 
-                            <div class="service-content">
-                                <span class="badge mb-2"><?php echo htmlspecialchars($service['category_name']); ?></span>
-                                <h5><?php echo htmlspecialchars($service['service_title']); ?></h5>
-                                <p class="text-muted small">
-                                    <i class="fa fa-user"></i>
-                                    <?php echo htmlspecialchars($service['provider_name'] ?: 'Provider'); ?>
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center mt-auto">
-                                    <strong class="text-primary">GHS <?php echo number_format($service['base_price'], 2); ?></strong>
-                                    <a href="single_service.php?id=<?php echo $service['service_id']; ?>" class="btn btn-sm btn-primary">View Details</a>
+                            <div class="service-footer">
+                                <div>
+                                    <span class="service-price">GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                                    <br><small style="color: #999;"><?php echo ucfirst(str_replace('_', ' ', $service['pricing_unit'])); ?></small>
                                 </div>
+                                <a href="single_service.php?id=<?php echo $service['service_id']; ?>" class="btn-view">
+                                    View Details
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -339,13 +548,16 @@ if ($search_query) {
             </div>
         <?php else: ?>
             <div class="empty-state">
-                <i class="fa fa-search fa-3x mb-3"></i>
+                <i class="fa fa-search fa-4x"></i>
                 <h4>No services found</h4>
-                <p class="text-muted">Try different keywords or browse all services</p>
-                <a href="all_services.php" class="btn btn-primary mt-3">Browse All Services</a>
+                <p style="color: #666;">Try adjusting your filters or search with different keywords</p>
+                <a href="all_services.php" class="btn btn-primary">Browse All Services</a>
             </div>
         <?php endif; ?>
     </div>
+
+    <!-- Footer -->
+    <?php include '../includes/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
