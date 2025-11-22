@@ -15,14 +15,24 @@ $user_id = getUserID();
 
 // Get user's favorites - with error handling
 $favorites = [];
+$debug_info = '';
 try {
     require_once '../controllers/favorite_controller.php';
     $favorites = get_user_favorites_ctr($user_id);
-    if (!$favorites) {
+
+    // Debug: Check if we got results
+    if ($favorites === false) {
+        $debug_info = "Query returned false - check database query";
         $favorites = [];
+    } elseif (!is_array($favorites)) {
+        $debug_info = "Query returned non-array: " . gettype($favorites);
+        $favorites = [];
+    } elseif (empty($favorites)) {
+        $debug_info = "Query returned empty array";
     }
 } catch (Exception $e) {
     error_log("Favorites error: " . $e->getMessage());
+    $debug_info = "Exception: " . $e->getMessage();
     $favorites = [];
 }
 ?>
@@ -368,6 +378,13 @@ try {
     </div>
 
     <div class="main-container">
+        <?php if (!empty($debug_info)): ?>
+            <div class="alert alert-warning" style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <strong>Debug Info:</strong> <?php echo htmlspecialchars($debug_info); ?>
+                <br><small>User ID: <?php echo $user_id; ?></small>
+            </div>
+        <?php endif; ?>
+
         <?php if ($favorites && count($favorites) > 0): ?>
             <p class="services-count">
                 <strong><?php echo count($favorites); ?></strong>

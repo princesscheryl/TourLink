@@ -8,6 +8,11 @@ require_once __DIR__ . '/../settings/db_class.php';
 
 class Favorite extends db_connection {
 
+    public function __construct()
+    {
+        $this->db_connect();
+    }
+
     /**
      * Add a service to user's favorites
      * @param int $user_id
@@ -23,7 +28,7 @@ class Favorite extends db_connection {
         $sql = "INSERT INTO tl_favorites (user_id, service_id, added_date)
                 VALUES (?, ?, NOW())";
 
-        $stmt = $this->db_conn()->prepare($sql);
+        $stmt = $this->db->prepare($sql);
 
         if ($stmt) {
             $stmt->bind_param('ii', $user_id, $service_id);
@@ -45,7 +50,7 @@ class Favorite extends db_connection {
         $sql = "DELETE FROM tl_favorites
                 WHERE user_id = ? AND service_id = ?";
 
-        $stmt = $this->db_conn()->prepare($sql);
+        $stmt = $this->db->prepare($sql);
 
         if ($stmt) {
             $stmt->bind_param('ii', $user_id, $service_id);
@@ -75,7 +80,7 @@ class Favorite extends db_connection {
                     s.service_images as service_image,
                     s.service_status,
                     s.service_location as location,
-                    s.available_regions as region,
+                    sp.region as region,
                     s.category_id,
                     sc.category_name,
                     s.provider_id,
@@ -87,9 +92,10 @@ class Favorite extends db_connection {
                 INNER JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
                 WHERE f.user_id = ?
                   AND s.service_status = 'active'
+                  AND s.availability_status = 'available'
                 ORDER BY f.added_date DESC";
 
-        $stmt = $this->db_conn()->prepare($sql);
+        $stmt = $this->db->prepare($sql);
 
         if ($stmt) {
             $stmt->bind_param('i', $user_id);
@@ -122,7 +128,7 @@ class Favorite extends db_connection {
                 FROM tl_favorites
                 WHERE user_id = ? AND service_id = ?";
 
-        $stmt = $this->db_conn()->prepare($sql);
+        $stmt = $this->db->prepare($sql);
 
         if ($stmt) {
             $stmt->bind_param('ii', $user_id, $service_id);
@@ -146,9 +152,10 @@ class Favorite extends db_connection {
                 FROM tl_favorites f
                 INNER JOIN tl_services s ON f.service_id = s.service_id
                 WHERE f.user_id = ?
-                  AND s.service_status = 'active'";
+                  AND s.service_status = 'active'
+                  AND s.availability_status = 'available'";
 
-        $stmt = $this->db_conn()->prepare($sql);
+        $stmt = $this->db->prepare($sql);
 
         if ($stmt) {
             $stmt->bind_param('i', $user_id);
@@ -184,7 +191,7 @@ class Favorite extends db_connection {
                 WHERE f.service_id = ?
                 ORDER BY f.added_date DESC";
 
-        $stmt = $this->db_conn()->prepare($sql);
+        $stmt = $this->db->prepare($sql);
 
         if ($stmt) {
             $stmt->bind_param('i', $service_id);
@@ -216,7 +223,7 @@ class Favorite extends db_connection {
                 FROM tl_favorites
                 WHERE service_id = ?";
 
-        $stmt = $this->db_conn()->prepare($sql);
+        $stmt = $this->db->prepare($sql);
 
         if ($stmt) {
             $stmt->bind_param('i', $service_id);
