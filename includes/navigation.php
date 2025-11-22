@@ -69,6 +69,12 @@ if ($in_view_folder || $in_admin_folder) {
                         <i class="fas fa-heart"></i>
                         <span data-i18n="favorites.my_favorites">My Favorites</span>
                     </a>
+                    <?php if(!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'provider'): ?>
+                    <a href="<?php echo $base_path; ?>view/my_bookings.php">
+                        <i class="fa fa-calendar-check"></i>
+                        My Bookings
+                    </a>
+                    <?php endif; ?>
                     <?php if(isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'provider'): ?>
                         <div class="dropdown-divider"></div>
                         <a href="<?php echo $base_path; ?>admin/provider_dashboard.php">
@@ -79,7 +85,7 @@ if ($in_view_folder || $in_admin_folder) {
                             <i class="fa fa-briefcase"></i>
                             My Services
                         </a>
-                        <a href="<?php echo $base_path; ?>admin/bookings.php">
+                        <a href="<?php echo $base_path; ?>view/provider/manage_bookings.php">
                             <i class="fa fa-calendar-check"></i>
                             Bookings
                         </a>

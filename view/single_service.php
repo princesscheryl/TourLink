@@ -571,6 +571,196 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
             border: 1px solid #b6effb;
             color: #055160;
         }
+
+        /* Booking Modal */
+        .booking-modal .modal-content {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .booking-modal .modal-header {
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            color: white;
+            border: none;
+            padding: 24px 30px;
+        }
+
+        .booking-modal .modal-header .modal-title {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .booking-modal .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+
+        .booking-modal .modal-body {
+            padding: 30px;
+        }
+
+        .booking-modal .booking-summary {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .booking-modal .booking-summary h6 {
+            font-weight: 600;
+            color: #1b4332;
+            margin-bottom: 8px;
+        }
+
+        .booking-modal .booking-summary .service-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .booking-modal .booking-summary .service-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d6a4f;
+        }
+
+        .booking-modal .booking-summary .pricing-unit {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .booking-modal .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .booking-modal .form-control,
+        .booking-modal .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .booking-modal .form-control:focus,
+        .booking-modal .form-select:focus {
+            border-color: #2d6a4f;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+        }
+
+        .booking-modal .price-breakdown {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .booking-modal .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #555;
+        }
+
+        .booking-modal .price-row.total {
+            border-top: 2px solid #e0e0e0;
+            margin-top: 10px;
+            padding-top: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1a1a1a;
+        }
+
+        .booking-modal .price-row.total span:last-child {
+            color: #2d6a4f;
+        }
+
+        .booking-modal .modal-footer {
+            border: none;
+            padding: 0 30px 30px;
+            gap: 12px;
+        }
+
+        .booking-modal .btn-book {
+            background: #2d6a4f;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            flex: 1;
+        }
+
+        .booking-modal .btn-book:hover {
+            background: #1b4332;
+        }
+
+        .booking-modal .btn-cancel-modal {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            color: #666;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .booking-modal .btn-cancel-modal:hover {
+            background: #e9ecef;
+            border-color: #d0d0d0;
+        }
+
+        .booking-modal .input-group-text {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            color: #2d6a4f;
+        }
+
+        .booking-modal .input-group .form-control {
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .booking-modal .guest-counter {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .booking-modal .guest-counter button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #e0e0e0;
+            background: white;
+            font-size: 1.2rem;
+            color: #2d6a4f;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .booking-modal .guest-counter button:hover {
+            background: #2d6a4f;
+            border-color: #2d6a4f;
+            color: white;
+        }
+
+        .booking-modal .guest-counter button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .booking-modal .guest-counter .guest-count {
+            font-size: 1.3rem;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -943,14 +1133,286 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
         </div>
     </div>
 
+    <!-- Booking Modal -->
+    <div class="modal fade booking-modal" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel">
+                        <i class="fa fa-calendar-check me-2"></i>Book This Service
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookingForm">
+                        <input type="hidden" name="service_id" value="<?php echo $service_id; ?>">
+
+                        <!-- Service Summary -->
+                        <div class="booking-summary">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6>Service</h6>
+                                    <div class="service-name"><?php echo htmlspecialchars($service['service_title']); ?></div>
+                                    <small class="text-muted"><?php echo htmlspecialchars($service['provider_name'] ?: ($service['provider_first_name'] . ' ' . $service['provider_last_name'])); ?></small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="service-price">GHS <?php echo number_format($service['base_price'], 2); ?></div>
+                                    <div class="pricing-unit"><?php echo str_replace('_', ' ', $service['pricing_unit']); ?></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Date Selection -->
+                        <div class="mb-3">
+                            <label for="service_date" class="form-label">
+                                <i class="fa fa-calendar me-2 text-success"></i>Select Date
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   id="service_date"
+                                   name="service_date"
+                                   min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>"
+                                   required>
+                        </div>
+
+                        <!-- Time Selection -->
+                        <div class="mb-3">
+                            <label for="service_time" class="form-label">
+                                <i class="fa fa-clock me-2 text-success"></i>Preferred Time
+                            </label>
+                            <select class="form-select" id="service_time" name="service_time" required>
+                                <option value="">Select a time...</option>
+                                <option value="06:00">6:00 AM</option>
+                                <option value="07:00">7:00 AM</option>
+                                <option value="08:00">8:00 AM</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="13:00">1:00 PM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                                <option value="18:00">6:00 PM</option>
+                            </select>
+                        </div>
+
+                        <!-- Number of Guests -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fa fa-users me-2 text-success"></i>Number of Guests
+                            </label>
+                            <div class="guest-counter">
+                                <button type="button" id="decreaseGuests" onclick="updateGuestCount(-1)">−</button>
+                                <span class="guest-count" id="guestCountDisplay">1</span>
+                                <button type="button" id="increaseGuests" onclick="updateGuestCount(1)">+</button>
+                                <input type="hidden" name="number_of_people" id="number_of_people" value="1">
+                                <?php if ($service['max_capacity']): ?>
+                                    <span class="text-muted ms-2">(Max: <?php echo $service['max_capacity']; ?>)</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- Special Requests -->
+                        <div class="mb-3">
+                            <label for="special_requests" class="form-label">
+                                <i class="fa fa-comment me-2 text-success"></i>Special Requests (Optional)
+                            </label>
+                            <textarea class="form-control"
+                                      id="special_requests"
+                                      name="special_requests"
+                                      rows="3"
+                                      placeholder="Any special requirements, dietary restrictions, accessibility needs..."></textarea>
+                        </div>
+
+                        <!-- Price Breakdown -->
+                        <div class="price-breakdown">
+                            <div class="price-row">
+                                <span>Base price</span>
+                                <span>GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                            </div>
+                            <div class="price-row" id="guestPriceRow" style="display: <?php echo $service['pricing_unit'] === 'per_person' ? 'flex' : 'none'; ?>;">
+                                <span>× <span id="guestMultiplier">1</span> guest(s)</span>
+                                <span id="subtotalAmount">GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Total</span>
+                                <span id="totalAmount">GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel-modal" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-book" onclick="submitBooking()">
+                        <i class="fa fa-check me-2"></i>Request Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/favorites.js"></script>
     <script>
+        // Service data for pricing calculation
+        const serviceData = {
+            basePrice: <?php echo $service['base_price']; ?>,
+            pricingUnit: '<?php echo $service['pricing_unit']; ?>',
+            maxCapacity: <?php echo $service['max_capacity'] ?: 'null'; ?>
+        };
+
+        let guestCount = 1;
+
         function bookService() {
-            alert('Booking functionality coming soon!');
+            const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+            modal.show();
         }
+
+        function updateGuestCount(change) {
+            const newCount = guestCount + change;
+            const maxCapacity = serviceData.maxCapacity || 20;
+
+            if (newCount >= 1 && newCount <= maxCapacity) {
+                guestCount = newCount;
+                document.getElementById('guestCountDisplay').textContent = guestCount;
+                document.getElementById('number_of_people').value = guestCount;
+                document.getElementById('guestMultiplier').textContent = guestCount;
+
+                // Update decrease button state
+                document.getElementById('decreaseGuests').disabled = (guestCount <= 1);
+                document.getElementById('increaseGuests').disabled = (guestCount >= maxCapacity);
+
+                // Update pricing
+                updatePricing();
+            }
+        }
+
+        function updatePricing() {
+            let total = serviceData.basePrice;
+
+            if (serviceData.pricingUnit === 'per_person') {
+                total = serviceData.basePrice * guestCount;
+                document.getElementById('subtotalAmount').textContent = 'GHS ' + formatNumber(total);
+            }
+
+            document.getElementById('totalAmount').textContent = 'GHS ' + formatNumber(total);
+        }
+
+        function formatNumber(num) {
+            return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function submitBooking() {
+            const form = document.getElementById('bookingForm');
+            const serviceDate = document.getElementById('service_date').value;
+            const serviceTime = document.getElementById('service_time').value;
+
+            // Validate form
+            if (!serviceDate) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Date Required',
+                    text: 'Please select a date for your booking.',
+                    confirmButtonColor: '#2d6a4f'
+                });
+                return;
+            }
+
+            if (!serviceTime) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Time Required',
+                    text: 'Please select a preferred time.',
+                    confirmButtonColor: '#2d6a4f'
+                });
+                return;
+            }
+
+            // Show loading state
+            const bookBtn = document.querySelector('.btn-book');
+            const originalText = bookBtn.innerHTML;
+            bookBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Processing...';
+            bookBtn.disabled = true;
+
+            // Submit booking via AJAX
+            $.ajax({
+                url: '../actions/create_booking_action.php',
+                method: 'POST',
+                data: $(form).serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Close modal
+                        bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+
+                        // Show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Booking Requested!',
+                            html: `
+                                <p>Your booking request has been submitted successfully.</p>
+                                <p><strong>Reference:</strong> ${response.booking_reference}</p>
+                                <p class="text-muted">The service provider will review and confirm your booking.</p>
+                            `,
+                            confirmButtonColor: '#2d6a4f',
+                            confirmButtonText: 'View My Bookings'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = 'my_bookings.php';
+                            }
+                        });
+                    } else {
+                        if (response.require_login) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Login Required',
+                                text: response.message,
+                                confirmButtonColor: '#2d6a4f',
+                                confirmButtonText: 'Sign In'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '../login/login.php';
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Booking Failed',
+                                text: response.message,
+                                confirmButtonColor: '#2d6a4f'
+                            });
+                        }
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred. Please try again.',
+                        confirmButtonColor: '#2d6a4f'
+                    });
+                },
+                complete: function() {
+                    bookBtn.innerHTML = originalText;
+                    bookBtn.disabled = false;
+                }
+            });
+        }
+
+        // Initialize on page load
+        $(document).ready(function() {
+            // Set minimum date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('service_date').min = tomorrow.toISOString().split('T')[0];
+
+            // Initialize button states
+            document.getElementById('decreaseGuests').disabled = true;
+        });
 
         // Update button text when favorite is toggled
         $(document).on('favoriteToggled', function(event, data) {

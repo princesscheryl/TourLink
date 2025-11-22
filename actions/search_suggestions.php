@@ -7,6 +7,7 @@
 require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
 require_once '../controllers/service_category_controller.php';
+require_once '../controllers/search_history_controller.php';
 
 header('Content-Type: application/json');
 
@@ -21,10 +22,21 @@ if (empty($query) || strlen($query) < 2) {
 $suggestions = [];
 
 try {
-    // Get recent searches for logged-in users
+    // Get recent searches for logged-in users that match the query
     if (isset($_SESSION['user_id'])) {
-        // TODO: Implement recent searches from database
-        // For now, we'll skip this part
+        $recent_searches = get_recent_searches_ctr($_SESSION['user_id'], 5);
+        if ($recent_searches && is_array($recent_searches)) {
+            foreach ($recent_searches as $search) {
+                // Only show recent searches that match current query
+                if (stripos($search['search_query'], $query) !== false) {
+                    $suggestions[] = [
+                        'type' => 'recent',
+                        'id' => $search['search_id'],
+                        'text' => $search['search_query']
+                    ];
+                }
+            }
+        }
     }
 
     // Search for services

@@ -213,5 +213,47 @@ class TourLinkUser extends db_connection
 
         return $stmt->execute();
     }
+
+    /**
+     * Update user email
+     * @param int $user_id
+     * @param string $new_email
+     * @return bool
+     */
+    public function update_email($user_id, $new_email)
+    {
+        $stmt = $this->db->prepare("UPDATE tl_users SET email = ? WHERE user_id = ?");
+        $stmt->bind_param("si", $new_email, $user_id);
+
+        return $stmt->execute();
+    }
+
+    /**
+     * Update user preferences (language, country)
+     * @param int $user_id
+     * @param string $language
+     * @param string $country
+     * @return bool
+     */
+    public function update_preferences($user_id, $language, $country)
+    {
+        $stmt = $this->db->prepare("UPDATE tl_users SET preferred_language = ?, country = ? WHERE user_id = ?");
+        $stmt->bind_param("ssi", $language, $country, $user_id);
+
+        return $stmt->execute();
+    }
+
+    /**
+     * Delete user account
+     * @param int $user_id
+     * @return bool
+     */
+    public function delete_user($user_id)
+    {
+        $stmt = $this->db->prepare("DELETE FROM tl_users WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+
+        return $stmt->execute();
+    }
 }
 ?>

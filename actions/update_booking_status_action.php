@@ -1,76 +1,171 @@
 <?php
-header('Content-Type: application/json');
-session_start();
+/**
+ * Update Booking Status Action
+ * Handles booking status updates (approve, reject, complete, cancel)
+ */
 
-$response = array();
+session_start();
+header('Content-Type: application/json');
+
+require_once '../controllers/booking_controller.php';
+require_once '../classes/service_provider_class.php';
+
+$response = [
+    'status' => 'error',
+    'message' => ''
+];
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    $response['status'] = 'error';
-    $response['message'] = 'You must be logged in to perform this action';
+    $response['message'] = 'Please log in';
     echo json_encode($response);
-    exit();
+    exit;
 }
 
-require_once '../classes/service_provider_class.php';
-require_once '../classes/booking_class.php';
-
-// Check if user is a provider
-$provider_class = new ServiceProvider();
-$provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
-
-if (!$provider) {
-    $response['status'] = 'error';
-    $response['message'] = 'Only providers can update booking status';
+// Check if request is POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $response['message'] = 'Invalid request method';
     echo json_encode($response);
-    exit();
+    exit;
 }
 
 // Get form data
 $booking_id = isset($_POST['booking_id']) ? (int)$_POST['booking_id'] : 0;
 $status = isset($_POST['status']) ? trim($_POST['status']) : '';
+$reason = isset($_POST['reason']) ? trim($_POST['reason']) : '';
 
-// Validate inputs
-if ($booking_id <= 0) {
-    $response['status'] = 'error';
-    $response['message'] = 'Invalid booking ID';
+// Validate required fields
+if ($booking_id <= 0 || empty($status)) {
+    $response['message'] = 'Invalid request';
     echo json_encode($response);
-    exit();
+    exit;
 }
 
-if (empty($status)) {
-    $response['status'] = 'error';
-    $response['message'] = 'Status is required';
+// Get booking details
+$booking = get_booking_by_id_ctr($booking_id);
+if (!$booking) {
+    $response['message'] = 'Booking not found';
     echo json_encode($response);
-    exit();
+    exit;
 }
 
-// Verify booking belongs to this provider
-$booking_class = new Booking();
-$booking = $booking_class->get_booking_by_id($booking_id);
+$user_id = $_SESSION['user_id'];
+$user_type = $_SESSION['user_type'] ?? 'tourist';
 
-if (!$booking || $booking['provider_id'] != $provider['provider_id']) {
-    $response['status'] = 'error';
-    $response['message'] = 'Booking not found or you do not have permission to update it';
-    echo json_encode($response);
-    exit();
+// Determine if user is authorized
+$is_tourist = ($booking['tourist_id'] == $user_id);
+$is_provider = false;
+
+if ($user_type === 'provider') {
+    $provider_class = new ServiceProvider();
+    $provider = $provider_class->get_provider_by_user_id($user_id);
+    if ($provider && $provider['provider_id'] == $booking['provider_id']) {
+        $is_provider = true;
+    }
 }
 
-// Update booking status
-$updated = false;
-if ($status === 'completed') {
-    $updated = $booking_class->complete_booking($booking_id);
-} else {
-    $updated = $booking_class->update_booking_status($booking_id, $status);
-}
+// Handle different status updates
+switch ($status) {
+    case 'confirmed':
+        // Only provider can confirm
+        if (!$is_provider) {
+            $response['message'] = 'Only the service provider can confirm bookings';
+            break;
+        }
+        if ($booking['booking_status'] !== 'pending') {
+            $response['message'] = 'Only pending bookings can be confirmed';
+            break;
+        }
+        if (update_booking_status_ctr($booking_id, 'confirmed')) {
+            $response['status'] = 'success';
+            $response['message'] = 'Booking confirmed successfully';
+            $response['new_status'] = 'confirmed';
+        } else {
+            $response['message'] = 'Failed to confirm booking';
+        }
+        break;
 
-if ($updated) {
-    $response['status'] = 'success';
-    $response['message'] = 'Booking status updated successfully!';
-} else {
-    $response['status'] = 'error';
-    $response['message'] = 'Failed to update booking status. Please try again.';
+    case 'rejected':
+        // Only provider can reject
+        if (!$is_provider) {
+            $response['message'] = 'Only the service provider can reject bookings';
+            break;
+        }
+        if ($booking['booking_status'] !== 'pending') {
+            $response['message'] = 'Only pending bookings can be rejected';
+            break;
+        }
+        if (cancel_booking_ctr($booking_id, 'provider', $reason ?: 'Rejected by provider')) {
+            $response['status'] = 'success';
+            $response['message'] = 'Booking rejected';
+            $response['new_status'] = 'cancelled';
+        } else {
+            $response['message'] = 'Failed to reject booking';
+        }
+        break;
+
+    case 'completed':
+        // Only provider can mark as completed
+        if (!$is_provider) {
+            $response['message'] = 'Only the service provider can mark bookings as completed';
+            break;
+        }
+        if (!in_array($booking['booking_status'], ['confirmed', 'in_progress'])) {
+            $response['message'] = 'Only confirmed or in-progress bookings can be completed';
+            break;
+        }
+        if (complete_booking_ctr($booking_id)) {
+            $response['status'] = 'success';
+            $response['message'] = 'Booking marked as completed';
+            $response['new_status'] = 'completed';
+        } else {
+            $response['message'] = 'Failed to complete booking';
+        }
+        break;
+
+    case 'cancelled':
+        // Both tourist and provider can cancel
+        if (!$is_tourist && !$is_provider) {
+            $response['message'] = 'You are not authorized to cancel this booking';
+            break;
+        }
+        if (in_array($booking['booking_status'], ['completed', 'cancelled', 'refunded'])) {
+            $response['message'] = 'This booking cannot be cancelled';
+            break;
+        }
+        $cancelled_by = $is_tourist ? 'tourist' : 'provider';
+        if (cancel_booking_ctr($booking_id, $cancelled_by, $reason ?: 'Cancelled by ' . $cancelled_by)) {
+            $response['status'] = 'success';
+            $response['message'] = 'Booking cancelled successfully';
+            $response['new_status'] = 'cancelled';
+        } else {
+            $response['message'] = 'Failed to cancel booking';
+        }
+        break;
+
+    case 'in_progress':
+        // Provider marks booking as in progress
+        if (!$is_provider) {
+            $response['message'] = 'Only the service provider can start the service';
+            break;
+        }
+        if ($booking['booking_status'] !== 'confirmed') {
+            $response['message'] = 'Only confirmed bookings can be started';
+            break;
+        }
+        if (update_booking_status_ctr($booking_id, 'in_progress')) {
+            $response['status'] = 'success';
+            $response['message'] = 'Service marked as in progress';
+            $response['new_status'] = 'in_progress';
+        } else {
+            $response['message'] = 'Failed to update booking';
+        }
+        break;
+
+    default:
+        $response['message'] = 'Invalid status';
 }
 
 echo json_encode($response);
+exit;
 ?>

@@ -2,6 +2,7 @@
 require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
 require_once '../controllers/service_category_controller.php';
+require_once '../controllers/search_history_controller.php';
 
 // Get search parameters
 $search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
@@ -10,6 +11,17 @@ $region_filter = isset($_GET['region']) ? trim($_GET['region']) : '';
 $min_price = isset($_GET['min_price']) ? (float)$_GET['min_price'] : null;
 $max_price = isset($_GET['max_price']) ? (float)$_GET['max_price'] : null;
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'relevance';
+
+// Save search to history for logged-in users
+if (!empty($search_query) && isset($_SESSION['user_id'])) {
+    $filters = [];
+    if ($category_filter) $filters['category'] = $category_filter;
+    if ($region_filter) $filters['region'] = $region_filter;
+    if ($min_price !== null) $filters['min_price'] = $min_price;
+    if ($max_price !== null) $filters['max_price'] = $max_price;
+
+    save_search_ctr($_SESSION['user_id'], $search_query, !empty($filters) ? $filters : null);
+}
 
 // Get services
 $services = [];
