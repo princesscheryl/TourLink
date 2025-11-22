@@ -85,7 +85,7 @@ class Favorite extends db_connection {
                     sc.category_name,
                     s.provider_id,
                     sp.business_name,
-                    sp.business_location
+                    sp.location_details as business_location
                 FROM tl_favorites f
                 INNER JOIN tl_services s ON f.service_id = s.service_id
                 INNER JOIN tl_service_categories sc ON s.category_id = sc.category_id
