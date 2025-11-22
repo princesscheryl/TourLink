@@ -108,25 +108,39 @@ if ($provider['verification_status'] === 'verified') $completion += 10;
         }
 
         .sidebar-logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 8px;
+            text-decoration: none;
+            gap: 12px;
         }
 
-        .sidebar-logo span { color: var(--accent); }
+        .sidebar-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
 
-        .sidebar-badge {
-            font-size: 0.65rem;
+        .sidebar-logo-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-top: 4px;
+            margin-left: 1px;
+        }
+
+        .sidebar-logo-badge {
             background: var(--primary);
             color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
+            font-size: 0.65rem;
             font-weight: 600;
-            margin-left: 8px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.3px;
         }
 
         .sidebar-nav {
@@ -683,9 +697,9 @@ if ($provider['verification_status'] === 'verified') $completion += 10;
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <a href="../index_tourlink.php" class="sidebar-logo">
-                TourLink<span>.</span>
-                <span class="sidebar-badge">Provider</span>
+            <a href="provider_dashboard.php" class="sidebar-logo">
+                <span class="sidebar-logo-text">TourLink<span class="sidebar-logo-dot"></span></span>
+                <span class="sidebar-logo-badge">Provider</span>
             </a>
         </div>
 

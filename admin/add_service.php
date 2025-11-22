@@ -78,22 +78,36 @@ $categories = get_all_service_categories_ctr();
             display: flex;
             align-items: center;
             text-decoration: none;
-            gap: 3px;
+            gap: 12px;
         }
 
         .sidebar-logo-text {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--primary);
             letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
 
         .sidebar-logo-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: var(--accent);
             border-radius: 50%;
-            margin-top: 8px;
+            margin-top: 4px;
+            margin-left: 1px;
+        }
+
+        .sidebar-logo-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.3px;
         }
 
         .sidebar-nav {
@@ -628,8 +642,8 @@ $categories = get_all_service_categories_ctr();
     <aside class="sidebar">
         <div class="sidebar-header">
             <a href="provider_dashboard.php" class="sidebar-logo">
-                <span class="sidebar-logo-text">TourLink</span>
-                <span class="sidebar-logo-dot"></span>
+                <span class="sidebar-logo-text">TourLink<span class="sidebar-logo-dot"></span></span>
+                <span class="sidebar-logo-badge">Provider</span>
             </a>
         </div>
 
