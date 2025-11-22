@@ -671,8 +671,12 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                         <button class="btn btn-primary w-100 mb-3" onclick="bookService()">
                             <i class="fa fa-calendar-check"></i> Book Now
                         </button>
-                        <button class="btn btn-outline-primary w-100">
-                            <i class="fa fa-heart"></i> Add to Favorites
+                        <button class="btn btn-outline-primary w-100 favorite-btn-sidebar <?php echo $is_favorited ? 'active' : ''; ?>"
+                                data-favorite-btn
+                                data-service-id="<?php echo $service_id; ?>"
+                                aria-label="<?php echo $is_favorited ? 'Remove from favorites' : 'Add to favorites'; ?>">
+                            <i class="<?php echo $is_favorited ? 'fas' : 'far'; ?> fa-heart"></i>
+                            <?php echo $is_favorited ? 'Saved' : 'Add to Favorites'; ?>
                         </button>
                     <?php elseif ($is_own_service): ?>
                         <!-- Provider viewing their own service -->
@@ -833,9 +837,33 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                         </form>
                     </div>
                 <?php elseif (isset($_SESSION['user_id']) && !$is_provider): ?>
-                    <div class="alert alert-info">
-                        <i class="fa fa-info-circle"></i> You can write a review after completing a booking for this service.
-                    </div>
+                    <?php
+                    // Check if user has any bookings (pending, confirmed, or completed)
+                    require_once '../classes/booking_class.php';
+                    $booking_class = new Booking();
+                    $all_user_bookings = $booking_class->get_tourist_bookings($_SESSION['user_id']);
+                    $has_booking_for_service = false;
+                    $has_pending_booking = false;
+                    foreach ($all_user_bookings as $bkg) {
+                        if ($bkg['service_id'] == $service_id) {
+                            $has_booking_for_service = true;
+                            if ($bkg['booking_status'] != 'completed') {
+                                $has_pending_booking = true;
+                            }
+                        }
+                    }
+                    ?>
+                    <?php if ($has_pending_booking): ?>
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i> <strong>You have a booking for this service!</strong><br>
+                            You'll be able to write a review once your booking is marked as "completed" by the provider after you've used the service.
+                        </div>
+                    <?php else: ?>
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i> You can write a review after booking and completing this service.
+                            <a href="#" onclick="document.querySelector('.btn-primary').scrollIntoView({behavior: 'smooth'}); return false;" class="alert-link">Book now</a> to get started!
+                        </div>
+                    <?php endif; ?>
                 <?php elseif (!isset($_SESSION['user_id'])): ?>
                     <div class="alert alert-info">
                         <i class="fa fa-info-circle"></i> Please <a href="../login/login.php">sign in</a> to write a review.
@@ -927,18 +955,33 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
         // Update button text when favorite is toggled
         $(document).on('favoriteToggled', function(event, data) {
             if (data.serviceId == <?php echo $service_id; ?>) {
-                const button = $('.favorite-btn-large');
-                const span = button.find('span');
-                const icon = button.find('i');
+                // Update large favorite button (top of page)
+                const buttonLarge = $('.favorite-btn-large');
+                const span = buttonLarge.find('span');
+                const iconLarge = buttonLarge.find('i');
 
                 if (data.action === 'added') {
                     span.text('Saved');
-                    icon.removeClass('far').addClass('fas');
-                    button.addClass('active');
+                    iconLarge.removeClass('far').addClass('fas');
+                    buttonLarge.addClass('active');
                 } else {
                     span.text('Save');
-                    icon.removeClass('fas').addClass('far');
-                    button.removeClass('active');
+                    iconLarge.removeClass('fas').addClass('far');
+                    buttonLarge.removeClass('active');
+                }
+
+                // Update sidebar favorite button
+                const buttonSidebar = $('.favorite-btn-sidebar');
+                const iconSidebar = buttonSidebar.find('i');
+
+                if (data.action === 'added') {
+                    buttonSidebar.html('<i class="fas fa-heart"></i> Saved');
+                    buttonSidebar.addClass('active');
+                    buttonSidebar.attr('aria-label', 'Remove from favorites');
+                } else {
+                    buttonSidebar.html('<i class="far fa-heart"></i> Add to Favorites');
+                    buttonSidebar.removeClass('active');
+                    buttonSidebar.attr('aria-label', 'Add to favorites');
                 }
             }
         });

@@ -387,13 +387,23 @@ try {
                             </button>
 
                             <?php
-                            // Handle service_image (single) or service_images (array)
+                            // Handle service_image (JSON array or single path)
                             $service_image = $favorite['service_image'] ?? null;
+                            $image_url = null;
 
-                            if ($service_image && file_exists('../' . $service_image)) {
-                                $image_url = '../' . $service_image;
-                            } else {
-                                $image_url = null;
+                            if ($service_image) {
+                                // Check if it's a JSON array (multiple images)
+                                $images = json_decode($service_image, true);
+                                if (is_array($images) && count($images) > 0) {
+                                    // Use first image from array
+                                    $first_image = $images[0];
+                                    if (file_exists('../' . $first_image)) {
+                                        $image_url = '../' . $first_image;
+                                    }
+                                } elseif (file_exists('../' . $service_image)) {
+                                    // Single image path (old format)
+                                    $image_url = '../' . $service_image;
+                                }
                             }
                             ?>
 
