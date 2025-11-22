@@ -1199,6 +1199,12 @@ $categories = get_all_service_categories_ctr();
                                 <i class="fas fa-heart"></i>
                                 <span data-i18n="favorites.my_favorites">My Favorites</span>
                             </a>
+                            <?php if($_SESSION['user_type'] !== 'provider'): ?>
+                            <a href="view/my_bookings.php">
+                                <i class="fa fa-calendar-check"></i>
+                                My Bookings
+                            </a>
+                            <?php endif; ?>
                             <?php if($_SESSION['user_type'] === 'provider'): ?>
                                 <div class="dropdown-divider"></div>
                                 <a href="admin/provider_dashboard.php">
@@ -1209,7 +1215,7 @@ $categories = get_all_service_categories_ctr();
                                     <i class="fa fa-briefcase"></i>
                                     My Services
                                 </a>
-                                <a href="admin/bookings.php">
+                                <a href="view/provider/manage_bookings.php">
                                     <i class="fa fa-calendar-check"></i>
                                     Bookings
                                 </a>

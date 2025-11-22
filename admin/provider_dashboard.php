@@ -15,7 +15,6 @@ $provider_class = new ServiceProvider();
 $provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
 
 if (!$provider) {
-    // Redirect to become a provider page
     header("Location: become_provider.php");
     exit();
 }
@@ -29,601 +28,952 @@ $booking_class = new Booking();
 $bookings = $booking_class->get_provider_bookings($provider['provider_id']);
 $statistics = $booking_class->get_provider_statistics($provider['provider_id']);
 
-// Count active services
+// Count services by status
 $active_services = 0;
+$pending_services = 0;
 if ($services) {
     foreach ($services as $service) {
-        if ($service['service_status'] === 'active') {
-            $active_services++;
-        }
+        if ($service['service_status'] === 'active') $active_services++;
+        elseif ($service['service_status'] === 'pending') $pending_services++;
     }
 }
+
+// Count bookings by status
+$pending_bookings = array_filter($bookings ?: [], fn($b) => $b['booking_status'] === 'pending');
+$confirmed_bookings = array_filter($bookings ?: [], fn($b) => $b['booking_status'] === 'confirmed');
+$completed_bookings = array_filter($bookings ?: [], fn($b) => $b['booking_status'] === 'completed');
+
+// Calculate profile completion
+$completion = 40;
+if (!empty($provider['business_name'])) $completion += 15;
+if (!empty($provider['years_of_experience'])) $completion += 15;
+if (!empty($provider['languages_spoken'])) $completion += 10;
+if (!empty($provider['business_registration_number'])) $completion += 10;
+if ($provider['verification_status'] === 'verified') $completion += 10;
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Provider Dashboard - TourLink</title>
+    <title>Dashboard - TourLink Provider</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #0f766e;
+            --primary-dark: #0d5a54;
+            --primary-light: #14b8a6;
+            --accent: #f59e0b;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
             min-height: 100vh;
         }
 
-        /* Navigation */
-        .main-nav {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 0;
+        /* Sidebar */
+        .sidebar {
             position: fixed;
-            width: 100%;
+            left: 0;
             top: 0;
-            z-index: 1000;
+            bottom: 0;
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
         }
 
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 30px;
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-logo span { color: var(--accent); }
+
+        .sidebar-badge {
+            font-size: 0.65rem;
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.15s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-item i { width: 20px; text-align: center; font-size: 1rem; }
+
+        .nav-item .badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .nav-item.active .badge {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .user-info { flex: 1; min-width: 0; }
+        .user-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-role { font-size: 0.75rem; color: var(--text-secondary); }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top Header */
+        .top-header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        .nav-left, .nav-right {
+        .page-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .page-title p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 4px 0 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-add-service {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 30px;
+            gap: 8px;
+            transition: all 0.15s;
         }
 
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #2d6a4f;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .logo:hover {
-            color: #1b4332;
-        }
-
-        .logo-dot {
-            color: #ffd700;
-            font-size: 2rem;
-        }
-
-        .nav-link {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-            position: relative;
-        }
-
-        .nav-link:hover {
-            color: #2d6a4f;
-        }
-
-        .nav-link.active {
-            color: #2d6a4f;
-            font-weight: 600;
-        }
-
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -23px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: #2d6a4f;
-        }
-
-        .btn-nav {
-            padding: 10px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .btn-nav-logout {
-            background: #dc3545;
+        .btn-add-service:hover {
+            background: var(--primary-dark);
             color: white;
         }
 
-        .btn-nav-logout:hover {
-            background: #c82333;
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 32px;
         }
 
-        /* Main Container */
-        .main-container {
-            max-width: 1400px;
-            margin: 100px auto 60px;
-            padding: 0 30px;
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
         }
 
-        /* Profile Completion Banner */
-        .profile-banner {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border-left: 4px solid #ffd700;
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.green { background: #ecfdf5; color: var(--success); }
+        .stat-icon.blue { background: #eff6ff; color: var(--info); }
+        .stat-icon.amber { background: #fffbeb; color: var(--warning); }
+        .stat-icon.teal { background: #f0fdfa; color: var(--primary); }
+
+        .stat-trend {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .stat-trend.up { background: #ecfdf5; color: var(--success); }
+        .stat-trend.down { background: #fef2f2; color: var(--danger); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Alert Banner */
+        .alert-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
             border-radius: 12px;
             padding: 20px 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .profile-banner h5 {
-            color: #856404;
+        .alert-banner-content h3 {
+            font-size: 1.1rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 4px;
+        }
+
+        .alert-banner-content p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .alert-banner .btn {
+            background: white;
+            color: var(--primary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .alert-banner .btn:hover {
+            background: #f8fafc;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .card-header .btn-link {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .card-body { padding: 24px; }
+
+        /* Booking Item */
+        .booking-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .booking-item:last-child { border-bottom: none; }
+
+        .booking-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .booking-info { flex: 1; }
+        .booking-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+        .booking-meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .booking-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .booking-status.pending { background: #fef3c7; color: #92400e; }
+        .booking-status.confirmed { background: #d1fae5; color: #065f46; }
+        .booking-status.completed { background: #e0e7ff; color: #3730a3; }
+        .booking-status.cancelled { background: #fee2e2; color: #991b1b; }
+
+        .booking-amount {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            text-align: right;
+            min-width: 80px;
+        }
+
+        /* Service Item */
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .service-item:last-child { border-bottom: none; }
+
+        .service-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .service-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .service-thumb i { font-size: 1.25rem; color: var(--text-secondary); }
+
+        .service-info { flex: 1; }
+        .service-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+        .service-category {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .service-price {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+
+        .service-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .service-status.active { background: #d1fae5; color: #065f46; }
+        .service-status.pending { background: #fef3c7; color: #92400e; }
+        .service-status.inactive { background: #f1f5f9; color: #64748b; }
+
+        /* Quick Actions */
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.15s;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .quick-action:hover {
+            background: #f8fafc;
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .quick-action-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.1rem;
         }
 
-        .profile-banner p {
-            color: #856404;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
+        .quick-action-icon.teal { background: #f0fdfa; color: var(--primary); }
+        .quick-action-icon.blue { background: #eff6ff; color: var(--info); }
+        .quick-action-icon.amber { background: #fffbeb; color: var(--warning); }
+        .quick-action-icon.green { background: #ecfdf5; color: var(--success); }
+
+        .quick-action-text { flex: 1; }
+        .quick-action-title { font-weight: 600; font-size: 0.9rem; }
+        .quick-action-desc { font-size: 0.75rem; color: var(--text-secondary); }
+
+        /* Profile Completion */
+        .completion-ring {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 16px;
+            position: relative;
         }
 
-        .profile-banner ul {
-            margin: 10px 0 15px 20px;
-            color: #856404;
+        .completion-ring svg {
+            transform: rotate(-90deg);
         }
 
-        .profile-banner li {
-            margin-bottom: 5px;
+        .completion-ring circle {
+            fill: none;
+            stroke-width: 8;
         }
 
-        .profile-banner .btn {
-            background: #2d6a4f;
-            border: none;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
+        .completion-ring .bg { stroke: #e2e8f0; }
+        .completion-ring .progress { stroke: var(--primary); stroke-linecap: round; }
 
-        .profile-banner .btn:hover {
-            background: #1b4332;
-            transform: translateY(-2px);
-        }
-
-        /* Dashboard Card */
-        .dashboard-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            margin-bottom: 24px;
-        }
-
-        .dashboard-card h2 {
+        .completion-percent {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.25rem;
             font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 12px;
+            color: var(--text-primary);
         }
 
-        .dashboard-card h4, .dashboard-card h5 {
-            font-weight: 700;
-            color: #1b4332;
-        }
-
-        /* Stat Cards */
-        .stat-card {
-            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-card h3 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin: 0 0 8px 0;
-        }
-
-        .stat-card p {
-            margin: 0;
-            opacity: 0.9;
-            font-weight: 500;
-        }
-
-        .stat-card-alt1 {
-            background: linear-gradient(135deg, #52796f 0%, #354f52 100%);
-        }
-
-        .stat-card-alt2 {
-            background: linear-gradient(135deg, #74c69d 0%, #52b788 100%);
-        }
-
-        .stat-card-alt3 {
-            background: linear-gradient(135deg, #95d5b2 0%, #74c69d 100%);
-        }
-
-        /* Verification Badge */
-        .verification-badge {
-            display: inline-block;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .verified {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        /* Service Items */
-        .service-item {
-            border-bottom: 1px solid #e9ecef;
-            padding: 16px 0;
-        }
-
-        .service-item:last-child {
-            border-bottom: none;
-        }
-
-        .service-item h6 {
-            font-weight: 700;
-            color: #1a1a1a;
-        }
-
-        /* Quick Action Buttons */
-        .quick-action-btn {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            margin-bottom: 12px;
-            background: white;
-            border: 2px solid #2d6a4f;
-            color: #2d6a4f;
-            border-radius: 8px;
-            text-decoration: none;
+        .completion-label {
             text-align: center;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
         }
 
-        .quick-action-btn:hover {
-            background: #2d6a4f;
-            color: white;
-            transform: translateX(5px);
+        .completion-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            font-size: 0.85rem;
         }
 
-        .quick-action-btn i {
-            margin-right: 8px;
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background: #2d6a4f;
-            border: none;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-primary:hover {
-            background: #1b4332;
-            transform: translateY(-2px);
-        }
-
-        .btn-outline-primary {
-            border: 2px solid #2d6a4f;
-            color: #2d6a4f;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-outline-primary:hover {
-            background: #2d6a4f;
-            color: white;
-            border-color: #2d6a4f;
-        }
-
-        /* Table */
-        .table thead {
-            background: #f8f9fa;
-        }
-
-        .table th {
-            font-weight: 700;
-            color: #1b4332;
-            border-bottom: 2px solid #2d6a4f;
-        }
-
-        /* Progress Bar */
-        .progress {
-            height: 10px;
-            border-radius: 5px;
-            background: #e9ecef;
-        }
-
-        .progress-bar {
-            background: #2d6a4f;
-            border-radius: 5px;
-        }
-
-        /* Badges */
-        .badge {
-            font-weight: 600;
-            padding: 6px 12px;
-        }
-
-        .bg-success {
-            background: #2d6a4f !important;
-        }
+        .completion-item i.complete { color: var(--success); }
+        .completion-item i.incomplete { color: #cbd5e1; }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
         }
 
-        .empty-state i {
-            color: #ddd;
-            margin-bottom: 20px;
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
         }
 
         .empty-state p {
-            color: #666;
-            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .empty-state .btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .dashboard-content { padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="main-nav">
-        <div class="nav-container">
-            <div class="nav-left">
-                <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
-            </div>
-            <div class="nav-right">
-                <a href="provider_dashboard.php" class="nav-link active">Dashboard</a>
-                <a href="manage_services.php" class="nav-link">My Services</a>
-                <a href="../index_tourlink.php" class="nav-link">View Site</a>
-                <a href="../login/logout.php" class="btn-nav btn-nav-logout">Logout</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="main-container">
-        <!-- Welcome Header -->
-        <div class="dashboard-card">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h2>Welcome back, <?php echo htmlspecialchars($provider['business_name'] ?: $_SESSION['user_name']); ?>!</h2>
-                    <p class="text-muted mb-0">
-                        <i class="fa fa-map-marker-alt"></i> <?php echo htmlspecialchars($provider['region']); ?> |
-                        <i class="fa fa-star"></i> Rating: <?php echo number_format($provider['average_rating'], 1); ?>/5.0 |
-                        <span class="verification-badge <?php echo $provider['verification_status']; ?>">
-                            <?php echo ucfirst($provider['verification_status']); ?>
-                        </span>
-                    </p>
-                </div>
-                <div class="col-md-4 text-end">
-                    <a href="add_service.php" class="btn btn-primary btn-lg">
-                        <i class="fa fa-plus"></i> Add New Service
-                    </a>
-                </div>
-            </div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="../index_tourlink.php" class="sidebar-logo">
+                TourLink<span>.</span>
+                <span class="sidebar-badge">Provider</span>
+            </a>
         </div>
 
-        <!-- Profile Completion Banner -->
-        <?php
-        $missing_fields = [];
-        if (empty($provider['languages_spoken'])) {
-            $missing_fields[] = 'Languages Spoken';
-        }
-        if (empty($provider['years_of_experience'])) {
-            $missing_fields[] = 'Years of Experience';
-        }
-        if (empty($provider['business_registration_number'])) {
-            $missing_fields[] = 'Business Registration Number';
-        }
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="provider_dashboard.php" class="nav-item active">
+                    <i class="fa fa-th-large"></i> Dashboard
+                </a>
+                <a href="../view/provider/manage_bookings.php" class="nav-item">
+                    <i class="fa fa-calendar-check"></i> Bookings
+                    <?php if (count($pending_bookings) > 0): ?>
+                        <span class="badge"><?php echo count($pending_bookings); ?></span>
+                    <?php endif; ?>
+                </a>
+                <a href="manage_services.php" class="nav-item">
+                    <i class="fa fa-briefcase"></i> My Services
+                </a>
+            </div>
 
-        if (count($missing_fields) > 0):
-        ?>
-        <div class="profile-banner">
-            <div class="d-flex justify-content-between align-items-start">
-                <div class="flex-grow-1">
-                    <h5><i class="fa fa-exclamation-triangle"></i> Complete Your Profile</h5>
-                    <p class="mb-2">Your profile is incomplete. Please add the following information to improve your visibility and credibility:</p>
-                    <ul>
-                        <?php foreach ($missing_fields as $field): ?>
-                            <li><?php echo htmlspecialchars($field); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                    <a href="provider_profile.php" class="btn">
-                        <i class="fa fa-edit"></i> Update Profile
-                    </a>
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="add_service.php" class="nav-item">
+                    <i class="fa fa-plus-circle"></i> Add Service
+                </a>
+                <a href="provider_profile.php" class="nav-item">
+                    <i class="fa fa-user-cog"></i> Business Profile
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Other</div>
+                <a href="../index_tourlink.php" class="nav-item">
+                    <i class="fa fa-external-link-alt"></i> View Site
+                </a>
+                <a href="../view/profile_settings.php" class="nav-item">
+                    <i class="fa fa-cog"></i> Account Settings
+                </a>
+                <a href="../login/logout.php" class="nav-item">
+                    <i class="fa fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">
+                    <?php echo strtoupper(substr($_SESSION['first_name'], 0, 1)); ?>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; color: #856404; opacity: 0.7;"></button>
+                <div class="user-info">
+                    <div class="user-name"><?php echo htmlspecialchars($provider['business_name'] ?: $_SESSION['first_name']); ?></div>
+                    <div class="user-role"><?php echo ucfirst($provider['verification_status']); ?></div>
+                </div>
             </div>
         </div>
-        <?php endif; ?>
+    </aside>
 
-        <!-- Statistics Cards -->
-        <div class="row">
-            <div class="col-md-3">
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="page-title">
+                <h1>Dashboard</h1>
+                <p>Welcome back, <?php echo htmlspecialchars($_SESSION['first_name']); ?>. Here's what's happening.</p>
+            </div>
+            <div class="header-actions">
+                <a href="add_service.php" class="btn-add-service">
+                    <i class="fa fa-plus"></i> Add Service
+                </a>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Pending Bookings Alert -->
+            <?php if (count($pending_bookings) > 0): ?>
+            <div class="alert-banner">
+                <div class="alert-banner-content">
+                    <h3><i class="fa fa-bell"></i> You have <?php echo count($pending_bookings); ?> pending booking<?php echo count($pending_bookings) > 1 ? 's' : ''; ?></h3>
+                    <p>Review and respond to booking requests to keep customers happy.</p>
+                </div>
+                <a href="../view/provider/manage_bookings.php?filter=pending" class="btn">View Pending</a>
+            </div>
+            <?php endif; ?>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
                 <div class="stat-card">
-                    <h3><?php echo $active_services; ?></h3>
-                    <p>Active Services</p>
+                    <div class="stat-card-header">
+                        <div class="stat-icon teal"><i class="fa fa-briefcase"></i></div>
+                    </div>
+                    <div class="stat-value"><?php echo $active_services; ?></div>
+                    <div class="stat-label">Active Services</div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card stat-card-alt1">
-                    <h3><?php echo $statistics['total_bookings'] ?: 0; ?></h3>
-                    <p>Total Bookings</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card stat-card-alt2">
-                    <h3><?php echo $statistics['pending_bookings'] ?: 0; ?></h3>
-                    <p>Pending Bookings</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card stat-card-alt3">
-                    <h3>GHS <?php echo number_format($statistics['total_earnings'] ?: 0, 2); ?></h3>
-                    <p>Total Earnings</p>
-                </div>
-            </div>
-        </div>
 
-        <div class="row">
-            <!-- Recent Services -->
-            <div class="col-md-8">
-                <div class="dashboard-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4>Your Services</h4>
-                        <a href="manage_services.php" class="btn btn-sm btn-outline-primary">View All</a>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon blue"><i class="fa fa-calendar-check"></i></div>
+                    </div>
+                    <div class="stat-value"><?php echo $statistics['total_bookings'] ?: 0; ?></div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon amber"><i class="fa fa-clock"></i></div>
+                    </div>
+                    <div class="stat-value"><?php echo count($pending_bookings); ?></div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon green"><i class="fa fa-wallet"></i></div>
+                    </div>
+                    <div class="stat-value">GHS <?php echo number_format($statistics['total_earnings'] ?: 0, 0); ?></div>
+                    <div class="stat-label">Total Earnings</div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <div>
+                    <!-- Recent Bookings -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h2>Recent Bookings</h2>
+                            <a href="../view/provider/manage_bookings.php" class="btn-link">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <?php if ($bookings && count($bookings) > 0): ?>
+                                <?php foreach (array_slice($bookings, 0, 5) as $booking): ?>
+                                    <?php $initials = strtoupper(substr($booking['tourist_first_name'], 0, 1) . substr($booking['tourist_last_name'], 0, 1)); ?>
+                                    <div class="booking-item">
+                                        <div class="booking-avatar"><?php echo $initials; ?></div>
+                                        <div class="booking-info">
+                                            <div class="booking-title"><?php echo htmlspecialchars($booking['service_title']); ?></div>
+                                            <div class="booking-meta">
+                                                <?php echo htmlspecialchars($booking['tourist_first_name'] . ' ' . $booking['tourist_last_name']); ?>
+                                                &bull; <?php echo date('M d, Y', strtotime($booking['service_date'])); ?>
+                                            </div>
+                                        </div>
+                                        <span class="booking-status <?php echo $booking['booking_status']; ?>">
+                                            <?php echo ucfirst($booking['booking_status']); ?>
+                                        </span>
+                                        <div class="booking-amount">GHS <?php echo number_format($booking['provider_earnings'], 0); ?></div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="empty-state">
+                                    <div class="empty-state-icon"><i class="fa fa-calendar-alt"></i></div>
+                                    <h4>No bookings yet</h4>
+                                    <p>When customers book your services, they'll appear here.</p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
 
-                    <?php if ($services && count($services) > 0): ?>
-                        <?php foreach (array_slice($services, 0, 5) as $service): ?>
-                        <div class="service-item">
-                            <div class="row align-items-center">
-                                <div class="col-md-7">
-                                    <h6 class="mb-1"><?php echo htmlspecialchars($service['service_title']); ?></h6>
-                                    <small class="text-muted"><?php echo htmlspecialchars($service['category_name']); ?></small>
+                    <!-- Your Services -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Your Services</h2>
+                            <a href="manage_services.php" class="btn-link">Manage All</a>
+                        </div>
+                        <div class="card-body">
+                            <?php if ($services && count($services) > 0): ?>
+                                <?php foreach (array_slice($services, 0, 4) as $service): ?>
+                                    <?php
+                                    $image_url = null;
+                                    if (!empty($service['service_images'])) {
+                                        $images = json_decode($service['service_images'], true);
+                                        if (is_array($images) && count($images) > 0) {
+                                            $image_url = '../' . $images[0];
+                                        }
+                                    }
+                                    ?>
+                                    <div class="service-item">
+                                        <div class="service-thumb">
+                                            <?php if ($image_url && file_exists($image_url)): ?>
+                                                <img src="<?php echo htmlspecialchars($image_url); ?>" alt="">
+                                            <?php else: ?>
+                                                <i class="fa fa-image"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="service-info">
+                                            <div class="service-title"><?php echo htmlspecialchars($service['service_title']); ?></div>
+                                            <div class="service-category"><?php echo htmlspecialchars($service['category_name']); ?></div>
+                                        </div>
+                                        <span class="service-status <?php echo $service['service_status']; ?>">
+                                            <?php echo ucfirst($service['service_status']); ?>
+                                        </span>
+                                        <div class="service-price">GHS <?php echo number_format($service['base_price'], 0); ?></div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="empty-state">
+                                    <div class="empty-state-icon"><i class="fa fa-box-open"></i></div>
+                                    <h4>No services yet</h4>
+                                    <p>Add your first service to start receiving bookings.</p>
+                                    <a href="add_service.php" class="btn">Add Service</a>
                                 </div>
-                                <div class="col-md-3">
-                                    <strong>GHS <?php echo number_format($service['base_price'], 2); ?></strong>
-                                    <br><small><?php echo htmlspecialchars($service['pricing_unit']); ?></small>
-                                </div>
-                                <div class="col-md-2 text-end">
-                                    <span class="badge bg-<?php echo $service['service_status'] === 'active' ? 'success' : 'warning'; ?>">
-                                        <?php echo ucfirst($service['service_status']); ?>
-                                    </span>
-                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div>
+                    <!-- Profile Completion -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h2>Profile Status</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="completion-ring">
+                                <svg width="100" height="100" viewBox="0 0 100 100">
+                                    <circle class="bg" cx="50" cy="50" r="42"/>
+                                    <circle class="progress" cx="50" cy="50" r="42"
+                                            stroke-dasharray="<?php echo (264 * $completion / 100); ?> 264"/>
+                                </svg>
+                                <div class="completion-percent"><?php echo $completion; ?>%</div>
                             </div>
-                        </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="empty-state">
-                            <i class="fa fa-box-open fa-3x mb-3"></i>
-                            <p>You haven't added any services yet.</p>
-                            <a href="add_service.php" class="btn btn-primary">Add Your First Service</a>
-                        </div>
-                    <?php endif; ?>
-                </div>
+                            <div class="completion-label">Profile Completion</div>
 
-                <!-- Recent Bookings -->
-                <div class="dashboard-card">
-                    <h4 class="mb-3">Recent Bookings</h4>
+                            <div class="completion-item">
+                                <i class="fa fa-<?php echo !empty($provider['business_name']) ? 'check-circle complete' : 'circle incomplete'; ?>"></i>
+                                Business Name
+                            </div>
+                            <div class="completion-item">
+                                <i class="fa fa-<?php echo !empty($provider['years_of_experience']) ? 'check-circle complete' : 'circle incomplete'; ?>"></i>
+                                Years of Experience
+                            </div>
+                            <div class="completion-item">
+                                <i class="fa fa-<?php echo !empty($provider['languages_spoken']) ? 'check-circle complete' : 'circle incomplete'; ?>"></i>
+                                Languages Spoken
+                            </div>
+                            <div class="completion-item">
+                                <i class="fa fa-<?php echo $provider['verification_status'] === 'verified' ? 'check-circle complete' : 'circle incomplete'; ?>"></i>
+                                Verification Status
+                            </div>
 
-                    <?php if ($bookings && count($bookings) > 0): ?>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Ref</th>
-                                        <th>Service</th>
-                                        <th>Date</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach (array_slice($bookings, 0, 5) as $booking): ?>
-                                    <tr>
-                                        <td><small><?php echo htmlspecialchars($booking['booking_reference']); ?></small></td>
-                                        <td><?php echo htmlspecialchars($booking['service_title']); ?></td>
-                                        <td><?php echo date('M d, Y', strtotime($booking['service_date'])); ?></td>
-                                        <td><strong>GHS <?php echo number_format($booking['total_amount'], 2); ?></strong></td>
-                                        <td><span class="badge bg-info"><?php echo ucfirst($booking['booking_status']); ?></span></td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php else: ?>
-                        <div class="text-center py-4">
-                            <p class="text-muted">No bookings yet</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Quick Actions Sidebar -->
-            <div class="col-md-4">
-                <div class="dashboard-card">
-                    <h5 class="mb-3">Quick Actions</h5>
-                    <a href="add_service.php" class="quick-action-btn">
-                        <i class="fa fa-plus-circle"></i> Add New Service
-                    </a>
-                    <a href="manage_services.php" class="quick-action-btn">
-                        <i class="fa fa-list"></i> Manage Services
-                    </a>
-                    <a href="provider_profile.php" class="quick-action-btn">
-                        <i class="fa fa-user-circle"></i> Edit Profile
-                    </a>
-                    <a href="bookings.php" class="quick-action-btn">
-                        <i class="fa fa-calendar-check"></i> View All Bookings
-                    </a>
-                </div>
-
-                <!-- Profile Completion -->
-                <div class="dashboard-card">
-                    <h5 class="mb-3">Profile Status</h5>
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span>Profile Completion</span>
-                            <span>
-                                <?php
-                                $completion = 50;
-                                if ($provider['business_name']) $completion += 10;
-                                if ($provider['years_of_experience']) $completion += 10;
-                                if ($provider['languages_spoken']) $completion += 10;
-                                if ($provider['verification_status'] === 'verified') $completion += 20;
-                                echo $completion;
-                                ?>%
-                            </span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: <?php echo $completion; ?>%"></div>
+                            <?php if ($completion < 100): ?>
+                                <a href="provider_profile.php" class="btn" style="width: 100%; margin-top: 16px; text-align: center; display: block; background: var(--primary); color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                                    Complete Profile
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
 
-                    <?php if ($provider['verification_status'] !== 'verified'): ?>
-                    <div class="alert alert-warning">
-                        <small><i class="fa fa-info-circle"></i> Complete verification to appear in search results</small>
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Quick Actions</h2>
+                        </div>
+                        <div class="card-body" style="padding: 16px;">
+                            <a href="add_service.php" class="quick-action">
+                                <div class="quick-action-icon teal"><i class="fa fa-plus"></i></div>
+                                <div class="quick-action-text">
+                                    <div class="quick-action-title">Add New Service</div>
+                                    <div class="quick-action-desc">List a new tour or experience</div>
+                                </div>
+                            </a>
+                            <a href="../view/provider/manage_bookings.php" class="quick-action">
+                                <div class="quick-action-icon amber"><i class="fa fa-calendar-check"></i></div>
+                                <div class="quick-action-text">
+                                    <div class="quick-action-title">Manage Bookings</div>
+                                    <div class="quick-action-desc">Review and respond to requests</div>
+                                </div>
+                            </a>
+                            <a href="provider_profile.php" class="quick-action">
+                                <div class="quick-action-icon blue"><i class="fa fa-user-edit"></i></div>
+                                <div class="quick-action-text">
+                                    <div class="quick-action-title">Edit Business Profile</div>
+                                    <div class="quick-action-desc">Update your information</div>
+                                </div>
+                            </a>
+                            <a href="../view/all_services.php" class="quick-action">
+                                <div class="quick-action-icon green"><i class="fa fa-search"></i></div>
+                                <div class="quick-action-text">
+                                    <div class="quick-action-title">Browse Marketplace</div>
+                                    <div class="quick-action-desc">See what others are offering</div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
