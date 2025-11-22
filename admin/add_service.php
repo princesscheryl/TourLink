@@ -26,251 +26,704 @@ $categories = get_all_service_categories_ctr();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Service - TourLink</title>
+    <title>Add New Service - TourLink Provider</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #0f766e;
+            --primary-dark: #0d5a54;
+            --primary-light: #14b8a6;
+            --accent: #f59e0b;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
             min-height: 100vh;
         }
 
-        /* Navigation */
-        .main-nav {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 0;
+        /* Sidebar */
+        .sidebar {
             position: fixed;
-            width: 100%;
+            left: 0;
             top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 30px;
+            bottom: 0;
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 100;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
+            flex-direction: column;
         }
 
-        .nav-left, .nav-right {
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo {
             display: flex;
             align-items: center;
-            gap: 30px;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #2d6a4f;
             text-decoration: none;
-            transition: all 0.3s;
+            gap: 3px;
         }
 
-        .logo:hover {
-            color: #1b4332;
+        .sidebar-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
         }
 
-        .logo-dot {
-            color: #ffd700;
-            font-size: 2rem;
+        .sidebar-logo-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-top: 8px;
         }
 
-        .nav-link {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s;
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 0;
+            overflow-y: auto;
         }
 
-        .nav-link:hover {
-            color: #2d6a4f;
+        .nav-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
         }
 
-        .btn-nav {
-            padding: 10px 24px;
-            border-radius: 8px;
-            text-decoration: none;
+        .nav-section-title {
+            font-size: 0.7rem;
             font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .btn-nav-logout {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-nav-logout:hover {
-            background: #c82333;
-        }
-
-        /* Main Container */
-        .main-container {
-            max-width: 900px;
-            margin: 100px auto 60px;
-            padding: 0 30px;
-        }
-
-        /* Form Card */
-        .form-card {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }
-
-        .form-card h2 {
-            font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #2d6a4f;
-        }
-
-        /* Form Elements */
-        .form-label {
-            font-weight: 600;
-            color: #1b4332;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 12px;
             margin-bottom: 8px;
         }
 
-        .form-control, .form-select {
-            border: 2px solid #e9ecef;
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
             border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .provider-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-main);
+            border-radius: 10px;
+        }
+
+        .provider-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .provider-info h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .provider-info span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .page-title h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .page-title p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 4px 0 0 0;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        /* Form Container */
+        .form-container {
+            padding: 32px;
+            max-width: 900px;
+        }
+
+        .form-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 24px 32px;
+            color: white;
+        }
+
+        .form-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form-header p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin: 4px 0 0 0;
+        }
+
+        .form-body {
+            padding: 32px;
+        }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            font-size: 0.9rem;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--danger);
+        }
+
+        .form-control, .form-select {
+            width: 100%;
             padding: 12px 16px;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: all 0.2s;
         }
 
         .form-control:focus, .form-select:focus {
-            border-color: #2d6a4f;
-            box-shadow: 0 0 0 0.2rem rgba(45, 106, 79, 0.15);
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
         }
 
         textarea.form-control {
             resize: vertical;
+            min-height: 120px;
         }
 
-        .form-check {
-            padding: 10px 0;
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
         }
 
-        .form-check-input {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #2d6a4f;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Checkboxes */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--primary);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
             cursor: pointer;
         }
 
-        .form-check-input:checked {
-            background-color: #2d6a4f;
-            border-color: #2d6a4f;
-        }
-
-        .form-check-input:focus {
-            box-shadow: 0 0 0 0.2rem rgba(45, 106, 79, 0.15);
-        }
-
-        .form-check-label {
+        .checkbox-item label {
+            font-size: 0.875rem;
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
             cursor: pointer;
-            margin-left: 8px;
+            margin: 0;
         }
 
-        /* Alert */
-        .alert-info {
-            background: #e8f4f1;
-            border-left: 4px solid #2d6a4f;
-            color: #1b4332;
-            border-radius: 8px;
+        .checkbox-item.checked {
+            background: rgba(15, 118, 110, 0.05);
+            border-color: var(--primary);
         }
 
-        .alert-info i {
-            color: #2d6a4f;
+        /* Image Upload */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-main);
         }
 
-        /* Buttons */
-        .btn-primary {
-            background: #2d6a4f;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 1rem;
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(15, 118, 110, 0.02);
         }
 
-        .btn-primary:hover {
-            background: #1b4332;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(15, 118, 110, 0.05);
         }
 
-        .btn-outline-secondary {
-            border: 2px solid #6c757d;
-            color: #6c757d;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s;
-            text-decoration: none;
+        .upload-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
         }
 
-        .btn-outline-secondary:hover {
-            background: #6c757d;
+        .upload-icon i {
+            font-size: 1.5rem;
             color: white;
         }
 
-        /* Help Text */
-        small.text-muted {
-            color: #666 !important;
+        .upload-text h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 4px 0;
+        }
+
+        .upload-text p {
             font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            aspect-ratio: 1;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item.main {
+            border-color: var(--primary);
+            border-width: 3px;
+        }
+
+        .preview-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .preview-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .preview-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .preview-btn.remove {
+            background: var(--danger);
+            color: white;
+        }
+
+        .preview-btn.set-main {
+            background: var(--primary);
+            color: white;
+        }
+
+        .preview-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Info Alert */
+        .info-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px 20px;
+            background: rgba(15, 118, 110, 0.05);
+            border: 1px solid rgba(15, 118, 110, 0.2);
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+
+        .info-alert i {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-top: 2px;
+        }
+
+        .info-alert p {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            margin-top: 32px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-main);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; }
+            .sidebar-logo-text, .nav-section-title, .nav-item span, .provider-info { display: none; }
+            .sidebar-header { padding: 16px; justify-content: center; }
+            .sidebar-logo { justify-content: center; }
+            .nav-item { justify-content: center; padding: 14px; }
+            .nav-item i { margin: 0; font-size: 1.2rem; }
+            .provider-badge { justify-content: center; padding: 12px 8px; }
+            .main-content { margin-left: 80px; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .form-container { padding: 16px; }
+            .form-body { padding: 20px; }
+            .form-row { grid-template-columns: 1fr; }
+            .checkbox-grid { grid-template-columns: 1fr; }
+            .form-header { padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <nav class="main-nav">
-        <div class="nav-container">
-            <div class="nav-left">
-                <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="provider_dashboard.php" class="sidebar-logo">
+                <span class="sidebar-logo-text">TourLink</span>
+                <span class="sidebar-logo-dot"></span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="provider_dashboard.php" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="../view/provider/manage_bookings.php" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Bookings</span>
+                </a>
             </div>
-            <div class="nav-right">
-                <a href="provider_dashboard.php" class="nav-link">Dashboard</a>
-                <a href="manage_services.php" class="nav-link">My Services</a>
-                <a href="../login/logout.php" class="btn-nav btn-nav-logout">Logout</a>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="manage_services.php" class="nav-item">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span>My Services</span>
+                </a>
+                <a href="add_service.php" class="nav-item active">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Service</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="provider_profile.php" class="nav-item">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="../login/logout.php" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="provider-badge">
+                <div class="provider-avatar">
+                    <?php echo strtoupper(substr($provider['business_name'] ?? $_SESSION['first_name'], 0, 1)); ?>
+                </div>
+                <div class="provider-info">
+                    <h4><?php echo htmlspecialchars($provider['business_name'] ?? $_SESSION['first_name']); ?></h4>
+                    <span>Service Provider</span>
+                </div>
             </div>
         </div>
-    </nav>
+    </aside>
 
-    <div class="main-container">
-        <div class="form-card">
-            <h2>Add New Service</h2>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Add New Service</h1>
+                <p>Create a new service listing for tourists</p>
+            </div>
+            <div class="top-bar-actions">
+                <a href="manage_services.php" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Services
+                </a>
+            </div>
+        </div>
 
-                        <form action="../actions/add_service_action.php" method="POST" enctype="multipart/form-data" id="addServiceForm">
-                            <!-- Service Title -->
-                            <div class="mb-3">
-                                <label for="service_title" class="form-label">Service Title *</label>
-                                <input type="text" class="form-control" id="service_title" name="service_title" required>
-                                <small class="text-muted">Give your service a clear, descriptive title</small>
+        <div class="form-container">
+            <div class="form-card">
+                <div class="form-header">
+                    <h2><i class="fas fa-plus-circle"></i> Service Details</h2>
+                    <p>Fill in the information below to create your service listing</p>
+                </div>
+
+                <div class="form-body">
+                    <form action="../actions/add_service_action.php" method="POST" enctype="multipart/form-data" id="addServiceForm">
+
+                        <!-- Basic Information -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-info-circle"></i>
+                                Basic Information
                             </div>
 
-                            <!-- Category -->
-                            <div class="mb-3">
-                                <label for="category_id" class="form-label">Category *</label>
+                            <div class="form-group">
+                                <label class="form-label">Service Title <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="service_title" name="service_title" placeholder="e.g., Accra City Walking Tour" required>
+                                <p class="form-hint">Give your service a clear, descriptive title that tourists will easily understand</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Category <span class="required">*</span></label>
                                 <select class="form-select" id="category_id" name="category_id" required>
                                     <option value="">Select a category</option>
                                     <?php if ($categories): ?>
@@ -283,21 +736,27 @@ $categories = get_all_service_categories_ctr();
                                 </select>
                             </div>
 
-                            <!-- Description -->
-                            <div class="mb-3">
-                                <label for="service_description" class="form-label">Description *</label>
-                                <textarea class="form-control" id="service_description" name="service_description" rows="5" required></textarea>
-                                <small class="text-muted">Describe what your service includes, what makes it special, and what tourists can expect</small>
+                            <div class="form-group">
+                                <label class="form-label">Description <span class="required">*</span></label>
+                                <textarea class="form-control" id="service_description" name="service_description" rows="5" placeholder="Describe what your service includes, what makes it special, and what tourists can expect..." required></textarea>
+                                <p class="form-hint">Be detailed - tourists want to know exactly what they'll experience</p>
+                            </div>
+                        </div>
+
+                        <!-- Pricing -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-tag"></i>
+                                Pricing
                             </div>
 
-                            <!-- Pricing -->
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="base_price" class="form-label">Price (GHS) *</label>
-                                    <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" min="0" required>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Price (GHS) <span class="required">*</span></label>
+                                    <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" min="0" placeholder="0.00" required>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="pricing_unit" class="form-label">Pricing Unit *</label>
+                                <div class="form-group">
+                                    <label class="form-label">Pricing Unit <span class="required">*</span></label>
                                     <select class="form-select" id="pricing_unit" name="pricing_unit" required>
                                         <option value="per_hour">Per Hour</option>
                                         <option value="per_day">Per Day</option>
@@ -306,304 +765,218 @@ $categories = get_all_service_categories_ctr();
                                     </select>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Location -->
-                            <div class="mb-3">
-                                <label for="service_location" class="form-label">Service Location *</label>
-                                <input type="text" class="form-control" id="service_location" name="service_location" required>
-                                <small class="text-muted">Where is this service provided? (e.g., "Accra", "Cape Coast", "Kumasi")</small>
+                        <!-- Location -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Location & Coverage
                             </div>
 
-                            <!-- Available Regions -->
-                            <div class="mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Service Location <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="service_location" name="service_location" placeholder="e.g., Accra, Cape Coast, Kumasi" required>
+                                <p class="form-hint">Where is this service primarily provided?</p>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">Available Regions</label>
-                                <div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="regions[]" value="Greater Accra" id="region1">
-                                        <label class="form-check-label" for="region1">Greater Accra</label>
+                                <div class="checkbox-grid">
+                                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                                        <input type="checkbox" name="regions[]" value="Greater Accra" id="region1">
+                                        <label for="region1">Greater Accra</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="regions[]" value="Central" id="region2">
-                                        <label class="form-check-label" for="region2">Central</label>
+                                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                                        <input type="checkbox" name="regions[]" value="Central" id="region2">
+                                        <label for="region2">Central</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="regions[]" value="Ashanti" id="region3">
-                                        <label class="form-check-label" for="region3">Ashanti</label>
+                                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                                        <input type="checkbox" name="regions[]" value="Ashanti" id="region3">
+                                        <label for="region3">Ashanti</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="regions[]" value="Northern" id="region4">
-                                        <label class="form-check-label" for="region4">Northern</label>
+                                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                                        <input type="checkbox" name="regions[]" value="Northern" id="region4">
+                                        <label for="region4">Northern</label>
+                                    </div>
+                                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                                        <input type="checkbox" name="regions[]" value="Eastern" id="region5">
+                                        <label for="region5">Eastern</label>
+                                    </div>
+                                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                                        <input type="checkbox" name="regions[]" value="Western" id="region6">
+                                        <label for="region6">Western</label>
+                                    </div>
+                                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                                        <input type="checkbox" name="regions[]" value="Volta" id="region7">
+                                        <label for="region7">Volta</label>
+                                    </div>
+                                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
+                                        <input type="checkbox" name="regions[]" value="Upper East" id="region8">
+                                        <label for="region8">Upper East</label>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Max Capacity -->
-                            <div class="mb-3">
-                                <label for="max_capacity" class="form-label">Maximum Capacity (Optional)</label>
-                                <input type="number" class="form-control" id="max_capacity" name="max_capacity" min="1">
-                                <small class="text-muted">How many people can you serve at once?</small>
+                        <!-- Capacity -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-users"></i>
+                                Capacity
                             </div>
 
-                            <!-- Service Images -->
-                            <div class="mb-3">
-                                <label for="service_images" class="form-label">
-                                    <i class="fa fa-images"></i> Service Images (3-5 recommended)
-                                </label>
-                                <div class="image-upload-container">
-                                    <div class="upload-box" id="uploadBox">
-                                        <i class="fa fa-cloud-upload-alt fa-3x mb-3"></i>
-                                        <p><strong>Click to upload</strong> or drag and drop</p>
-                                        <p class="text-muted small">JPG, PNG or WEBP (Max 5MB each, 3-5 images)</p>
-                                        <input type="file"
-                                               id="service_images"
-                                               name="service_images[]"
-                                               accept="image/jpeg,image/jpg,image/png,image/webp"
-                                               multiple
-                                               style="display: none;">
-                                    </div>
-                                    <div class="image-preview-container" id="imagePreviewContainer"></div>
+                            <div class="form-group">
+                                <label class="form-label">Maximum Capacity</label>
+                                <input type="number" class="form-control" id="max_capacity" name="max_capacity" min="1" placeholder="How many people can you serve at once?">
+                                <p class="form-hint">Leave empty if there's no limit</p>
+                            </div>
+                        </div>
+
+                        <!-- Images -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-images"></i>
+                                Service Images
+                            </div>
+
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
                                 </div>
+                                <div class="upload-text">
+                                    <h4>Upload Images</h4>
+                                    <p>Drag and drop or click to select (3-5 images recommended)</p>
+                                    <p style="font-size: 0.8rem; margin-top: 8px;">JPG, PNG or WEBP - Max 5MB each</p>
+                                </div>
+                                <input type="file" id="service_images" name="service_images[]" accept="image/jpeg,image/jpg,image/png,image/webp" multiple style="display: none;">
                             </div>
+                            <div class="image-preview-grid" id="previewGrid"></div>
+                        </div>
 
-                            <style>
-                                .image-upload-container {
-                                    margin-bottom: 20px;
-                                }
+                        <!-- Info Alert -->
+                        <div class="info-alert">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Your service will be reviewed by our team before going live. This typically takes 24-48 hours. You'll receive a notification once approved.</p>
+                        </div>
 
-                                .upload-box {
-                                    border: 2px dashed #2d6a4f;
-                                    border-radius: 12px;
-                                    padding: 40px;
-                                    text-align: center;
-                                    cursor: pointer;
-                                    transition: all 0.3s;
-                                    background: #f8fdf9;
-                                }
-
-                                .upload-box:hover {
-                                    border-color: #1b4332;
-                                    background: #f0f7f4;
-                                }
-
-                                .upload-box.dragover {
-                                    border-color: #1b4332;
-                                    background: #e8f3ed;
-                                    transform: scale(1.02);
-                                }
-
-                                .image-preview-container {
-                                    display: grid;
-                                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                                    gap: 15px;
-                                    margin-top: 20px;
-                                }
-
-                                .image-preview-item {
-                                    position: relative;
-                                    border-radius: 8px;
-                                    overflow: hidden;
-                                    border: 2px solid #e0e0e0;
-                                }
-
-                                .image-preview-item img {
-                                    width: 100%;
-                                    height: 150px;
-                                    object-fit: cover;
-                                }
-
-                                .image-preview-item.main-image {
-                                    border-color: #2d6a4f;
-                                    border-width: 3px;
-                                }
-
-                                .main-badge {
-                                    position: absolute;
-                                    top: 8px;
-                                    left: 8px;
-                                    background: #2d6a4f;
-                                    color: white;
-                                    padding: 4px 10px;
-                                    border-radius: 4px;
-                                    font-size: 0.75rem;
-                                    font-weight: 600;
-                                }
-
-                                .remove-image {
-                                    position: absolute;
-                                    top: 8px;
-                                    right: 8px;
-                                    background: rgba(220, 53, 69, 0.9);
-                                    color: white;
-                                    border: none;
-                                    width: 28px;
-                                    height: 28px;
-                                    border-radius: 50%;
-                                    cursor: pointer;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    transition: all 0.3s;
-                                }
-
-                                .remove-image:hover {
-                                    background: #c82333;
-                                    transform: scale(1.1);
-                                }
-
-                                .set-main-image {
-                                    position: absolute;
-                                    bottom: 8px;
-                                    left: 8px;
-                                    background: rgba(45, 106, 79, 0.9);
-                                    color: white;
-                                    border: none;
-                                    padding: 4px 10px;
-                                    border-radius: 4px;
-                                    font-size: 0.7rem;
-                                    cursor: pointer;
-                                    transition: all 0.3s;
-                                }
-
-                                .set-main-image:hover {
-                                    background: #1b4332;
-                                }
-
-                                .image-count-badge {
-                                    display: inline-block;
-                                    background: #2d6a4f;
-                                    color: white;
-                                    padding: 4px 12px;
-                                    border-radius: 20px;
-                                    font-size: 0.85rem;
-                                    margin-left: 10px;
-                                }
-                            </style>
-
-                            <script>
-                                const uploadBox = document.getElementById('uploadBox');
-                                const fileInput = document.getElementById('service_images');
-                                const previewContainer = document.getElementById('imagePreviewContainer');
-                                let selectedFiles = [];
-                                let mainImageIndex = 0;
-                                const MAX_FILES = 5;
-                                const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-                                // Click to upload
-                                uploadBox.addEventListener('click', () => fileInput.click());
-
-                                // Drag and drop
-                                uploadBox.addEventListener('dragover', (e) => {
-                                    e.preventDefault();
-                                    uploadBox.classList.add('dragover');
-                                });
-
-                                uploadBox.addEventListener('dragleave', () => {
-                                    uploadBox.classList.remove('dragover');
-                                });
-
-                                uploadBox.addEventListener('drop', (e) => {
-                                    e.preventDefault();
-                                    uploadBox.classList.remove('dragover');
-                                    const files = Array.from(e.dataTransfer.files);
-                                    handleFiles(files);
-                                });
-
-                                // File input change
-                                fileInput.addEventListener('change', (e) => {
-                                    const files = Array.from(e.target.files);
-                                    handleFiles(files);
-                                });
-
-                                function handleFiles(files) {
-                                    // Filter valid image files
-                                    const validFiles = files.filter(file => {
-                                        if (!file.type.startsWith('image/')) {
-                                            alert(`${file.name} is not a valid image file`);
-                                            return false;
-                                        }
-                                        if (file.size > MAX_FILE_SIZE) {
-                                            alert(`${file.name} is too large (max 5MB)`);
-                                            return false;
-                                        }
-                                        return true;
-                                    });
-
-                                    // Check total count
-                                    if (selectedFiles.length + validFiles.length > MAX_FILES) {
-                                        alert(`Maximum ${MAX_FILES} images allowed`);
-                                        return;
-                                    }
-
-                                    selectedFiles = [...selectedFiles, ...validFiles];
-                                    displayPreviews();
-                                }
-
-                                function displayPreviews() {
-                                    previewContainer.innerHTML = '';
-
-                                    selectedFiles.forEach((file, index) => {
-                                        const reader = new FileReader();
-                                        reader.onload = (e) => {
-                                            const previewItem = document.createElement('div');
-                                            previewItem.className = 'image-preview-item' + (index === mainImageIndex ? ' main-image' : '');
-
-                                            previewItem.innerHTML = `
-                                                <img src="${e.target.result}" alt="Preview">
-                                                ${index === mainImageIndex ? '<span class="main-badge">Main</span>' : ''}
-                                                <button type="button" class="remove-image" onclick="removeImage(${index})">
-                                                    <i class="fa fa-times"></i>
-                                                </button>
-                                                ${index !== mainImageIndex ? `<button type="button" class="set-main-image" onclick="setMainImage(${index})">Set as Main</button>` : ''}
-                                            `;
-
-                                            previewContainer.appendChild(previewItem);
-                                        };
-                                        reader.readAsDataURL(file);
-                                    });
-
-                                    // Update file input
-                                    const dataTransfer = new DataTransfer();
-                                    selectedFiles.forEach(file => dataTransfer.items.add(file));
-                                    fileInput.files = dataTransfer.files;
-
-                                    // Update upload box text
-                                    if (selectedFiles.length > 0) {
-                                        uploadBox.querySelector('p:first-of-type').innerHTML =
-                                            `<strong>${selectedFiles.length} image(s) selected</strong><br>Click or drag to add more (max ${MAX_FILES})`;
-                                    }
-                                }
-
-                                function removeImage(index) {
-                                    selectedFiles.splice(index, 1);
-                                    if (mainImageIndex === index) {
-                                        mainImageIndex = 0;
-                                    } else if (mainImageIndex > index) {
-                                        mainImageIndex--;
-                                    }
-                                    displayPreviews();
-                                }
-
-                                function setMainImage(index) {
-                                    mainImageIndex = index;
-                                    displayPreviews();
-                                }
-                            </script>
-
-                            <div class="alert alert-info">
-                                <i class="fa fa-info-circle"></i>
-                                Your service will be marked as "pending approval" until verified by our team.
-                            </div>
-
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-check"></i> Add Service
-                                </button>
-                                <a href="provider_dashboard.php" class="btn btn-outline-secondary">Cancel</a>
-                            </div>
-                        </form>
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check"></i>
+                                Create Service
+                            </button>
+                            <a href="provider_dashboard.php" class="btn btn-secondary">
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle checkbox styling
+        function toggleCheckbox(element) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            element.classList.toggle('checked', checkbox.checked);
+        }
+
+        // Image upload functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('service_images');
+        const previewGrid = document.getElementById('previewGrid');
+        let selectedFiles = [];
+        let mainImageIndex = 0;
+        const MAX_FILES = 5;
+        const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(Array.from(e.dataTransfer.files));
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(Array.from(e.target.files));
+        });
+
+        function handleFiles(files) {
+            const validFiles = files.filter(file => {
+                if (!file.type.startsWith('image/')) {
+                    alert(`${file.name} is not a valid image file`);
+                    return false;
+                }
+                if (file.size > MAX_FILE_SIZE) {
+                    alert(`${file.name} is too large (max 5MB)`);
+                    return false;
+                }
+                return true;
+            });
+
+            if (selectedFiles.length + validFiles.length > MAX_FILES) {
+                alert(`Maximum ${MAX_FILES} images allowed`);
+                return;
+            }
+
+            selectedFiles = [...selectedFiles, ...validFiles];
+            displayPreviews();
+        }
+
+        function displayPreviews() {
+            previewGrid.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const item = document.createElement('div');
+                    item.className = 'preview-item' + (index === mainImageIndex ? ' main' : '');
+                    item.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        ${index === mainImageIndex ? '<span class="preview-badge">Main</span>' : ''}
+                        <div class="preview-actions">
+                            <button type="button" class="preview-btn remove" onclick="removeImage(${index})" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            ${index !== mainImageIndex ? `<button type="button" class="preview-btn set-main" onclick="setMainImage(${index})" title="Set as main"><i class="fas fa-star"></i></button>` : ''}
+                        </div>
+                    `;
+                    previewGrid.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Update file input
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+
+        function removeImage(index) {
+            selectedFiles.splice(index, 1);
+            if (mainImageIndex === index) mainImageIndex = 0;
+            else if (mainImageIndex > index) mainImageIndex--;
+            displayPreviews();
+        }
+
+        function setMainImage(index) {
+            mainImageIndex = index;
+            displayPreviews();
+        }
+    </script>
 </body>
 </html>
