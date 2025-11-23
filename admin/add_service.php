@@ -261,20 +261,14 @@ $categories = get_all_service_categories_ctr();
         /* Form Container */
         .form-container {
             padding: 32px;
-            max-width: 900px;
-        }
-
-        .form-card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            overflow: hidden;
         }
 
         .form-header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             padding: 24px 32px;
             color: white;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 0;
         }
 
         .form-header h2 {
@@ -290,7 +284,11 @@ $categories = get_all_service_categories_ctr();
         }
 
         .form-body {
+            background: var(--bg-card);
             padding: 32px;
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
         }
 
         /* Form Sections */
@@ -714,13 +712,12 @@ $categories = get_all_service_categories_ctr();
         </div>
 
         <div class="form-container">
-            <div class="form-card">
-                <div class="form-header">
-                    <h2><i class="fas fa-plus-circle"></i> Service Details</h2>
-                    <p>Fill in the information below to create your service listing</p>
-                </div>
+            <div class="form-header">
+                <h2><i class="fas fa-plus-circle"></i> Service Details</h2>
+                <p>Fill in the information below to create your service listing</p>
+            </div>
 
-                <div class="form-body">
+            <div class="form-body">
                     <form action="../actions/add_service_action.php" method="POST" enctype="multipart/form-data" id="addServiceForm">
 
                         <!-- Basic Information -->
@@ -887,7 +884,6 @@ $categories = get_all_service_categories_ctr();
                         </div>
                     </form>
                 </div>
-            </div>
         </div>
     </main>
 
