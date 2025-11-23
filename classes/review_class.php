@@ -161,7 +161,7 @@ class Review extends db_connection
     {
         $stmt = $this->db->prepare(
             "UPDATE tl_reviews
-            SET provider_response = ?,
+            SET response_from_provider = ?,
                 response_date = NOW()
             WHERE review_id = ?"
         );
@@ -178,22 +178,29 @@ class Review extends db_connection
      */
     private function update_service_rating($service_id)
     {
-        $stats = $this->get_service_review_stats($service_id);
+        try {
+            $stats = $this->get_service_review_stats($service_id);
 
-        if ($stats && $stats['total_reviews'] > 0) {
-            $stmt = $this->db->prepare(
-                "UPDATE tl_services
-                SET average_rating = ?,
-                    total_reviews = ?
-                WHERE service_id = ?"
-            );
+            if ($stats && $stats['total_reviews'] > 0) {
+                $stmt = $this->db->prepare(
+                    "UPDATE tl_services
+                    SET average_rating = ?,
+                        total_reviews = ?
+                    WHERE service_id = ?"
+                );
 
-            $avg_rating = round($stats['average_rating'], 1);
-            $total = $stats['total_reviews'];
+                if ($stmt) {
+                    $avg_rating = round($stats['average_rating'], 1);
+                    $total = $stats['total_reviews'];
 
-            $stmt->bind_param("dii", $avg_rating, $total, $service_id);
+                    $stmt->bind_param("dii", $avg_rating, $total, $service_id);
 
-            return $stmt->execute();
+                    return $stmt->execute();
+                }
+            }
+        } catch (Exception $e) {
+            // Silently fail if columns don't exist yet
+            // Review is still saved, just rating won't be cached
         }
 
         return false;

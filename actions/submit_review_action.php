@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Start output buffering to prevent header issues
 require_once '../settings/core.php';
 require_once '../controllers/review_controller.php';
 require_once '../classes/booking_class.php';
@@ -72,6 +73,8 @@ if (has_reviewed_booking_ctr($booking_id, $tourist_id)) {
 // Submit the review (provider_id is available from the booking)
 $provider_id = $booking['provider_id'];
 $review_id = submit_review_ctr($service_id, $provider_id, $tourist_id, $booking_id, $rating, $review_title, $review_text);
+
+ob_end_clean(); // Clear any output before redirect
 
 if ($review_id) {
     $_SESSION['success'] = "Thank you for your review! Your feedback helps other tourists.";

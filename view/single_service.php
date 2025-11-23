@@ -1089,13 +1089,13 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                             <p class="review-text"><?php echo nl2br(htmlspecialchars($review['review_text'])); ?></p>
 
                             <!-- Provider Response -->
-                            <?php if ($review['provider_response']): ?>
+                            <?php if (!empty($review['response_from_provider'])): ?>
                                 <div class="provider-response">
                                     <div class="provider-response-label">
                                         <i class="fa fa-reply"></i> Provider Response
                                     </div>
                                     <p class="provider-response-text mb-0">
-                                        <?php echo nl2br(htmlspecialchars($review['provider_response'])); ?>
+                                        <?php echo nl2br(htmlspecialchars($review['response_from_provider'])); ?>
                                     </p>
                                     <small class="text-muted">
                                         <?php echo date('F j, Y', strtotime($review['response_date'])); ?>
