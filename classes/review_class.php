@@ -15,6 +15,7 @@ class Review extends db_connection
     /**
      * Submit a new review
      * @param int $service_id
+     * @param int $provider_id
      * @param int $tourist_id
      * @param int $booking_id
      * @param int $rating (1-5)
@@ -22,7 +23,7 @@ class Review extends db_connection
      * @param string $review_text
      * @return int|bool Review ID on success, false on failure
      */
-    public function submit_review($service_id, $tourist_id, $booking_id, $rating, $review_title, $review_text)
+    public function submit_review($service_id, $provider_id, $tourist_id, $booking_id, $rating, $review_title, $review_text)
     {
         // Check if user already reviewed this booking
         if ($this->has_reviewed_booking($booking_id, $tourist_id)) {
@@ -30,11 +31,11 @@ class Review extends db_connection
         }
 
         $stmt = $this->db->prepare(
-            "INSERT INTO tl_reviews (service_id, tourist_id, booking_id, rating, review_title, review_text)
-            VALUES (?, ?, ?, ?, ?, ?)"
+            "INSERT INTO tl_reviews (service_id, provider_id, tourist_id, booking_id, rating, review_title, review_text)
+            VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
 
-        $stmt->bind_param("iiiiss", $service_id, $tourist_id, $booking_id, $rating, $review_title, $review_text);
+        $stmt->bind_param("iiiiiss", $service_id, $provider_id, $tourist_id, $booking_id, $rating, $review_title, $review_text);
 
         if ($stmt->execute()) {
             // Update service average rating

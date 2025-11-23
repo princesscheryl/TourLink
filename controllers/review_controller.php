@@ -9,6 +9,7 @@ require_once __DIR__.'/../classes/review_class.php';
 /**
  * Submit a new review
  * @param int $service_id
+ * @param int $provider_id
  * @param int $tourist_id
  * @param int $booking_id
  * @param int $rating
@@ -16,10 +17,10 @@ require_once __DIR__.'/../classes/review_class.php';
  * @param string $review_text
  * @return int|bool Review ID on success, false on failure
  */
-function submit_review_ctr($service_id, $tourist_id, $booking_id, $rating, $review_title, $review_text)
+function submit_review_ctr($service_id, $provider_id, $tourist_id, $booking_id, $rating, $review_title, $review_text)
 {
     $review = new Review();
-    return $review->submit_review($service_id, $tourist_id, $booking_id, $rating, $review_title, $review_text);
+    return $review->submit_review($service_id, $provider_id, $tourist_id, $booking_id, $rating, $review_title, $review_text);
 }
 
 /**

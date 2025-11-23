@@ -69,8 +69,9 @@ if (has_reviewed_booking_ctr($booking_id, $tourist_id)) {
     exit();
 }
 
-// Submit the review
-$review_id = submit_review_ctr($service_id, $tourist_id, $booking_id, $rating, $review_title, $review_text);
+// Submit the review (provider_id is available from the booking)
+$provider_id = $booking['provider_id'];
+$review_id = submit_review_ctr($service_id, $provider_id, $tourist_id, $booking_id, $rating, $review_title, $review_text);
 
 if ($review_id) {
     $_SESSION['success'] = "Thank you for your review! Your feedback helps other tourists.";
