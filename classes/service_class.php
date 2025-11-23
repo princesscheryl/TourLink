@@ -181,7 +181,7 @@ class Service extends db_connection
      */
     public function update_service($service_id, $data)
     {
-        $allowed_fields = ['service_title', 'service_description', 'base_price', 'pricing_unit',
+        $allowed_fields = ['service_title', 'category_id', 'service_description', 'base_price', 'pricing_unit',
                           'service_location', 'available_regions', 'max_capacity', 'service_images',
                           'availability_status', 'service_status'];
 

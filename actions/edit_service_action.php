@@ -55,9 +55,10 @@ if (empty($service_title) || empty($category_id) || empty($service_description) 
 
 // Handle image uploads
 $service_images = json_decode($existing_service['service_images'], true) ?: [];
+$provider_id = $provider['provider_id'];
 
 if (!empty($_FILES['service_images']['name'][0])) {
-    $upload_dir = '../uploads/services/';
+    $upload_dir = '../uploads/services/' . $provider_id . '/';
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0755, true);
     }
@@ -73,12 +74,14 @@ if (!empty($_FILES['service_images']['name'][0])) {
                 continue;
             }
 
-            $ext = pathinfo($_FILES['service_images']['name'][$key], PATHINFO_EXTENSION);
-            $filename = uniqid('service_') . '.' . $ext;
+            $ext = strtolower(pathinfo($_FILES['service_images']['name'][$key], PATHINFO_EXTENSION));
+            $filename = uniqid('service_' . $provider_id . '_') . '.' . $ext;
             $filepath = $upload_dir . $filename;
 
             if (move_uploaded_file($tmp_name, $filepath)) {
-                $new_images[] = $filename;
+                // Store relative path (consistent with add_service_action.php)
+                $relative_path = 'uploads/services/' . $provider_id . '/' . $filename;
+                $new_images[] = $relative_path;
             }
         }
     }
@@ -86,28 +89,31 @@ if (!empty($_FILES['service_images']['name'][0])) {
     if (!empty($new_images)) {
         // Delete old images
         foreach ($service_images as $old_img) {
-            $old_path = $upload_dir . $old_img;
+            // Handle both old format (filename only) and new format (full path)
+            $old_path = strpos($old_img, 'uploads/') === 0 ? '../' . $old_img : '../uploads/services/' . $old_img;
             if (file_exists($old_path)) {
-                unlink($old_path);
+                @unlink($old_path);
             }
         }
         $service_images = $new_images;
     }
 }
 
+// Prepare update data as associative array
+$update_data = [
+    'service_title' => $service_title,
+    'category_id' => $category_id,
+    'service_description' => $service_description,
+    'base_price' => $base_price,
+    'pricing_unit' => $pricing_unit,
+    'service_location' => $service_location,
+    'available_regions' => json_encode($regions),
+    'max_capacity' => $max_capacity,
+    'service_images' => json_encode($service_images)
+];
+
 // Update service
-$result = $service_class->update_service(
-    $service_id,
-    $service_title,
-    $category_id,
-    $service_description,
-    $base_price,
-    $pricing_unit,
-    $service_location,
-    json_encode($regions),
-    $max_capacity,
-    json_encode($service_images)
-);
+$result = $service_class->update_service($service_id, $update_data);
 
 if ($result) {
     $_SESSION['success'] = 'Service updated successfully';
