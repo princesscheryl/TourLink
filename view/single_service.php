@@ -183,6 +183,80 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
             text-decoration: underline;
         }
 
+        /* Image Gallery */
+        .service-gallery {
+            margin-bottom: 24px;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .gallery-main {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #f0f0f0;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .gallery-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            color: white;
+        }
+
+        .gallery-placeholder i {
+            font-size: 4rem;
+            opacity: 0.5;
+            margin-bottom: 16px;
+        }
+
+        .gallery-placeholder span {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .gallery-thumbs {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .gallery-thumb {
+            width: 80px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .gallery-thumb.active {
+            border-color: #2d6a4f;
+        }
+
+        .gallery-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-thumb:hover {
+            border-color: #2d6a4f;
+        }
+
         /* Service Card */
         .service-detail-card {
             background: white;
@@ -874,6 +948,48 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
             <span><?php echo htmlspecialchars($service['service_title']); ?></span>
         </div>
 
+        <!-- Image Gallery -->
+        <?php
+        $gallery_images = json_decode($service['service_images'], true);
+        $has_images = is_array($gallery_images) && !empty($gallery_images);
+        ?>
+        <div class="service-gallery">
+            <div class="gallery-main">
+                <?php if ($has_images): ?>
+                    <?php $first_img = '../' . $gallery_images[0]; ?>
+                    <?php if (file_exists($first_img)): ?>
+                        <img src="<?php echo htmlspecialchars($first_img); ?>"
+                             alt="<?php echo htmlspecialchars($service['service_title']); ?>"
+                             id="mainGalleryImage">
+                    <?php else: ?>
+                        <div class="gallery-placeholder">
+                            <i class="fa fa-image"></i>
+                            <span>Image not available</span>
+                        </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <div class="gallery-placeholder">
+                        <i class="fa fa-image"></i>
+                        <span>No images uploaded for this service</span>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <?php if ($has_images && count($gallery_images) > 1): ?>
+            <div class="gallery-thumbs">
+                <?php foreach ($gallery_images as $index => $img): ?>
+                    <?php $img_path = '../' . $img; ?>
+                    <?php if (file_exists($img_path)): ?>
+                    <div class="gallery-thumb <?php echo $index === 0 ? 'active' : ''; ?>"
+                         onclick="changeGalleryImage('<?php echo htmlspecialchars($img_path); ?>', this)">
+                        <img src="<?php echo htmlspecialchars($img_path); ?>" alt="Thumbnail <?php echo $index + 1; ?>">
+                    </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </div>
+
         <div class="row">
             <div class="col-md-8">
                 <div class="service-detail-card">
@@ -1439,6 +1555,19 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
 
         function formatNumber(num) {
             return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Gallery image switching
+        function changeGalleryImage(src, thumbElement) {
+            const mainImage = document.getElementById('mainGalleryImage');
+            if (mainImage) {
+                mainImage.src = src;
+            }
+            // Update active state
+            document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+            if (thumbElement) {
+                thumbElement.classList.add('active');
+            }
         }
 
         function submitBooking() {

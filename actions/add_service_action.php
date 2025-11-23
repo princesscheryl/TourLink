@@ -100,23 +100,36 @@ function handleImageUploads($files, $provider_id) {
         }
 
         // Generate unique filename
-        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
+        $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
         $new_filename = uniqid('service_' . $provider_id . '_', true) . '.' . $extension;
         $destination = $upload_dir . $new_filename;
 
-        // Resize and optimize image
-        if (resizeImage($file_tmp, $destination, 1200, 800, 85)) {
+        // Try to resize and optimize image
+        $upload_success = false;
+
+        // First try GD resize
+        if (function_exists('imagecreatefromjpeg') && resizeImage($file_tmp, $destination, 1200, 800, 85)) {
+            $upload_success = true;
+        }
+        // Fallback: just move the uploaded file without resizing
+        elseif (move_uploaded_file($file_tmp, $destination)) {
+            $upload_success = true;
+        }
+
+        if ($upload_success) {
             // Store relative path (from project root)
             $relative_path = 'uploads/services/' . $provider_id . '/' . $new_filename;
             $uploaded_paths[] = $relative_path;
 
-            // Create thumbnail
-            $thumb_dir = $upload_dir . 'thumbs/';
-            if (!file_exists($thumb_dir)) {
-                mkdir($thumb_dir, 0755, true);
+            // Try to create thumbnail (optional, don't fail if it doesn't work)
+            if (function_exists('imagecreatefromjpeg')) {
+                $thumb_dir = $upload_dir . 'thumbs/';
+                if (!file_exists($thumb_dir)) {
+                    @mkdir($thumb_dir, 0755, true);
+                }
+                $thumb_destination = $thumb_dir . 'thumb_' . $new_filename;
+                @resizeImage($destination, $thumb_destination, 400, 300, 80);
             }
-            $thumb_destination = $thumb_dir . 'thumb_' . $new_filename;
-            resizeImage($destination, $thumb_destination, 400, 300, 80);
         }
     }
 

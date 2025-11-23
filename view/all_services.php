@@ -467,9 +467,11 @@ if (isset($_SESSION['user_id'])) {
                                     <?php
                                     $images = json_decode($service['service_images'], true);
                                     $first_image = is_array($images) && !empty($images) ? $images[0] : null;
+                                    // Build proper image path
+                                    $image_path = $first_image ? '../' . $first_image : null;
                                     ?>
-                                    <?php if ($first_image): ?>
-                                        <img src="<?php echo htmlspecialchars($first_image); ?>"
+                                    <?php if ($first_image && file_exists($image_path)): ?>
+                                        <img src="<?php echo htmlspecialchars($image_path); ?>"
                                              alt="<?php echo htmlspecialchars($service['service_title']); ?>"
                                              class="service-image">
                                     <?php else: ?>
