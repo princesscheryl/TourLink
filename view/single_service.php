@@ -572,194 +572,403 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
             color: #055160;
         }
 
-        /* Booking Modal */
+        /* Booking Modal - Professional Design */
+        .booking-modal .modal-dialog {
+            max-width: 480px;
+        }
+
         .booking-modal .modal-content {
             border: none;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
         .booking-modal .modal-header {
-            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            background: #1b4332;
             color: white;
             border: none;
-            padding: 24px 30px;
+            padding: 20px 28px;
+            position: relative;
+        }
+
+        .booking-modal .modal-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 28px;
+            right: 28px;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
         }
 
         .booking-modal .modal-header .modal-title {
-            font-weight: 700;
-            font-size: 1.3rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .booking-modal .modal-header .modal-title i {
+            font-size: 0.95rem;
+            opacity: 0.9;
         }
 
         .booking-modal .modal-header .btn-close {
             filter: brightness(0) invert(1);
-            opacity: 0.8;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            padding: 0;
+            margin: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-size: 10px;
+        }
+
+        .booking-modal .modal-header .btn-close:hover {
+            opacity: 1;
+            background-color: rgba(255,255,255,0.1);
         }
 
         .booking-modal .modal-body {
-            padding: 30px;
+            padding: 0;
+            background: #fafafa;
         }
 
-        .booking-modal .booking-summary {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 24px;
+        /* Service Card */
+        .booking-modal .service-card {
+            background: white;
+            margin: 20px;
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid #e8e8e8;
         }
 
-        .booking-modal .booking-summary h6 {
+        .booking-modal .service-card-inner {
+            display: flex;
+            gap: 16px;
+        }
+
+        .booking-modal .service-thumb {
+            width: 72px;
+            height: 72px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #f0f0f0;
+        }
+
+        .booking-modal .service-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .booking-modal .service-category {
+            font-size: 0.7rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: #1b4332;
-            margin-bottom: 8px;
+            background: #e8f5e9;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 6px;
         }
 
-        .booking-modal .booking-summary .service-name {
-            font-size: 1.1rem;
+        .booking-modal .service-name {
+            font-size: 1rem;
             font-weight: 600;
             color: #1a1a1a;
+            margin-bottom: 4px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .booking-modal .booking-summary .service-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #2d6a4f;
-        }
-
-        .booking-modal .booking-summary .pricing-unit {
+        .booking-modal .service-provider {
+            font-size: 0.8rem;
             color: #666;
-            font-size: 0.9rem;
+        }
+
+        .booking-modal .service-pricing {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .booking-modal .service-price {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1b4332;
+            line-height: 1.2;
+        }
+
+        .booking-modal .service-price-currency {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .booking-modal .pricing-unit {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* Form Section */
+        .booking-modal .booking-form-section {
+            padding: 0 20px 20px;
+        }
+
+        .booking-modal .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .booking-modal .form-group {
+            margin-bottom: 14px;
+        }
+
+        .booking-modal .form-group.full-width {
+            grid-column: 1 / -1;
         }
 
         .booking-modal .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: #333;
+            color: #444;
             margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .booking-modal .form-label i {
+            color: #1b4332;
+            font-size: 0.85rem;
         }
 
         .booking-modal .form-control,
         .booking-modal .form-select {
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.2s ease;
+            color: #333;
+        }
+
+        .booking-modal .form-control:hover,
+        .booking-modal .form-select:hover {
+            border-color: #bbb;
         }
 
         .booking-modal .form-control:focus,
         .booking-modal .form-select:focus {
-            border-color: #2d6a4f;
-            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+            border-color: #1b4332;
+            box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.08);
+            outline: none;
         }
 
-        .booking-modal .price-breakdown {
-            background: #fff;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
+        .booking-modal .form-control::placeholder {
+            color: #999;
         }
 
-        .booking-modal .price-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            color: #555;
+        .booking-modal textarea.form-control {
+            resize: none;
+            min-height: 80px;
         }
 
-        .booking-modal .price-row.total {
-            border-top: 2px solid #e0e0e0;
-            margin-top: 10px;
-            padding-top: 15px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: #1a1a1a;
-        }
-
-        .booking-modal .price-row.total span:last-child {
-            color: #2d6a4f;
-        }
-
-        .booking-modal .modal-footer {
-            border: none;
-            padding: 0 30px 30px;
-            gap: 12px;
-        }
-
-        .booking-modal .btn-book {
-            background: #2d6a4f;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            flex: 1;
-        }
-
-        .booking-modal .btn-book:hover {
-            background: #1b4332;
-        }
-
-        .booking-modal .btn-cancel-modal {
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            color: #666;
-            padding: 14px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .booking-modal .btn-cancel-modal:hover {
-            background: #e9ecef;
-            border-color: #d0d0d0;
-        }
-
-        .booking-modal .input-group-text {
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            border-right: none;
-            border-radius: 8px 0 0 8px;
-            color: #2d6a4f;
-        }
-
-        .booking-modal .input-group .form-control {
-            border-left: none;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .booking-modal .guest-counter {
+        /* Guest Counter */
+        .booking-modal .guest-selector {
             display: flex;
             align-items: center;
-            gap: 15px;
-        }
-
-        .booking-modal .guest-counter button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #e0e0e0;
             background: white;
-            font-size: 1.2rem;
-            color: #2d6a4f;
-            cursor: pointer;
-            transition: all 0.2s;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 6px;
+            gap: 0;
         }
 
-        .booking-modal .guest-counter button:hover {
-            background: #2d6a4f;
-            border-color: #2d6a4f;
+        .booking-modal .guest-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            border: none;
+            background: #f5f5f5;
+            font-size: 1.1rem;
+            color: #1b4332;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .booking-modal .guest-btn:hover:not(:disabled) {
+            background: #1b4332;
             color: white;
         }
 
-        .booking-modal .guest-counter button:disabled {
-            opacity: 0.5;
+        .booking-modal .guest-btn:disabled {
+            color: #ccc;
+            background: #f9f9f9;
             cursor: not-allowed;
         }
 
-        .booking-modal .guest-counter .guest-count {
-            font-size: 1.3rem;
-            font-weight: 600;
-            min-width: 40px;
+        .booking-modal .guest-display {
+            flex: 1;
             text-align: center;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .booking-modal .guest-max {
+            font-size: 0.75rem;
+            color: #888;
+            margin-left: 12px;
+            font-weight: 500;
+        }
+
+        /* Price Summary */
+        .booking-modal .price-summary {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 6px;
+        }
+
+        .booking-modal .price-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .booking-modal .price-line-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .booking-modal .price-divider {
+            height: 1px;
+            background: #eee;
+            margin: 8px 0;
+        }
+
+        .booking-modal .price-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 8px;
+        }
+
+        .booking-modal .price-total-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .booking-modal .price-total-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1b4332;
+        }
+
+        /* Modal Footer */
+        .booking-modal .modal-footer {
+            border: none;
+            padding: 16px 20px 20px;
+            background: #fafafa;
+            gap: 10px;
+        }
+
+        .booking-modal .btn-cancel {
+            flex: 0 0 auto;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: white;
+            border: 1px solid #ddd;
+            color: #555;
+            transition: all 0.2s ease;
+        }
+
+        .booking-modal .btn-cancel:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+            color: #333;
+        }
+
+        .booking-modal .btn-book {
+            flex: 1;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: #1b4332;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .booking-modal .btn-book:hover {
+            background: #143728;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(27, 67, 50, 0.3);
+        }
+
+        .booking-modal .btn-book:active {
+            transform: translateY(0);
+        }
+
+        .booking-modal .btn-book i {
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 520px) {
+            .booking-modal .modal-dialog {
+                margin: 10px;
+                max-width: calc(100% - 20px);
+            }
+
+            .booking-modal .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-modal .service-card-inner {
+                flex-direction: column;
+            }
+
+            .booking-modal .service-thumb {
+                width: 100%;
+                height: 120px;
+            }
+
+            .booking-modal .service-pricing {
+                text-align: left;
+                margin-top: 8px;
+            }
         }
     </style>
 </head>
@@ -1139,7 +1348,8 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="bookingModalLabel">
-                        <i class="fa fa-calendar-check me-2"></i>Book This Service
+                        <i class="far fa-calendar-check"></i>
+                        <span>Book This Service</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -1147,106 +1357,122 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                     <form id="bookingForm">
                         <input type="hidden" name="service_id" value="<?php echo $service_id; ?>">
 
-                        <!-- Service Summary -->
-                        <div class="booking-summary">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6>Service</h6>
+                        <!-- Service Card -->
+                        <div class="service-card">
+                            <div class="service-card-inner">
+                                <?php
+                                $images = json_decode($service['service_images'], true);
+                                $thumb = !empty($images) ? '../uploads/services/' . $images[0] : '../assets/images/placeholder.jpg';
+                                ?>
+                                <img src="<?php echo $thumb; ?>" alt="" class="service-thumb">
+                                <div class="service-info">
+                                    <span class="service-category"><?php echo htmlspecialchars($service['category_name'] ?? 'Service'); ?></span>
                                     <div class="service-name"><?php echo htmlspecialchars($service['service_title']); ?></div>
-                                    <small class="text-muted"><?php echo htmlspecialchars($service['provider_name'] ?: ($service['provider_first_name'] . ' ' . $service['provider_last_name'])); ?></small>
+                                    <div class="service-provider"><?php echo htmlspecialchars($service['provider_name'] ?: ($service['provider_first_name'] . ' ' . $service['provider_last_name'])); ?></div>
                                 </div>
-                                <div class="text-end">
-                                    <div class="service-price">GHS <?php echo number_format($service['base_price'], 2); ?></div>
+                                <div class="service-pricing">
+                                    <div class="service-price">
+                                        <span class="service-price-currency">GHS</span> <?php echo number_format($service['base_price'], 2); ?>
+                                    </div>
                                     <div class="pricing-unit"><?php echo str_replace('_', ' ', $service['pricing_unit']); ?></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Date Selection -->
-                        <div class="mb-3">
-                            <label for="service_date" class="form-label">
-                                <i class="fa fa-calendar me-2 text-success"></i>Select Date
-                            </label>
-                            <input type="date"
-                                   class="form-control"
-                                   id="service_date"
-                                   name="service_date"
-                                   min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>"
-                                   required>
-                        </div>
+                        <!-- Form Fields -->
+                        <div class="booking-form-section">
+                            <div class="form-grid">
+                                <!-- Date Selection -->
+                                <div class="form-group">
+                                    <label for="service_date" class="form-label">
+                                        <i class="far fa-calendar"></i>Date
+                                    </label>
+                                    <input type="date"
+                                           class="form-control"
+                                           id="service_date"
+                                           name="service_date"
+                                           min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>"
+                                           required>
+                                </div>
 
-                        <!-- Time Selection -->
-                        <div class="mb-3">
-                            <label for="service_time" class="form-label">
-                                <i class="fa fa-clock me-2 text-success"></i>Preferred Time
-                            </label>
-                            <select class="form-select" id="service_time" name="service_time" required>
-                                <option value="">Select a time...</option>
-                                <option value="06:00">6:00 AM</option>
-                                <option value="07:00">7:00 AM</option>
-                                <option value="08:00">8:00 AM</option>
-                                <option value="09:00">9:00 AM</option>
-                                <option value="10:00">10:00 AM</option>
-                                <option value="11:00">11:00 AM</option>
-                                <option value="12:00">12:00 PM</option>
-                                <option value="13:00">1:00 PM</option>
-                                <option value="14:00">2:00 PM</option>
-                                <option value="15:00">3:00 PM</option>
-                                <option value="16:00">4:00 PM</option>
-                                <option value="17:00">5:00 PM</option>
-                                <option value="18:00">6:00 PM</option>
-                            </select>
-                        </div>
-
-                        <!-- Number of Guests -->
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="fa fa-users me-2 text-success"></i>Number of Guests
-                            </label>
-                            <div class="guest-counter">
-                                <button type="button" id="decreaseGuests" onclick="updateGuestCount(-1)">−</button>
-                                <span class="guest-count" id="guestCountDisplay">1</span>
-                                <button type="button" id="increaseGuests" onclick="updateGuestCount(1)">+</button>
-                                <input type="hidden" name="number_of_people" id="number_of_people" value="1">
-                                <?php if ($service['max_capacity']): ?>
-                                    <span class="text-muted ms-2">(Max: <?php echo $service['max_capacity']; ?>)</span>
-                                <?php endif; ?>
+                                <!-- Time Selection -->
+                                <div class="form-group">
+                                    <label for="service_time" class="form-label">
+                                        <i class="far fa-clock"></i>Time
+                                    </label>
+                                    <select class="form-select" id="service_time" name="service_time" required>
+                                        <option value="">Select time</option>
+                                        <option value="06:00">6:00 AM</option>
+                                        <option value="07:00">7:00 AM</option>
+                                        <option value="08:00">8:00 AM</option>
+                                        <option value="09:00">9:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="12:00">12:00 PM</option>
+                                        <option value="13:00">1:00 PM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                        <option value="17:00">5:00 PM</option>
+                                        <option value="18:00">6:00 PM</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Special Requests -->
-                        <div class="mb-3">
-                            <label for="special_requests" class="form-label">
-                                <i class="fa fa-comment me-2 text-success"></i>Special Requests (Optional)
-                            </label>
-                            <textarea class="form-control"
-                                      id="special_requests"
-                                      name="special_requests"
-                                      rows="3"
-                                      placeholder="Any special requirements, dietary restrictions, accessibility needs..."></textarea>
-                        </div>
+                            <!-- Number of Guests -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user-friends"></i>Guests
+                                </label>
+                                <div style="display: flex; align-items: center;">
+                                    <div class="guest-selector" style="flex: 1;">
+                                        <button type="button" class="guest-btn" id="decreaseGuests" onclick="updateGuestCount(-1)">−</button>
+                                        <span class="guest-display" id="guestCountDisplay">1</span>
+                                        <button type="button" class="guest-btn" id="increaseGuests" onclick="updateGuestCount(1)">+</button>
+                                        <input type="hidden" name="number_of_people" id="number_of_people" value="1">
+                                    </div>
+                                    <?php if ($service['max_capacity']): ?>
+                                        <span class="guest-max">Max <?php echo $service['max_capacity']; ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
 
-                        <!-- Price Breakdown -->
-                        <div class="price-breakdown">
-                            <div class="price-row">
-                                <span>Base price</span>
-                                <span>GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                            <!-- Special Requests -->
+                            <div class="form-group">
+                                <label for="special_requests" class="form-label">
+                                    <i class="far fa-comment-alt"></i>Special Requests
+                                </label>
+                                <textarea class="form-control"
+                                          id="special_requests"
+                                          name="special_requests"
+                                          rows="2"
+                                          placeholder="Dietary needs, accessibility, special occasions..."></textarea>
                             </div>
-                            <div class="price-row" id="guestPriceRow" style="display: <?php echo $service['pricing_unit'] === 'per_person' ? 'flex' : 'none'; ?>;">
-                                <span>× <span id="guestMultiplier">1</span> guest(s)</span>
-                                <span id="subtotalAmount">GHS <?php echo number_format($service['base_price'], 2); ?></span>
-                            </div>
-                            <div class="price-row total">
-                                <span>Total</span>
-                                <span id="totalAmount">GHS <?php echo number_format($service['base_price'], 2); ?></span>
+
+                            <!-- Price Summary -->
+                            <div class="price-summary">
+                                <div class="price-line">
+                                    <span>Service fee</span>
+                                    <span class="price-line-value">GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                                </div>
+                                <div class="price-line" id="guestPriceRow" style="display: <?php echo $service['pricing_unit'] === 'per_person' ? 'flex' : 'none'; ?>;">
+                                    <span>× <span id="guestMultiplier">1</span> guest(s)</span>
+                                    <span class="price-line-value" id="subtotalAmount">GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                                </div>
+                                <div class="price-divider"></div>
+                                <div class="price-total">
+                                    <span class="price-total-label">Total</span>
+                                    <span class="price-total-value" id="totalAmount">GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                                </div>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel-modal" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary btn-book" onclick="submitBooking()">
-                        <i class="fa fa-check me-2"></i>Request Booking
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-book" onclick="submitBooking()">
+                        <i class="fas fa-check"></i>
+                        <span>Confirm Booking</span>
                     </button>
                 </div>
             </div>
