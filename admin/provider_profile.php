@@ -22,344 +22,676 @@ if (!$provider) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile - TourLink</title>
+    <title>Business Profile - TourLink Provider</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <link href="../css/dark-mode.css" rel="stylesheet">
-    <link href="../css/accessibility.css" rel="stylesheet">
-    <script src="../js/dark-mode.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #0f766e;
+            --primary-dark: #0d5a54;
+            --primary-light: #14b8a6;
+            --accent: #f59e0b;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
             min-height: 100vh;
         }
 
-        /* Navigation */
-        .main-nav {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 0;
+        .sidebar {
             position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
-        }
-
-        .nav-left, .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #2d6a4f;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .logo:hover {
-            color: #1b4332;
-        }
-
-        .logo-dot {
-            color: #ffd700;
-            font-size: 2rem;
-        }
-
-        .nav-link {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-            position: relative;
-        }
-
-        .nav-link:hover {
-            color: #2d6a4f;
-        }
-
-        .nav-link.active {
-            color: #2d6a4f;
-            font-weight: 600;
-        }
-
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: -23px;
             left: 0;
-            right: 0;
-            height: 3px;
-            background: #2d6a4f;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
         }
 
-        .btn-nav {
-            padding: 10px 24px;
-            border-radius: 8px;
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s;
+            gap: 12px;
         }
 
-        .btn-nav-logout {
-            background: #dc3545;
+        .sidebar-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .sidebar-logo-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-top: 4px;
+            margin-left: 1px;
+        }
+
+        .sidebar-logo-badge {
+            background: var(--primary);
             color: white;
-        }
-
-        .btn-nav-logout:hover {
-            background: #c82333;
-        }
-
-        /* Main Container */
-        .main-container {
-            max-width: 900px;
-            margin: 100px auto 60px;
-            padding: 0 30px;
-        }
-
-        /* Form Card */
-        .form-card {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }
-
-        .form-card h2 {
-            font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #2d6a4f;
-        }
-
-        /* Form Elements */
-        .form-label {
+            font-size: 0.65rem;
             font-weight: 600;
-            color: #1b4332;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 0;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 12px;
             margin-bottom: 8px;
         }
 
-        .form-control, .form-select {
-            border: 2px solid #e9ecef;
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
             border-radius: 8px;
-            padding: 12px 16px;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #2d6a4f;
-            box-shadow: 0 0 0 0.2rem rgba(45, 106, 79, 0.15);
-        }
-
-        textarea.form-control {
-            resize: vertical;
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background: #2d6a4f;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 1rem;
-        }
-
-        .btn-primary:hover {
-            background: #1b4332;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
-        }
-
-        .btn-outline-secondary {
-            border: 2px solid #6c757d;
-            color: #6c757d;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s;
+            color: var(--text-secondary);
             text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 2px;
         }
 
-        .btn-outline-secondary:hover {
-            background: #6c757d;
+        .nav-item:hover {
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
         }
 
-        /* Help Text */
-        small.text-muted {
-            color: #666 !important;
-            font-size: 0.85rem;
-        }
+        .nav-item i { width: 20px; text-align: center; font-size: 1rem; }
 
-        .info-box {
-            background: #e8f4f1;
-            border-left: 4px solid #2d6a4f;
+        .sidebar-footer {
             padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            color: #1b4332;
+            border-top: 1px solid var(--border);
         }
 
-        .info-box i {
-            color: #2d6a4f;
-            margin-right: 8px;
+        .provider-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-main);
+            border-radius: 10px;
+        }
+
+        .provider-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .provider-info h4 { font-size: 0.85rem; font-weight: 600; margin: 0; }
+        .provider-info span { font-size: 0.75rem; color: var(--text-secondary); }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .page-title h1 { font-size: 1.25rem; font-weight: 600; margin: 0; }
+        .page-title p { font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 0 0; }
+
+        .content-area { padding: 32px; }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+        }
+
+        .profile-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .profile-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+
+        .profile-card .business-type {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .verification-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .verification-badge.verified {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .completion-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .completion-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+        }
+
+        .completion-bar {
+            height: 8px;
+            background: var(--bg-main);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .completion-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .completion-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .form-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-header h2 i {
+            color: var(--primary);
+        }
+
+        .form-body { padding: 24px; }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section:last-child { margin-bottom: 0; }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .form-label .required { color: var(--danger); }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        .form-control:read-only {
+            background: var(--bg-main);
+            color: var(--text-secondary);
+        }
+
+        .form-hint {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-main);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover { background: var(--border); }
+
+        .alert-toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 16px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert-toast.success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .alert-toast.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+        @media (max-width: 1200px) {
+            .profile-grid { grid-template-columns: 1fr; }
+            .profile-sidebar { flex-direction: row; }
+            .profile-card, .completion-card { flex: 1; }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; }
+            .sidebar-logo-text, .sidebar-logo-badge, .nav-section-title, .nav-item span, .provider-info { display: none; }
+            .main-content { margin-left: 80px; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .content-area { padding: 16px; }
+            .profile-sidebar { flex-direction: column; }
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    <!-- Navigation -->
-    <nav class="main-nav" role="navigation" aria-label="Provider navigation">
-        <div class="nav-container">
-            <div class="nav-left">
-                <a href="../index_tourlink.php" class="logo">TourLink<span class="logo-dot">.</span></a>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="provider_dashboard.php" class="sidebar-logo">
+                <span class="sidebar-logo-text">TourLink<span class="sidebar-logo-dot"></span></span>
+                <span class="sidebar-logo-badge">Provider</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="provider_dashboard.php" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="../view/provider/manage_bookings.php" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="manage_services.php" class="nav-item">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span>My Services</span>
+                </a>
             </div>
-            <div class="nav-right">
-                <a href="provider_dashboard.php" class="nav-link">Dashboard</a>
-                <a href="manage_services.php" class="nav-link">My Services</a>
-                <a href="../login/logout.php" class="btn-nav btn-nav-logout">Logout</a>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="add_service.php" class="nav-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Service</span>
+                </a>
+                <a href="provider_profile.php" class="nav-item active">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Business Profile</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Other</div>
+                <a href="../index_tourlink.php" class="nav-item">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>View Site</span>
+                </a>
+                <a href="account_settings.php" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Account Settings</span>
+                </a>
+                <a href="../login/logout.php" class="nav-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="provider-badge">
+                <div class="provider-avatar">
+                    <?php echo strtoupper(substr($provider['business_name'] ?? $_SESSION['first_name'], 0, 1)); ?>
+                </div>
+                <div class="provider-info">
+                    <h4><?php echo htmlspecialchars($provider['business_name'] ?? $_SESSION['first_name']); ?></h4>
+                    <span><?php echo ucfirst($provider['verification_status'] ?? 'Pending'); ?></span>
+                </div>
             </div>
         </div>
-    </nav>
+    </aside>
 
-    <div class="main-container" id="main-content" role="main">
-        <div class="form-card">
-            <h2><i class="fa fa-user-circle" aria-hidden="true"></i> Edit Profile</h2>
-
-            <div class="info-box">
-                <i class="fa fa-info-circle" aria-hidden="true"></i>
-                Complete your profile to improve your visibility and credibility with tourists.
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Business Profile</h1>
+                <p>Manage your provider information</p>
             </div>
-
-            <form id="profileForm" role="form" aria-label="Provider profile form">
-                <!-- Business Name -->
-                <div class="mb-3">
-                    <label for="business_name" class="form-label">Business Name *</label>
-                    <input type="text" class="form-control" id="business_name" name="business_name"
-                           value="<?php echo htmlspecialchars($provider['business_name']); ?>" required aria-required="true">
-                </div>
-
-                <!-- Business Registration Number -->
-                <div class="mb-3">
-                    <label for="business_registration_number" class="form-label">Business Registration Number</label>
-                    <input type="text" class="form-control" id="business_registration_number" name="business_registration_number"
-                           value="<?php echo htmlspecialchars($provider['business_registration_number'] ?? ''); ?>"
-                           placeholder="e.g., BN12345678" aria-describedby="reg-help">
-                    <small class="text-muted" id="reg-help">Optional - Helps build trust with customers</small>
-                </div>
-
-                <!-- Primary Region -->
-                <div class="mb-3">
-                    <label for="region" class="form-label">Primary Business Region *</label>
-                    <select class="form-select" id="region" name="region" required aria-required="true">
-                        <option value="Greater Accra" <?php echo $provider['region'] === 'Greater Accra' ? 'selected' : ''; ?>>Greater Accra</option>
-                        <option value="Central" <?php echo $provider['region'] === 'Central' ? 'selected' : ''; ?>>Central</option>
-                        <option value="Ashanti" <?php echo $provider['region'] === 'Ashanti' ? 'selected' : ''; ?>>Ashanti</option>
-                        <option value="Northern" <?php echo $provider['region'] === 'Northern' ? 'selected' : ''; ?>>Northern</option>
-                    </select>
-                </div>
-
-                <!-- Location Details -->
-                <div class="mb-3">
-                    <label for="location_details" class="form-label">Location Details</label>
-                    <textarea class="form-control" id="location_details" name="location_details" rows="2"
-                              placeholder="e.g., Osu, Accra - Near Oxford Street"><?php echo htmlspecialchars($provider['location_details'] ?? ''); ?></textarea>
-                    <small class="text-muted">Provide specific location information for tourists</small>
-                </div>
-
-                <!-- Years of Experience -->
-                <div class="mb-3">
-                    <label for="years_of_experience" class="form-label">Years of Experience</label>
-                    <input type="number" class="form-control" id="years_of_experience" name="years_of_experience"
-                           value="<?php echo htmlspecialchars($provider['years_of_experience'] ?? ''); ?>"
-                           min="0" max="50" placeholder="e.g., 5">
-                    <small class="text-muted">How many years have you been providing tourism services?</small>
-                </div>
-
-                <!-- Languages Spoken -->
-                <div class="mb-3">
-                    <label for="languages_spoken" class="form-label">Languages Spoken</label>
-                    <input type="text" class="form-control" id="languages_spoken" name="languages_spoken"
-                           value="<?php echo htmlspecialchars($provider['languages_spoken'] ?? ''); ?>"
-                           placeholder="e.g., English, Twi, French, German">
-                    <small class="text-muted">Comma-separated list of languages you can communicate in</small>
-                </div>
-
-                <hr class="my-4">
-
-                <h5 class="mb-3">Personal Information</h5>
-
-                <!-- First Name -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="first_name" class="form-label">First Name *</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name"
-                               value="<?php echo htmlspecialchars($provider['first_name']); ?>" required>
-                    </div>
-
-                    <!-- Last Name -->
-                    <div class="col-md-6 mb-3">
-                        <label for="last_name" class="form-label">Last Name *</label>
-                        <input type="text" class="form-control" id="last_name" name="last_name"
-                               value="<?php echo htmlspecialchars($provider['last_name']); ?>" required>
-                    </div>
-                </div>
-
-                <!-- Phone -->
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone Number *</label>
-                    <input type="tel" class="form-control" id="phone" name="phone"
-                           value="<?php echo htmlspecialchars($provider['phone']); ?>" required>
-                </div>
-
-                <!-- Email (Read-only) -->
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="email" name="email"
-                           value="<?php echo htmlspecialchars($provider['email']); ?>" readonly>
-                    <small class="text-muted">Email cannot be changed. Contact support if needed.</small>
-                </div>
-
-                <div class="d-flex gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-save"></i> Save Changes
-                    </button>
-                    <a href="provider_dashboard.php" class="btn btn-outline-secondary">Cancel</a>
-                </div>
-            </form>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="content-area">
+            <div class="profile-grid">
+                <div class="profile-sidebar">
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <?php echo strtoupper(substr($provider['business_name'] ?? $_SESSION['first_name'], 0, 1)); ?>
+                        </div>
+                        <h3><?php echo htmlspecialchars($provider['business_name'] ?? 'Your Business'); ?></h3>
+                        <p class="business-type">Service Provider</p>
+                        <span class="verification-badge <?php echo ($provider['verification_status'] ?? 'pending') === 'verified' ? 'verified' : 'pending'; ?>">
+                            <i class="fas <?php echo ($provider['verification_status'] ?? 'pending') === 'verified' ? 'fa-check-circle' : 'fa-clock'; ?>"></i>
+                            <?php echo ucfirst($provider['verification_status'] ?? 'Pending Verification'); ?>
+                        </span>
+                    </div>
+
+                    <?php
+                    $completion = 30;
+                    if (!empty($provider['business_name'])) $completion += 15;
+                    if (!empty($provider['years_of_experience'])) $completion += 15;
+                    if (!empty($provider['languages_spoken'])) $completion += 15;
+                    if (!empty($provider['business_registration_number'])) $completion += 15;
+                    if (($provider['verification_status'] ?? '') === 'verified') $completion += 10;
+                    ?>
+                    <div class="completion-card">
+                        <h4>Profile Completion</h4>
+                        <div class="completion-bar">
+                            <div class="completion-fill" style="width: <?php echo $completion; ?>%"></div>
+                        </div>
+                        <p class="completion-text"><?php echo $completion; ?>% complete - <?php echo $completion < 100 ? 'Add more details to improve visibility' : 'Great job!'; ?></p>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-header">
+                        <h2><i class="fas fa-building"></i> Business Information</h2>
+                    </div>
+                    <div class="form-body">
+                        <form id="profileForm">
+                            <div class="form-section">
+                                <div class="section-title">Business Details</div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Business Name <span class="required">*</span></label>
+                                    <input type="text" class="form-control" id="business_name" name="business_name"
+                                           value="<?php echo htmlspecialchars($provider['business_name'] ?? ''); ?>" required>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Registration Number</label>
+                                        <input type="text" class="form-control" name="business_registration_number"
+                                               value="<?php echo htmlspecialchars($provider['business_registration_number'] ?? ''); ?>"
+                                               placeholder="e.g., BN12345678">
+                                        <p class="form-hint">Optional - builds trust with customers</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Years of Experience</label>
+                                        <input type="number" class="form-control" name="years_of_experience"
+                                               value="<?php echo htmlspecialchars($provider['years_of_experience'] ?? ''); ?>"
+                                               min="0" max="50" placeholder="e.g., 5">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Primary Region <span class="required">*</span></label>
+                                        <select class="form-select" name="region" required>
+                                            <option value="Greater Accra" <?php echo ($provider['region'] ?? '') === 'Greater Accra' ? 'selected' : ''; ?>>Greater Accra</option>
+                                            <option value="Central" <?php echo ($provider['region'] ?? '') === 'Central' ? 'selected' : ''; ?>>Central</option>
+                                            <option value="Ashanti" <?php echo ($provider['region'] ?? '') === 'Ashanti' ? 'selected' : ''; ?>>Ashanti</option>
+                                            <option value="Northern" <?php echo ($provider['region'] ?? '') === 'Northern' ? 'selected' : ''; ?>>Northern</option>
+                                            <option value="Eastern" <?php echo ($provider['region'] ?? '') === 'Eastern' ? 'selected' : ''; ?>>Eastern</option>
+                                            <option value="Western" <?php echo ($provider['region'] ?? '') === 'Western' ? 'selected' : ''; ?>>Western</option>
+                                            <option value="Volta" <?php echo ($provider['region'] ?? '') === 'Volta' ? 'selected' : ''; ?>>Volta</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Languages Spoken</label>
+                                        <input type="text" class="form-control" name="languages_spoken"
+                                               value="<?php echo htmlspecialchars($provider['languages_spoken'] ?? ''); ?>"
+                                               placeholder="e.g., English, Twi, French">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Location Details</label>
+                                    <input type="text" class="form-control" name="location_details"
+                                           value="<?php echo htmlspecialchars($provider['location_details'] ?? ''); ?>"
+                                           placeholder="e.g., Osu, Accra - Near Oxford Street">
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="section-title">Personal Information</div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">First Name <span class="required">*</span></label>
+                                        <input type="text" class="form-control" name="first_name"
+                                               value="<?php echo htmlspecialchars($provider['first_name'] ?? ''); ?>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Last Name <span class="required">*</span></label>
+                                        <input type="text" class="form-control" name="last_name"
+                                               value="<?php echo htmlspecialchars($provider['last_name'] ?? ''); ?>" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Phone Number <span class="required">*</span></label>
+                                        <input type="tel" class="form-control" name="phone"
+                                               value="<?php echo htmlspecialchars($provider['phone'] ?? ''); ?>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" name="email"
+                                               value="<?php echo htmlspecialchars($provider['email'] ?? ''); ?>" readonly>
+                                        <p class="form-hint">Contact support to change email</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Save Changes
+                                </button>
+                                <a href="provider_dashboard.php" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="alertContainer"></div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $('#profileForm').on('submit', function(e) {
             e.preventDefault();
@@ -370,35 +702,27 @@ if (!$provider) {
                 data: $(this).serialize(),
                 dataType: 'json',
                 success: function(response) {
+                    showAlert(response.status, response.message);
                     if (response.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: response.message,
-                            confirmButtonColor: '#2d6a4f'
-                        }).then(() => {
-                            window.location.href = 'provider_dashboard.php';
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: response.message,
-                            confirmButtonColor: '#2d6a4f'
-                        });
+                        setTimeout(() => location.reload(), 1500);
                     }
                 },
                 error: function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred. Please try again.',
-                        confirmButtonColor: '#2d6a4f'
-                    });
+                    showAlert('error', 'An error occurred. Please try again.');
                 }
             });
         });
+
+        function showAlert(type, message) {
+            const alert = document.createElement('div');
+            alert.className = `alert-toast ${type}`;
+            alert.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                ${message}
+            `;
+            document.getElementById('alertContainer').appendChild(alert);
+            setTimeout(() => alert.remove(), 4000);
+        }
     </script>
-    <script src="../js/accessibility.js"></script>
 </body>
 </html>

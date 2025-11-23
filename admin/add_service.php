@@ -656,25 +656,33 @@ $categories = get_all_service_categories_ctr();
                     <i class="fas fa-calendar-check"></i>
                     <span>Bookings</span>
                 </a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Management</div>
                 <a href="manage_services.php" class="nav-item">
                     <i class="fas fa-concierge-bell"></i>
                     <span>My Services</span>
                 </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
                 <a href="add_service.php" class="nav-item active">
                     <i class="fas fa-plus-circle"></i>
                     <span>Add Service</span>
                 </a>
+                <a href="provider_profile.php" class="nav-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Business Profile</span>
+                </a>
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="provider_profile.php" class="nav-item">
-                    <i class="fas fa-user-cog"></i>
-                    <span>Profile</span>
+                <div class="nav-section-title">Other</div>
+                <a href="../index_tourlink.php" class="nav-item">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>View Site</span>
+                </a>
+                <a href="account_settings.php" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Account Settings</span>
                 </a>
                 <a href="../login/logout.php" class="nav-item">
                     <i class="fas fa-sign-out-alt"></i>
@@ -690,7 +698,7 @@ $categories = get_all_service_categories_ctr();
                 </div>
                 <div class="provider-info">
                     <h4><?php echo htmlspecialchars($provider['business_name'] ?? $_SESSION['first_name']); ?></h4>
-                    <span>Service Provider</span>
+                    <span><?php echo ucfirst($provider['verification_status'] ?? 'Pending'); ?></span>
                 </div>
             </div>
         </div>
