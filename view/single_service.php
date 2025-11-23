@@ -1255,7 +1255,7 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                                        required>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
-                                <label for="service_time" class="form-label">Time</label>
+                                <label for="service_time" class="form-label">Start Time</label>
                                 <select class="form-select" id="service_time" name="service_time" required>
                                     <option value="">Select time</option>
                                     <option value="06:00">6:00 AM</option>
@@ -1274,6 +1274,40 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                                 </select>
                             </div>
                         </div>
+
+                        <!-- Duration (for per_hour or per_day services) -->
+                        <?php if ($service['pricing_unit'] === 'per_hour'): ?>
+                        <div class="form-group" id="durationGroup">
+                            <label for="service_duration" class="form-label">Duration (Hours)</label>
+                            <select class="form-select" id="service_duration" name="service_duration" required onchange="updatePricing()">
+                                <option value="1">1 hour</option>
+                                <option value="2">2 hours</option>
+                                <option value="3">3 hours</option>
+                                <option value="4">4 hours</option>
+                                <option value="5">5 hours</option>
+                                <option value="6">6 hours</option>
+                                <option value="8">8 hours (Full day)</option>
+                                <option value="10">10 hours</option>
+                                <option value="12">12 hours</option>
+                            </select>
+                        </div>
+                        <?php elseif ($service['pricing_unit'] === 'per_day'): ?>
+                        <div class="form-group" id="durationGroup">
+                            <label for="service_duration" class="form-label">Number of Days</label>
+                            <select class="form-select" id="service_duration" name="service_duration" required onchange="updatePricing()">
+                                <option value="1">1 day</option>
+                                <option value="2">2 days</option>
+                                <option value="3">3 days</option>
+                                <option value="4">4 days</option>
+                                <option value="5">5 days</option>
+                                <option value="6">6 days</option>
+                                <option value="7">1 week</option>
+                                <option value="14">2 weeks</option>
+                            </select>
+                        </div>
+                        <?php else: ?>
+                        <input type="hidden" name="service_duration" value="1">
+                        <?php endif; ?>
 
                         <!-- Number of Guests -->
                         <div class="form-group">
@@ -1303,13 +1337,21 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                         <!-- Price Summary -->
                         <div class="price-summary">
                             <div class="price-row">
-                                <span>Service fee</span>
-                                <span>GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                                <span>Base rate</span>
+                                <span>GHS <?php echo number_format($service['base_price'], 2); ?> / <?php echo str_replace('per_', '', $service['pricing_unit']); ?></span>
                             </div>
-                            <div class="price-row" id="guestPriceRow" style="display: <?php echo $service['pricing_unit'] === 'per_person' ? 'flex' : 'none'; ?>;">
+                            <?php if ($service['pricing_unit'] === 'per_hour' || $service['pricing_unit'] === 'per_day'): ?>
+                            <div class="price-row" id="durationPriceRow">
+                                <span>× <span id="durationMultiplier">1</span> <?php echo $service['pricing_unit'] === 'per_hour' ? 'hour(s)' : 'day(s)'; ?></span>
+                                <span id="durationSubtotal">GHS <?php echo number_format($service['base_price'], 2); ?></span>
+                            </div>
+                            <?php endif; ?>
+                            <?php if ($service['pricing_unit'] === 'per_person'): ?>
+                            <div class="price-row" id="guestPriceRow">
                                 <span>× <span id="guestMultiplier">1</span> guest(s)</span>
                                 <span id="subtotalAmount">GHS <?php echo number_format($service['base_price'], 2); ?></span>
                             </div>
+                            <?php endif; ?>
                             <div class="price-row total">
                                 <span>Total</span>
                                 <span class="amount" id="totalAmount">GHS <?php echo number_format($service['base_price'], 2); ?></span>
@@ -1365,10 +1407,31 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
 
         function updatePricing() {
             let total = serviceData.basePrice;
+            let duration = 1;
+
+            // Get duration if applicable
+            const durationSelect = document.getElementById('service_duration');
+            if (durationSelect) {
+                duration = parseInt(durationSelect.value) || 1;
+            }
+
+            // Calculate based on pricing unit
+            if (serviceData.pricingUnit === 'per_hour' || serviceData.pricingUnit === 'per_day') {
+                total = serviceData.basePrice * duration;
+
+                // Update duration display
+                const durationMultiplier = document.getElementById('durationMultiplier');
+                const durationSubtotal = document.getElementById('durationSubtotal');
+                if (durationMultiplier) durationMultiplier.textContent = duration;
+                if (durationSubtotal) durationSubtotal.textContent = 'GHS ' + formatNumber(total);
+            }
 
             if (serviceData.pricingUnit === 'per_person') {
                 total = serviceData.basePrice * guestCount;
-                document.getElementById('subtotalAmount').textContent = 'GHS ' + formatNumber(total);
+                const subtotalEl = document.getElementById('subtotalAmount');
+                const guestMultiplier = document.getElementById('guestMultiplier');
+                if (guestMultiplier) guestMultiplier.textContent = guestCount;
+                if (subtotalEl) subtotalEl.textContent = 'GHS ' + formatNumber(total);
             }
 
             document.getElementById('totalAmount').textContent = 'GHS ' + formatNumber(total);

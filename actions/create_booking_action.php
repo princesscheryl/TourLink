@@ -36,7 +36,13 @@ $service_id = isset($_POST['service_id']) ? (int)$_POST['service_id'] : 0;
 $service_date = isset($_POST['service_date']) ? trim($_POST['service_date']) : '';
 $service_time = isset($_POST['service_time']) ? trim($_POST['service_time']) : '';
 $number_of_people = isset($_POST['number_of_people']) ? (int)$_POST['number_of_people'] : 1;
+$service_duration = isset($_POST['service_duration']) ? (int)$_POST['service_duration'] : 1;
 $special_requests = isset($_POST['special_requests']) ? trim($_POST['special_requests']) : '';
+
+// Ensure duration is at least 1
+if ($service_duration < 1) {
+    $service_duration = 1;
+}
 
 // Validate required fields
 if ($service_id <= 0 || empty($service_date) || empty($service_time)) {
@@ -78,7 +84,13 @@ switch ($pricing_unit) {
         $original_amount = $base_price * $number_of_people;
         break;
     case 'per_hour':
+        // Price per hour × number of hours
+        $original_amount = $base_price * $service_duration;
+        break;
     case 'per_day':
+        // Price per day × number of days
+        $original_amount = $base_price * $service_duration;
+        break;
     case 'flat_rate':
     default:
         $original_amount = $base_price;
@@ -100,6 +112,7 @@ $booking_data = [
     'service_date' => $service_date,
     'service_time' => $service_time,
     'number_of_people' => $number_of_people,
+    'service_duration' => $service_duration,
     'original_amount' => $original_amount,
     'discount_amount' => $discount_amount,
     'total_amount' => $total_amount,
