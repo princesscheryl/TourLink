@@ -676,8 +676,12 @@ $existing_regions = json_decode($service['available_regions'], true) ?: [];
                             <h4>Current Images</h4>
                             <div class="existing-images-grid">
                                 <?php foreach ($existing_images as $img): ?>
+                                <?php
+                                // Handle both old format (filename only) and new format (full relative path)
+                                $img_path = (strpos($img, 'uploads/') === 0) ? '../' . $img : '../uploads/services/' . $img;
+                                ?>
                                 <div class="existing-image-item">
-                                    <img src="../uploads/services/<?php echo htmlspecialchars($img); ?>" alt="Service image">
+                                    <img src="<?php echo htmlspecialchars($img_path); ?>" alt="Service image" onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;background:#f1f5f9;color:#94a3b8;\'><i class=\'fas fa-image\'></i></div>'">
                                 </div>
                                 <?php endforeach; ?>
                             </div>
