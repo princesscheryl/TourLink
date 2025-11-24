@@ -24,6 +24,8 @@ if ($in_view_folder || $in_admin_folder) {
         <ul class="nav-menu" id="navMenu" role="menubar">
             <li><a href="<?php echo $base_path; ?>index_tourlink.php" data-i18n="nav.home">Home</a></li>
             <li><a href="<?php echo $base_path; ?>view/all_services.php" data-i18n="nav.destinations">Browse Services</a></li>
+            <li><a href="<?php echo $base_path; ?>view/community_tourism.php">Community Tourism</a></li>
+            <li><a href="<?php echo $base_path; ?>view/festivals.php">Festivals</a></li>
             <li><a href="<?php echo $base_path; ?>view/about.php" data-i18n="nav.about">About</a></li>
             <li><a href="<?php echo $base_path; ?>view/contact.php" data-i18n="nav.contact">Contact</a></li>
         </ul>

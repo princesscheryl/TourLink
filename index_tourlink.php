@@ -2,9 +2,14 @@
 require_once 'settings/core.php';
 require_once 'controllers/service_controller.php';
 require_once 'controllers/service_category_controller.php';
+require_once 'classes/festival_class.php';
 
 // Get featured services
 $featured_services = get_premium_services_ctr(6);
+
+// Get upcoming festivals
+$festival_class = new Festival();
+$upcoming_festivals = $festival_class->get_upcoming_festivals(4);
 if (!$featured_services || count($featured_services) == 0) {
     $featured_services = get_all_services_ctr();
     if ($featured_services && count($featured_services) > 6) {
@@ -1136,6 +1141,402 @@ $categories = get_all_service_categories_ctr();
         [data-theme="dark"] .language-selector:hover {
             border-color: #2d6a4f !important;
         }
+
+        /* Community Tourism Section */
+        .community-section {
+            padding: 100px 40px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        }
+
+        .community-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .community-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .community-header h2 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #1b4332;
+            margin-bottom: 16px;
+        }
+
+        .community-header p {
+            font-size: 18px;
+            color: #4b5563;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .community-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1b4332;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .community-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .community-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .community-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+        }
+
+        .community-image {
+            height: 180px;
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .community-image i {
+            font-size: 48px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .community-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #d4a017;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .community-content {
+            padding: 20px;
+        }
+
+        .community-content h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .community-content p {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .community-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .community-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Festivals Section */
+        .festivals-section {
+            padding: 100px 40px;
+            background: white;
+        }
+
+        .festivals-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .festivals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
+        }
+
+        .festivals-header h2 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .festivals-header p {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        .btn-view-all {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1b4332;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-view-all:hover {
+            background: #143728;
+            transform: translateY(-2px);
+        }
+
+        .festivals-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .festival-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .festival-card:hover {
+            border-color: #1b4332;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .festival-date {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .festival-date-box {
+            background: #f0fdf4;
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .festival-date-day {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1b4332;
+            line-height: 1;
+        }
+
+        .festival-date-month {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .festival-type {
+            font-size: 11px;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .festival-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .festival-location {
+            font-size: 13px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Provider Stories Section */
+        .stories-section {
+            padding: 100px 40px;
+            background: #fafafa;
+        }
+
+        .stories-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .stories-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .stories-header h2 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .stories-header p {
+            font-size: 18px;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .story-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+        }
+
+        .story-image {
+            height: 200px;
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .story-image i {
+            font-size: 64px;
+            color: rgba(255,255,255,0.2);
+        }
+
+        .story-badge {
+            position: absolute;
+            bottom: -20px;
+            left: 24px;
+            background: #d4a017;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .story-content {
+            padding: 32px 24px 24px;
+        }
+
+        .story-content h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .story-location {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        .story-quote {
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.7;
+            font-style: italic;
+            position: relative;
+            padding-left: 16px;
+            border-left: 3px solid #d4a017;
+        }
+
+        .story-impact {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .impact-item {
+            text-align: center;
+        }
+
+        .impact-item strong {
+            display: block;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1b4332;
+        }
+
+        .impact-item span {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 1024px) {
+            .community-grid,
+            .festivals-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .community-grid,
+            .festivals-grid {
+                grid-template-columns: 1fr;
+            }
+            .festivals-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .community-header h2,
+            .festivals-header h2,
+            .stories-header h2 {
+                font-size: 28px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1477,6 +1878,211 @@ $categories = get_all_service_categories_ctr();
                     <div class="feature-text">
                         <h4 data-i18n="why_choose.verified_providers">Verified Travel Partners</h4>
                         <p data-i18n="why_choose.verified_providers_desc">Each hotel, guide, and experience partner is carefully vetted to meet our quality and safety standards.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Tourism Section -->
+    <section class="community-section">
+        <div class="community-container">
+            <div class="community-header">
+                <span class="community-badge">
+                    <i class="fas fa-hands-helping"></i>
+                    Supporting Local Communities
+                </span>
+                <h2>Village Experiences & Community Tourism</h2>
+                <p>Immerse yourself in authentic Ghanaian culture. Visit rural communities, learn traditional crafts, and directly support local livelihoods through responsible tourism.</p>
+                <a href="view/community_tourism.php" class="btn-view-all" style="margin-top: 24px;">
+                    Explore All Experiences <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="community-grid">
+                <div class="community-card">
+                    <div class="community-image">
+                        <i class="fas fa-palette"></i>
+                        <span class="community-tag">Craft Village</span>
+                    </div>
+                    <div class="community-content">
+                        <h3>Kente Weaving Village Tour</h3>
+                        <p>Visit Bonwire, the birthplace of Kente cloth. Watch master weavers create intricate patterns passed down through generations.</p>
+                        <div class="community-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Ashanti Region</span>
+                            <span><i class="fas fa-users"></i> 12 families supported</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="community-card">
+                    <div class="community-image">
+                        <i class="fas fa-utensils"></i>
+                        <span class="community-tag">Culinary</span>
+                    </div>
+                    <div class="community-content">
+                        <h3>Farm-to-Table Cooking Class</h3>
+                        <p>Learn to prepare authentic Ghanaian dishes with local mothers using fresh ingredients from community farms.</p>
+                        <div class="community-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Central Region</span>
+                            <span><i class="fas fa-users"></i> 8 families supported</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="community-card">
+                    <div class="community-image">
+                        <i class="fas fa-drum"></i>
+                        <span class="community-tag">Cultural</span>
+                    </div>
+                    <div class="community-content">
+                        <h3>Traditional Drumming & Dance</h3>
+                        <p>Join village elders in learning the rhythms and movements of traditional Ghanaian ceremonies and celebrations.</p>
+                        <div class="community-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Greater Accra</span>
+                            <span><i class="fas fa-users"></i> 15 artists supported</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="community-card">
+                    <div class="community-image">
+                        <i class="fas fa-fish"></i>
+                        <span class="community-tag">Eco-Tourism</span>
+                    </div>
+                    <div class="community-content">
+                        <h3>Fishing Village Experience</h3>
+                        <p>Spend a day with traditional fishing communities. Learn age-old techniques and enjoy the freshest catch of the day.</p>
+                        <div class="community-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> Central Region</span>
+                            <span><i class="fas fa-users"></i> 20 families supported</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Festivals Section -->
+    <?php if ($upcoming_festivals && count($upcoming_festivals) > 0): ?>
+    <section class="festivals-section">
+        <div class="festivals-container">
+            <div class="festivals-header">
+                <div>
+                    <h2>Ghana Festival Calendar</h2>
+                    <p>Experience the vibrant cultural celebrations across Ghana's regions</p>
+                </div>
+                <a href="view/festivals.php" class="btn-view-all">
+                    View Full Calendar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="festivals-grid">
+                <?php foreach ($upcoming_festivals as $festival): ?>
+                <div class="festival-card">
+                    <div class="festival-date">
+                        <div class="festival-date-box">
+                            <div class="festival-date-day"><?php echo date('d', strtotime($festival['start_date'])); ?></div>
+                            <div class="festival-date-month"><?php echo date('M', strtotime($festival['start_date'])); ?></div>
+                        </div>
+                        <span class="festival-type"><?php echo htmlspecialchars($festival['festival_type']); ?></span>
+                    </div>
+                    <h3><?php echo htmlspecialchars($festival['festival_name']); ?></h3>
+                    <p class="festival-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <?php echo htmlspecialchars($festival['location'] . ', ' . $festival['region']); ?>
+                    </p>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- Provider Success Stories -->
+    <section class="stories-section">
+        <div class="stories-container">
+            <div class="stories-header">
+                <h2>Provider Success Stories</h2>
+                <p>Meet the local entrepreneurs building sustainable tourism businesses across Ghana</p>
+            </div>
+
+            <div class="stories-grid">
+                <div class="story-card">
+                    <div class="story-image">
+                        <i class="fas fa-user"></i>
+                        <span class="story-badge">Tour Guide</span>
+                    </div>
+                    <div class="story-content">
+                        <h3>Kwadwo Asante</h3>
+                        <p class="story-location"><i class="fas fa-map-marker-alt"></i> Cape Coast, Central Region</p>
+                        <p class="story-quote">"TourLink helped me turn my passion for history into a thriving business. I now employ 3 other guides and have hosted over 500 tourists from around the world."</p>
+                        <div class="story-impact">
+                            <div class="impact-item">
+                                <strong>500+</strong>
+                                <span>Tourists Guided</span>
+                            </div>
+                            <div class="impact-item">
+                                <strong>3</strong>
+                                <span>Jobs Created</span>
+                            </div>
+                            <div class="impact-item">
+                                <strong>4.9</strong>
+                                <span>Avg Rating</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-image">
+                        <i class="fas fa-user"></i>
+                        <span class="story-badge">Accommodation</span>
+                    </div>
+                    <div class="story-content">
+                        <h3>Akosua Mensah</h3>
+                        <p class="story-location"><i class="fas fa-map-marker-alt"></i> Kumasi, Ashanti Region</p>
+                        <p class="story-quote">"From a single guest room to a 12-room eco-lodge, TourLink connected me with tourists seeking authentic experiences. My children now help run the business."</p>
+                        <div class="story-impact">
+                            <div class="impact-item">
+                                <strong>12</strong>
+                                <span>Rooms</span>
+                            </div>
+                            <div class="impact-item">
+                                <strong>5</strong>
+                                <span>Family Members</span>
+                            </div>
+                            <div class="impact-item">
+                                <strong>4.8</strong>
+                                <span>Avg Rating</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-image">
+                        <i class="fas fa-user"></i>
+                        <span class="story-badge">Transport</span>
+                    </div>
+                    <div class="story-content">
+                        <h3>Yaw Boateng</h3>
+                        <p class="story-location"><i class="fas fa-map-marker-alt"></i> Accra, Greater Accra</p>
+                        <p class="story-quote">"Starting with one vehicle, I now operate a fleet of 5 tour buses. TourLink's platform gave me visibility and trust with international visitors."</p>
+                        <div class="story-impact">
+                            <div class="impact-item">
+                                <strong>5</strong>
+                                <span>Vehicles</span>
+                            </div>
+                            <div class="impact-item">
+                                <strong>8</strong>
+                                <span>Drivers Employed</span>
+                            </div>
+                            <div class="impact-item">
+                                <strong>4.7</strong>
+                                <span>Avg Rating</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
