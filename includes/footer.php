@@ -19,24 +19,6 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
 ?>
 
 <footer class="footer" id="contact">
-    <!-- Partnership Banner -->
-    <div class="footer-partners">
-        <div class="partners-container">
-            <span class="partner-label">In Partnership With</span>
-            <div class="partner-logos">
-                <div class="partner-logo-item">
-                    <img src="<?php echo $base_path; ?>assets/images/partners/gta-logo.png" alt="Ghana Tourism Authority" onerror="this.style.display='none'">
-                </div>
-                <div class="partner-logo-item">
-                    <img src="<?php echo $base_path; ?>assets/images/partners/ministry-tourism-logo.png" alt="Ministry of Tourism" onerror="this.style.display='none'">
-                </div>
-                <div class="partner-logo-item">
-                    <img src="<?php echo $base_path; ?>assets/images/partners/ghatof-logo.png" alt="GHATOF" onerror="this.style.display='none'">
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="footer-container">
         <div>
             <h4 data-i18n="app_name">TourLink</h4>
@@ -79,65 +61,96 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
         </div>
     </div>
     <div class="footer-bottom">
-        <p>&copy; 2025 <span data-i18n="app_name">TourLink</span>. <span data-i18n="footer.copyright">All rights reserved.</span></p>
-        <p class="footer-tagline">Proudly supporting Ghana's tourism industry and local communities</p>
+        <div class="footer-bottom-content">
+            <div class="footer-copyright">
+                <p>&copy; 2025 <span data-i18n="app_name">TourLink</span>. <span data-i18n="footer.copyright">All rights reserved.</span></p>
+                <p class="footer-tagline">Proudly supporting Ghana's tourism industry and local communities</p>
+            </div>
+            <div class="footer-partners">
+                <span class="partner-label">In Partnership With</span>
+                <div class="partner-logos">
+                    <div class="partner-logo-item">
+                        <img src="<?php echo $base_path; ?>assets/images/partners/gta-logo.png" alt="Ghana Tourism Authority" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%2240%22%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22rgba(255,255,255,0.6)%22 font-size=%2210%22 font-family=%22Arial%22%3EGTA%3C/text%3E%3C/svg%3E';">
+                    </div>
+                    <div class="partner-logo-item">
+                        <img src="<?php echo $base_path; ?>assets/images/partners/ministry-tourism-logo.png" alt="Ministry of Tourism" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%2240%22%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22rgba(255,255,255,0.6)%22 font-size=%228%22 font-family=%22Arial%22%3EMinistry of Tourism%3C/text%3E%3C/svg%3E';">
+                    </div>
+                    <div class="partner-logo-item">
+                        <img src="<?php echo $base_path; ?>assets/images/partners/ghatof-logo.png" alt="GHATOF" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%2240%22%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22rgba(255,255,255,0.6)%22 font-size=%2210%22 font-family=%22Arial%22%3EGHATOF%3C/text%3E%3C/svg%3E';">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </footer>
 
 <style>
-    .footer-partners {
-        background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
-        padding: 20px 40px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+    .footer-bottom {
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding: 32px 40px;
     }
 
-    .partners-container {
+    .footer-bottom-content {
         max-width: 1400px;
         margin: 0 auto;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        gap: 32px;
+        gap: 40px;
         flex-wrap: wrap;
     }
 
-    .partner-label {
+    .footer-copyright {
+        flex: 1;
+    }
+
+    .footer-copyright p {
+        margin: 0;
         color: rgba(255,255,255,0.7);
-        font-size: 13px;
+        font-size: 14px;
+    }
+
+    .footer-partners {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .partner-label {
+        color: rgba(255,255,255,0.5);
+        font-size: 11px;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 1px;
+        white-space: nowrap;
     }
 
     .partner-logos {
         display: flex;
         align-items: center;
-        gap: 40px;
-        flex-wrap: wrap;
-        justify-content: center;
+        gap: 24px;
     }
 
     .partner-logo-item {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 60px;
+        height: 40px;
     }
 
     .partner-logo-item img {
-        max-height: 50px;
-        max-width: 150px;
+        max-height: 35px;
+        max-width: 100px;
         height: auto;
         width: auto;
         object-fit: contain;
         filter: brightness(0) invert(1);
-        opacity: 0.9;
+        opacity: 0.7;
         transition: all 0.3s;
     }
 
     .partner-logo-item img:hover {
         opacity: 1;
-        transform: scale(1.05);
     }
 
     .footer-certifications {
@@ -193,22 +206,34 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
     }
 
     @media (max-width: 768px) {
-        .footer-partners {
-            padding: 20px 20px;
+        .footer-bottom {
+            padding: 24px 20px;
         }
 
-        .partners-container {
+        .footer-bottom-content {
             flex-direction: column;
-            gap: 20px;
-        }
-
-        .partner-logos {
+            align-items: center;
+            text-align: center;
             gap: 24px;
         }
 
+        .footer-partners {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .partner-logos {
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .partner-logo-item {
+            height: 35px;
+        }
+
         .partner-logo-item img {
-            max-height: 40px;
-            max-width: 120px;
+            max-height: 30px;
+            max-width: 80px;
         }
     }
 </style>
