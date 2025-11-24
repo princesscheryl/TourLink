@@ -836,10 +836,18 @@ $total_count = $services ? count($services) : 0;
                     <div class="service-cell">
                         <?php
                         $images = json_decode($service['service_images'], true);
-                        $thumb = ($images && count($images) > 0) ? '../uploads/services/' . $images[0] : null;
+                        $thumb = null;
+                        if ($images && count($images) > 0) {
+                            // Handle both old format (filename only) and new format (full relative path)
+                            $img = $images[0];
+                            $thumb = (strpos($img, 'uploads/') === 0) ? '../' . $img : '../uploads/services/' . $img;
+                        }
                         ?>
                         <?php if ($thumb): ?>
-                            <img src="<?php echo $thumb; ?>" alt="" class="service-thumb">
+                            <img src="<?php echo htmlspecialchars($thumb); ?>" alt="" class="service-thumb" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="service-thumb-placeholder" style="display:none;">
+                                <i class="fas fa-image"></i>
+                            </div>
                         <?php else: ?>
                             <div class="service-thumb-placeholder">
                                 <i class="fas fa-image"></i>

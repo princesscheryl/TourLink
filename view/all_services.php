@@ -194,6 +194,86 @@ if (isset($_SESSION['user_id'])) {
             object-fit: cover;
         }
 
+        /* Image Carousel */
+        .image-carousel {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .carousel-slides {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 5;
+        }
+
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            padding: 0;
+        }
+
+        .carousel-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 5;
+        }
+
+        .image-carousel:hover .carousel-nav {
+            opacity: 1;
+        }
+
+        .carousel-nav.prev { left: 10px; }
+        .carousel-nav.next { right: 10px; }
+
+        .carousel-nav:hover {
+            background: white;
+        }
+
         .service-content {
             padding: 20px;
             flex-grow: 1;
@@ -466,14 +546,36 @@ if (isset($_SESSION['user_id'])) {
 
                                     <?php
                                     $images = json_decode($service['service_images'], true);
-                                    $first_image = is_array($images) && !empty($images) ? $images[0] : null;
-                                    // Build proper image path
-                                    $image_path = $first_image ? '../' . $first_image : null;
+                                    $valid_images = [];
+                                    if (is_array($images) && !empty($images)) {
+                                        foreach ($images as $img) {
+                                            $img_path = '../' . $img;
+                                            if (file_exists($img_path)) {
+                                                $valid_images[] = $img_path;
+                                            }
+                                        }
+                                    }
+                                    $carousel_id = 'carousel-' . $service['service_id'];
                                     ?>
-                                    <?php if ($first_image && file_exists($image_path)): ?>
-                                        <img src="<?php echo htmlspecialchars($image_path); ?>"
-                                             alt="<?php echo htmlspecialchars($service['service_title']); ?>"
-                                             class="service-image">
+                                    <?php if (!empty($valid_images)): ?>
+                                        <div class="image-carousel" data-carousel>
+                                            <div class="carousel-slides" data-slides>
+                                                <?php foreach ($valid_images as $img): ?>
+                                                    <div class="carousel-slide">
+                                                        <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($service['service_title']); ?>">
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                            <?php if (count($valid_images) > 1): ?>
+                                                <button class="carousel-nav prev" data-prev><i class="fas fa-chevron-left"></i></button>
+                                                <button class="carousel-nav next" data-next><i class="fas fa-chevron-right"></i></button>
+                                                <div class="carousel-dots" data-dots>
+                                                    <?php for ($i = 0; $i < count($valid_images); $i++): ?>
+                                                        <button class="carousel-dot <?php echo $i === 0 ? 'active' : ''; ?>" data-index="<?php echo $i; ?>"></button>
+                                                    <?php endfor; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
                                     <?php else: ?>
                                         <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: flex; align-items: center; justify-content: center;">
                                             <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
@@ -526,5 +628,64 @@ if (isset($_SESSION['user_id'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/favorites.js"></script>
     <script src="../js/accessibility.js"></script>
+
+    <script>
+    // Image Carousel Functionality
+    document.querySelectorAll('[data-carousel]').forEach(carousel => {
+        const slides = carousel.querySelector('[data-slides]');
+        const dots = carousel.querySelectorAll('.carousel-dot');
+        const prevBtn = carousel.querySelector('[data-prev]');
+        const nextBtn = carousel.querySelector('[data-next]');
+        const slideCount = carousel.querySelectorAll('.carousel-slide').length;
+
+        if (slideCount <= 1) return;
+
+        let currentIndex = 0;
+        let autoPlayInterval;
+
+        function goToSlide(index) {
+            if (index < 0) index = slideCount - 1;
+            if (index >= slideCount) index = 0;
+            currentIndex = index;
+            slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        }
+
+        function nextSlide() {
+            goToSlide(currentIndex + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentIndex - 1);
+        }
+
+        // Auto-play every 4 seconds
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(nextSlide, 4000);
+        }
+
+        function stopAutoPlay() {
+            clearInterval(autoPlayInterval);
+        }
+
+        // Start auto-play
+        startAutoPlay();
+
+        // Pause on hover
+        carousel.addEventListener('mouseenter', stopAutoPlay);
+        carousel.addEventListener('mouseleave', startAutoPlay);
+
+        // Navigation buttons
+        if (prevBtn) prevBtn.addEventListener('click', (e) => { e.preventDefault(); prevSlide(); });
+        if (nextBtn) nextBtn.addEventListener('click', (e) => { e.preventDefault(); nextSlide(); });
+
+        // Dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => goToSlide(index));
+        });
+    });
+    </script>
 </body>
 </html>
