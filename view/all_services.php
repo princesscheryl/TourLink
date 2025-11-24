@@ -5,12 +5,70 @@ require_once '../controllers/service_category_controller.php';
 
 // Get filter parameters
 $category_filter = isset($_GET['category']) ? (int)$_GET['category'] : null;
+$min_price = isset($_GET['min_price']) && $_GET['min_price'] !== '' ? (float)$_GET['min_price'] : null;
+$max_price = isset($_GET['max_price']) && $_GET['max_price'] !== '' ? (float)$_GET['max_price'] : null;
+$min_rating = isset($_GET['rating']) && $_GET['rating'] !== '' ? (float)$_GET['rating'] : null;
+$region_filter = isset($_GET['region']) ? trim($_GET['region']) : null;
+$sort_by = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
 
 // Get services
 if ($category_filter) {
     $services = get_services_by_category_ctr($category_filter);
 } else {
     $services = get_all_services_ctr();
+}
+
+// Apply additional filters
+if ($services && is_array($services)) {
+    // Price filter
+    if ($min_price !== null) {
+        $services = array_filter($services, function($s) use ($min_price) {
+            return $s['base_price'] >= $min_price;
+        });
+    }
+    if ($max_price !== null) {
+        $services = array_filter($services, function($s) use ($max_price) {
+            return $s['base_price'] <= $max_price;
+        });
+    }
+
+    // Rating filter
+    if ($min_rating !== null) {
+        $services = array_filter($services, function($s) use ($min_rating) {
+            return ($s['provider_rating'] ?? 0) >= $min_rating;
+        });
+    }
+
+    // Region filter
+    if ($region_filter) {
+        $services = array_filter($services, function($s) use ($region_filter) {
+            $regions = json_decode($s['available_regions'] ?? '[]', true);
+            return in_array($region_filter, $regions ?: []) ||
+                   stripos($s['service_location'] ?? '', $region_filter) !== false ||
+                   stripos($s['provider_region'] ?? '', $region_filter) !== false;
+        });
+    }
+
+    // Sort
+    $services = array_values($services); // Re-index array
+    switch ($sort_by) {
+        case 'price_low':
+            usort($services, fn($a, $b) => $a['base_price'] <=> $b['base_price']);
+            break;
+        case 'price_high':
+            usort($services, fn($a, $b) => $b['base_price'] <=> $a['base_price']);
+            break;
+        case 'rating':
+            usort($services, fn($a, $b) => ($b['provider_rating'] ?? 0) <=> ($a['provider_rating'] ?? 0));
+            break;
+        case 'popular':
+            usort($services, fn($a, $b) => ($b['views_count'] ?? 0) <=> ($a['views_count'] ?? 0));
+            break;
+        case 'newest':
+        default:
+            // Already sorted by date
+            break;
+    }
 }
 
 // Get all categories for filter
@@ -96,23 +154,59 @@ if (isset($_SESSION['user_id'])) {
             top: 90px;
         }
 
+        .filter-section {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 16px;
+        }
+
         .filter-sidebar h5 {
             font-weight: 700;
             color: #1b4332;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-sidebar h5 i {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #333;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #2d6a4f;
         }
 
         .category-filter {
             display: block;
-            padding: 12px 16px;
-            margin-bottom: 8px;
+            padding: 10px 14px;
+            margin-bottom: 6px;
             border-radius: 8px;
             text-decoration: none;
             color: #333;
             transition: all 0.3s ease;
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .category-filter:hover {
@@ -129,6 +223,109 @@ if (isset($_SESSION['user_id'])) {
         .category-filter i {
             margin-right: 10px;
             width: 20px;
+        }
+
+        .price-inputs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .price-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .price-input:focus {
+            outline: none;
+            border-color: #2d6a4f;
+        }
+
+        .price-separator {
+            color: #999;
+            font-weight: 500;
+        }
+
+        .rating-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rating-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .rating-option:hover {
+            border-color: #2d6a4f;
+            background: #f8f9fa;
+        }
+
+        .rating-option input[type="radio"] {
+            accent-color: #2d6a4f;
+        }
+
+        .rating-option input[type="radio"]:checked + span {
+            color: #2d6a4f;
+            font-weight: 600;
+        }
+
+        .btn-apply-filters {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-apply-filters:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
+        }
+
+        .btn-clear-filters {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            margin-top: 10px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-clear-filters:hover {
+            background: #f8f9fa;
+            color: #333;
+            border-color: #ccc;
+        }
+
+        .text-warning {
+            color: #f59e0b !important;
         }
 
         /* Service Cards */
@@ -432,6 +629,69 @@ if (isset($_SESSION['user_id'])) {
             color: #b0b0b0 !important;
         }
 
+        [data-theme="dark"] .filter-sidebar {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .filter-sidebar h5 {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .filter-select,
+        [data-theme="dark"] .price-input {
+            background: #3d3d3d !important;
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .category-filter {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .category-filter:hover,
+        [data-theme="dark"] .category-filter.active {
+            background: #52b788 !important;
+            color: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .rating-option {
+            border-color: #505050 !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .filter-section {
+            border-color: #404040 !important;
+        }
+
+        [data-theme="dark"] .btn-clear-filters {
+            border-color: #505050 !important;
+            color: #b0b0b0 !important;
+        }
+
+        /* Active Filters Pills */
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .filter-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #e8f5e9;
+            color: #2d6a4f;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .filter-pill i {
+            font-size: 0.7rem;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .nav-container {
@@ -502,26 +762,136 @@ if (isset($_SESSION['user_id'])) {
         <div class="row">
             <!-- Filter Sidebar -->
             <div class="col-md-3">
-                <div class="filter-sidebar">
-                    <h5 class="mb-3">Categories</h5>
-                    <a href="all_services.php" class="category-filter <?php echo !$category_filter ? 'active' : ''; ?>">
-                        <i class="fa fa-list"></i> All Services
-                    </a>
-                    <?php if ($categories): ?>
-                        <?php foreach ($categories as $category): ?>
-                            <a href="all_services.php?category=<?php echo $category['category_id']; ?>"
-                               class="category-filter <?php echo $category_filter == $category['category_id'] ? 'active' : ''; ?>">
-                                <?php echo htmlspecialchars($category['category_name']); ?>
+                <form id="filterForm" method="GET" action="all_services.php">
+                    <div class="filter-sidebar">
+                        <!-- Sort By -->
+                        <div class="filter-section">
+                            <h5><i class="fas fa-sort-amount-down"></i> Sort By</h5>
+                            <select name="sort" class="filter-select" onchange="this.form.submit()">
+                                <option value="newest" <?php echo $sort_by === 'newest' ? 'selected' : ''; ?>>Newest First</option>
+                                <option value="popular" <?php echo $sort_by === 'popular' ? 'selected' : ''; ?>>Most Popular</option>
+                                <option value="rating" <?php echo $sort_by === 'rating' ? 'selected' : ''; ?>>Highest Rated</option>
+                                <option value="price_low" <?php echo $sort_by === 'price_low' ? 'selected' : ''; ?>>Price: Low to High</option>
+                                <option value="price_high" <?php echo $sort_by === 'price_high' ? 'selected' : ''; ?>>Price: High to Low</option>
+                            </select>
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="filter-section">
+                            <h5><i class="fas fa-th-large"></i> Categories</h5>
+                            <a href="all_services.php<?php echo $sort_by !== 'newest' ? '?sort='.$sort_by : ''; ?>" class="category-filter <?php echo !$category_filter ? 'active' : ''; ?>">
+                                <i class="fa fa-list"></i> All Services
                             </a>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
+                            <?php if ($categories): ?>
+                                <?php foreach ($categories as $category): ?>
+                                    <a href="all_services.php?category=<?php echo $category['category_id']; ?><?php echo $sort_by !== 'newest' ? '&sort='.$sort_by : ''; ?>"
+                                       class="category-filter <?php echo $category_filter == $category['category_id'] ? 'active' : ''; ?>">
+                                        <?php echo htmlspecialchars($category['category_name']); ?>
+                                    </a>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                            <?php if ($category_filter): ?>
+                                <input type="hidden" name="category" value="<?php echo $category_filter; ?>">
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="filter-section">
+                            <h5><i class="fas fa-tag"></i> Price Range (GHS)</h5>
+                            <div class="price-inputs">
+                                <input type="number" name="min_price" placeholder="Min" class="price-input"
+                                       value="<?php echo $min_price !== null ? $min_price : ''; ?>">
+                                <span class="price-separator">-</span>
+                                <input type="number" name="max_price" placeholder="Max" class="price-input"
+                                       value="<?php echo $max_price !== null ? $max_price : ''; ?>">
+                            </div>
+                        </div>
+
+                        <!-- Rating Filter -->
+                        <div class="filter-section">
+                            <h5><i class="fas fa-star"></i> Minimum Rating</h5>
+                            <div class="rating-options">
+                                <label class="rating-option">
+                                    <input type="radio" name="rating" value="" <?php echo $min_rating === null ? 'checked' : ''; ?>>
+                                    <span>All Ratings</span>
+                                </label>
+                                <label class="rating-option">
+                                    <input type="radio" name="rating" value="4" <?php echo $min_rating == 4 ? 'checked' : ''; ?>>
+                                    <span><i class="fas fa-star text-warning"></i> 4+ Stars</span>
+                                </label>
+                                <label class="rating-option">
+                                    <input type="radio" name="rating" value="3" <?php echo $min_rating == 3 ? 'checked' : ''; ?>>
+                                    <span><i class="fas fa-star text-warning"></i> 3+ Stars</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Region Filter -->
+                        <div class="filter-section">
+                            <h5><i class="fas fa-map-marker-alt"></i> Region</h5>
+                            <select name="region" class="filter-select">
+                                <option value="">All Regions</option>
+                                <?php
+                                $regions = ['Greater Accra', 'Central', 'Ashanti', 'Northern', 'Eastern', 'Western', 'Volta', 'Upper East', 'Upper West', 'Bono', 'Ahafo', 'Bono East', 'Oti', 'Western North', 'North East', 'Savannah'];
+                                foreach ($regions as $region): ?>
+                                    <option value="<?php echo $region; ?>" <?php echo $region_filter === $region ? 'selected' : ''; ?>><?php echo $region; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <!-- Apply Filters Button -->
+                        <button type="submit" class="btn-apply-filters">
+                            <i class="fas fa-filter"></i> Apply Filters
+                        </button>
+
+                        <?php if ($min_price !== null || $max_price !== null || $min_rating !== null || $region_filter): ?>
+                            <a href="all_services.php<?php echo $category_filter ? '?category='.$category_filter : ''; ?>" class="btn-clear-filters">
+                                <i class="fas fa-times"></i> Clear Filters
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </form>
             </div>
 
             <!-- Services Grid -->
             <div class="col-md-9">
                 <?php if ($services && count($services) > 0): ?>
                     <p class="services-count"><strong><?php echo count($services); ?></strong> service(s) found</p>
+
+                    <?php if ($min_price !== null || $max_price !== null || $min_rating !== null || $region_filter || $category_filter): ?>
+                    <div class="active-filters">
+                        <?php if ($category_filter): ?>
+                            <?php
+                            $cat_name = 'Category';
+                            foreach ($categories as $cat) {
+                                if ($cat['category_id'] == $category_filter) {
+                                    $cat_name = $cat['category_name'];
+                                    break;
+                                }
+                            }
+                            ?>
+                            <span class="filter-pill"><i class="fas fa-tag"></i> <?php echo htmlspecialchars($cat_name); ?></span>
+                        <?php endif; ?>
+                        <?php if ($min_price !== null || $max_price !== null): ?>
+                            <span class="filter-pill">
+                                <i class="fas fa-tag"></i>
+                                <?php if ($min_price !== null && $max_price !== null): ?>
+                                    GHS <?php echo number_format($min_price); ?> - <?php echo number_format($max_price); ?>
+                                <?php elseif ($min_price !== null): ?>
+                                    Min GHS <?php echo number_format($min_price); ?>
+                                <?php else: ?>
+                                    Max GHS <?php echo number_format($max_price); ?>
+                                <?php endif; ?>
+                            </span>
+                        <?php endif; ?>
+                        <?php if ($min_rating !== null): ?>
+                            <span class="filter-pill"><i class="fas fa-star"></i> <?php echo $min_rating; ?>+ Stars</span>
+                        <?php endif; ?>
+                        <?php if ($region_filter): ?>
+                            <span class="filter-pill"><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($region_filter); ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
                     <div class="row">
                         <?php foreach ($services as $service): ?>
                             <div class="col-md-4">

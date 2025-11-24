@@ -228,6 +228,12 @@ function displaySearchSuggestions(data) {
         return;
     }
 
+    // Calculate base path based on current location
+    const currentPath = window.location.pathname;
+    const isInSubdir = currentPath.includes('/view/') || currentPath.includes('/admin/') || currentPath.includes('/login/');
+    const viewPath = isInSubdir ? '' : 'view/';
+    const basePath = isInSubdir ? '../view/' : 'view/';
+
     let html = '';
 
     // Group by type
@@ -238,7 +244,7 @@ function displaySearchSuggestions(data) {
     if (recent.length > 0) {
         html += '<div class="suggestions-group"><div class="suggestions-header">Recent Searches</div>';
         recent.forEach(item => {
-            html += `<a href="view/search_services.php?q=${encodeURIComponent(item.text)}" class="suggestion-item recent">
+            html += `<a href="${basePath}search_services.php?q=${encodeURIComponent(item.text)}" class="suggestion-item recent">
                 <i class="fa fa-history"></i>
                 <span>${escapeHtml(item.text)}</span>
             </a>`;
@@ -249,7 +255,7 @@ function displaySearchSuggestions(data) {
     if (services.length > 0) {
         html += '<div class="suggestions-group"><div class="suggestions-header">Services</div>';
         services.slice(0, 5).forEach(item => {
-            html += `<a href="view/single_service.php?id=${item.id}" class="suggestion-item service">
+            html += `<a href="${basePath}single_service.php?id=${item.id}" class="suggestion-item service">
                 <i class="fa fa-map-marker-alt"></i>
                 <span>${escapeHtml(item.text)}</span>
                 <span class="suggestion-category">${escapeHtml(item.category || '')}</span>
@@ -261,7 +267,7 @@ function displaySearchSuggestions(data) {
     if (categories.length > 0) {
         html += '<div class="suggestions-group"><div class="suggestions-header">Categories</div>';
         categories.forEach(item => {
-            html += `<a href="view/all_services.php?category=${item.id}" class="suggestion-item category">
+            html += `<a href="${basePath}all_services.php?category=${item.id}" class="suggestion-item category">
                 <i class="fa fa-th-large"></i>
                 <span>${escapeHtml(item.text)}</span>
             </a>`;
