@@ -543,7 +543,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/toast.js"></script>
     <script src="../js/accessibility.js"></script>
     <script>
         $(document).ready(function(){
@@ -560,57 +560,33 @@
 
                 // Validation
                 if (first_name === '' || last_name === '' || email === '' || password === '') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Missing Fields',
-                        text: 'Please fill in all required fields!'
-                    });
+                    Toast.error('Please fill in all required fields!', 'Missing Fields');
                     return;
                 }
 
                 if (!/^[a-zA-Z\s\-']{2,50}$/.test(first_name)) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Name',
-                        text: 'First name must be 2-50 characters (letters only)'
-                    });
+                    Toast.error('First name must be 2-50 characters (letters only)', 'Invalid Name');
                     return;
                 }
 
                 if (!/^[a-zA-Z\s\-']{2,50}$/.test(last_name)) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Name',
-                        text: 'Last name must be 2-50 characters (letters only)'
-                    });
+                    Toast.error('Last name must be 2-50 characters (letters only)', 'Invalid Name');
                     return;
                 }
 
                 var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (!emailRegex.test(email) || email.length > 100) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Email',
-                        text: 'Please enter a valid email address'
-                    });
+                    Toast.error('Please enter a valid email address', 'Invalid Email');
                     return;
                 }
 
                 if (password.length < 8) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Weak Password',
-                        text: 'Password must be at least 8 characters long'
-                    });
+                    Toast.error('Password must be at least 8 characters long', 'Weak Password');
                     return;
                 }
 
                 if (phone !== '' && !/^[\d\s\+\-\(\)]{7,20}$/.test(phone)) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Phone',
-                        text: 'Please enter a valid phone number'
-                    });
+                    Toast.error('Please enter a valid phone number', 'Invalid Phone');
                     return;
                 }
 
@@ -629,30 +605,19 @@
                     },
                     success: function(response) {
                         if (response.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success!',
-                                text: response.message
-                            }).then((result) => {
-                                if (result.isConfirmed && response.redirect) {
+                            Toast.success(response.message, 'Account Created!');
+                            setTimeout(function() {
+                                if (response.redirect) {
                                     window.location.href = response.redirect;
                                 }
-                            });
+                            }, 1500);
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Registration Failed',
-                                text: response.message
-                            });
+                            Toast.error(response.message, 'Registration Failed');
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error('Registration error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Connection Error',
-                            text: 'Unable to connect to server. Please try again.'
-                        });
+                        Toast.error('Unable to connect to server. Please try again.', 'Connection Error');
                     }
                 });
             });

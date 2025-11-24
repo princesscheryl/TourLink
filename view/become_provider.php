@@ -124,16 +124,6 @@ require_once '../settings/core.php';
             overflow: hidden;
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 600px;
-            height: 600px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 50%;
-        }
 
         .hero-container {
             max-width: 1400px;

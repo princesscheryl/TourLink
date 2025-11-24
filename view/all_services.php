@@ -832,7 +832,7 @@ if (isset($_SESSION['user_id'])) {
                             <select name="region" class="filter-select">
                                 <option value="">All Regions</option>
                                 <?php
-                                $regions = ['Greater Accra', 'Central', 'Ashanti', 'Northern', 'Eastern', 'Western', 'Volta', 'Upper East', 'Upper West', 'Bono', 'Ahafo', 'Bono East', 'Oti', 'Western North', 'North East', 'Savannah'];
+                                $regions = ['Greater Accra', 'Ashanti', 'Central', 'Northern'];
                                 foreach ($regions as $region): ?>
                                     <option value="<?php echo $region; ?>" <?php echo $region_filter === $region ? 'selected' : ''; ?>><?php echo $region; ?></option>
                                 <?php endforeach; ?>

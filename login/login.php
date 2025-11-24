@@ -490,30 +490,20 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/toast.js"></script>
     <script src="../js/accessibility.js"></script>
     <script>
         $(document).ready(function(){
             // Check for session timeout
             <?php if(isset($_SESSION['timeout_message'])): ?>
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Session Expired',
-                    text: '<?php echo $_SESSION['timeout_message']; ?>',
-                    confirmButtonColor: '#2d6a4f'
-                });
+                Toast.warning('<?php echo $_SESSION['timeout_message']; ?>', 'Session Expired');
                 <?php unset($_SESSION['timeout_message']); ?>
             <?php endif; ?>
 
             // Check for timeout URL parameter
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('timeout') === '1') {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Session Expired',
-                    text: 'Your session has expired due to inactivity. Please sign in again.',
-                    confirmButtonColor: '#2d6a4f'
-                });
+                Toast.warning('Your session has expired due to inactivity. Please sign in again.', 'Session Expired');
                 // Remove timeout parameter from URL
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
@@ -526,21 +516,13 @@
 
                 // Validation
                 if (email === '' || password === '') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Missing Fields',
-                        text: 'Please enter both email and password!'
-                    });
+                    Toast.error('Please enter both email and password!', 'Missing Fields');
                     return;
                 }
 
                 var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (!emailRegex.test(email)) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Email',
-                        text: 'Please enter a valid email address'
-                    });
+                    Toast.error('Please enter a valid email address', 'Invalid Email');
                     return;
                 }
 
@@ -555,32 +537,19 @@
                     },
                     success: function(response) {
                         if (response.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Welcome Back!',
-                                text: response.message,
-                                timer: 1500,
-                                showConfirmButton: false
-                            }).then(() => {
+                            Toast.success(response.message, 'Welcome Back!');
+                            setTimeout(function() {
                                 if (response.redirect) {
                                     window.location.href = response.redirect;
                                 }
-                            });
+                            }, 1000);
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Login Failed',
-                                text: response.message
-                            });
+                            Toast.error(response.message, 'Login Failed');
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error('Login error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Connection Error',
-                            text: 'Unable to connect to server. Please try again.'
-                        });
+                        Toast.error('Unable to connect to server. Please try again.', 'Connection Error');
                     }
                 });
             });
