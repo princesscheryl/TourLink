@@ -57,83 +57,67 @@ if (empty($service_title) || empty($category_id) || empty($service_description) 
 $service_images = json_decode($existing_service['service_images'], true) ?: [];
 $provider_id = $provider['provider_id'];
 
-// Debug: Check if files were uploaded
 $upload_error_log = [];
-
-// Debug logging - write to file to see what's happening
-$debug_log = "Time: " . date('Y-m-d H:i:s') . "\n";
-$debug_log .= "FILES array: " . print_r($_FILES, true) . "\n";
-$debug_log .= "Provider ID: $provider_id\n";
-file_put_contents('../uploads/upload_debug.log', $debug_log, FILE_APPEND);
 
 if (!empty($_FILES['service_images']['name'][0])) {
     $upload_dir = '../uploads/services/' . $provider_id . '/';
 
-    // Debug: Log entry to upload section
-    file_put_contents('../uploads/upload_debug.log', "Entered upload section\nUpload dir: $upload_dir\n", FILE_APPEND);
-
-    // Create directory with full permissions
+    // Create directory if needed
     if (!is_dir($upload_dir)) {
-        if (!@mkdir($upload_dir, 0777, true)) {
-            $upload_error_log[] = "Failed to create directory: $upload_dir";
-            file_put_contents('../uploads/upload_debug.log', "Failed to create dir: $upload_dir\n", FILE_APPEND);
-        } else {
-            file_put_contents('../uploads/upload_debug.log', "Created dir: $upload_dir\n", FILE_APPEND);
-        }
-    }
-
-    // Make sure directory is writable
-    if (!is_writable($upload_dir)) {
-        @chmod($upload_dir, 0777);
-        file_put_contents('../uploads/upload_debug.log', "Dir not writable, tried chmod\n", FILE_APPEND);
+        @mkdir($upload_dir, 0755, true);
     }
 
     $new_images = [];
     $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    $max_size = 5 * 1024 * 1024; // 5MB
 
     foreach ($_FILES['service_images']['tmp_name'] as $key => $tmp_name) {
         $upload_error = $_FILES['service_images']['error'][$key];
         $original_name = $_FILES['service_images']['name'][$key];
-        file_put_contents('../uploads/upload_debug.log', "Processing file: $original_name, error code: $upload_error\n", FILE_APPEND);
+
+        // Skip empty entries
+        if (empty($original_name) || $upload_error === UPLOAD_ERR_NO_FILE) {
+            continue;
+        }
 
         if ($upload_error === UPLOAD_ERR_OK) {
-            $file_type = $_FILES['service_images']['type'][$key];
-            file_put_contents('../uploads/upload_debug.log', "File type: $file_type, tmp_name: $tmp_name\n", FILE_APPEND);
+            // Use finfo for proper MIME detection (more reliable than $_FILES['type'])
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime_type = finfo_file($finfo, $tmp_name);
+            finfo_close($finfo);
 
-            if (!in_array($file_type, $allowed_types)) {
-                $upload_error_log[] = "Invalid file type: $file_type";
-                file_put_contents('../uploads/upload_debug.log', "Invalid type: $file_type\n", FILE_APPEND);
+            if (!in_array($mime_type, $allowed_types)) {
+                $upload_error_log[] = "Invalid file type for $original_name";
                 continue;
             }
 
-            $ext = strtolower(pathinfo($_FILES['service_images']['name'][$key], PATHINFO_EXTENSION));
+            // Check file size
+            $file_size = $_FILES['service_images']['size'][$key];
+            if ($file_size > $max_size) {
+                $upload_error_log[] = "File too large: $original_name";
+                continue;
+            }
+
+            $ext = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
             $filename = uniqid('service_' . $provider_id . '_') . '.' . $ext;
             $filepath = $upload_dir . $filename;
-            file_put_contents('../uploads/upload_debug.log', "Attempting move to: $filepath\n", FILE_APPEND);
 
             if (move_uploaded_file($tmp_name, $filepath)) {
-                // Store relative path (consistent with add_service_action.php)
                 $relative_path = 'uploads/services/' . $provider_id . '/' . $filename;
                 $new_images[] = $relative_path;
-                file_put_contents('../uploads/upload_debug.log', "SUCCESS: Moved to $filepath\n", FILE_APPEND);
             } else {
-                $upload_error_log[] = "move_uploaded_file failed for: " . $_FILES['service_images']['name'][$key];
-                file_put_contents('../uploads/upload_debug.log', "FAILED: move_uploaded_file for $original_name\n", FILE_APPEND);
+                $upload_error_log[] = "Failed to save: $original_name";
             }
         } else {
-            // Log upload errors
             $error_messages = [
-                UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize',
-                UPLOAD_ERR_FORM_SIZE => 'File exceeds MAX_FILE_SIZE',
-                UPLOAD_ERR_PARTIAL => 'File was only partially uploaded',
-                UPLOAD_ERR_NO_FILE => 'No file was uploaded',
-                UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder',
-                UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
-                UPLOAD_ERR_EXTENSION => 'Upload stopped by extension'
+                UPLOAD_ERR_INI_SIZE => 'File too large',
+                UPLOAD_ERR_FORM_SIZE => 'File too large',
+                UPLOAD_ERR_PARTIAL => 'Partial upload',
+                UPLOAD_ERR_NO_TMP_DIR => 'Server error',
+                UPLOAD_ERR_CANT_WRITE => 'Server error',
+                UPLOAD_ERR_EXTENSION => 'File type blocked'
             ];
-            $err_msg = $error_messages[$upload_error] ?? "Unknown error: $upload_error";
-            $upload_error_log[] = $err_msg;
-            file_put_contents('../uploads/upload_debug.log', "Upload error: $err_msg\n", FILE_APPEND);
+            $upload_error_log[] = ($error_messages[$upload_error] ?? 'Upload failed') . ": $original_name";
         }
     }
 
