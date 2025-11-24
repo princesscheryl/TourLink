@@ -24,19 +24,14 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
         <div class="partners-container">
             <span class="partner-label">In Partnership With</span>
             <div class="partner-logos">
-                <div class="partner-item">
-                    <i class="fas fa-landmark"></i>
-                    <span>Ghana Tourism Authority</span>
+                <div class="partner-logo-item">
+                    <img src="<?php echo $base_path; ?>assets/images/partners/gta-logo.png" alt="Ghana Tourism Authority" onerror="this.style.display='none'">
                 </div>
-                <div class="partner-divider"></div>
-                <div class="partner-item">
-                    <i class="fas fa-globe-africa"></i>
-                    <span>Ministry of Tourism</span>
+                <div class="partner-logo-item">
+                    <img src="<?php echo $base_path; ?>assets/images/partners/ministry-tourism-logo.png" alt="Ministry of Tourism" onerror="this.style.display='none'">
                 </div>
-                <div class="partner-divider"></div>
-                <div class="partner-item">
-                    <i class="fas fa-handshake"></i>
-                    <span>GHATOF</span>
+                <div class="partner-logo-item">
+                    <img src="<?php echo $base_path; ?>assets/images/partners/ghatof-logo.png" alt="GHATOF" onerror="this.style.display='none'">
                 </div>
             </div>
         </div>
@@ -117,29 +112,32 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
     .partner-logos {
         display: flex;
         align-items: center;
-        gap: 24px;
+        gap: 40px;
         flex-wrap: wrap;
         justify-content: center;
     }
 
-    .partner-item {
+    .partner-logo-item {
         display: flex;
         align-items: center;
-        gap: 10px;
-        color: white;
-        font-size: 14px;
-        font-weight: 600;
+        justify-content: center;
+        height: 60px;
     }
 
-    .partner-item i {
-        font-size: 24px;
-        color: #d4a017;
+    .partner-logo-item img {
+        max-height: 50px;
+        max-width: 150px;
+        height: auto;
+        width: auto;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+        transition: all 0.3s;
     }
 
-    .partner-divider {
-        width: 1px;
-        height: 30px;
-        background: rgba(255,255,255,0.2);
+    .partner-logo-item img:hover {
+        opacity: 1;
+        transform: scale(1.05);
     }
 
     .footer-certifications {
@@ -195,25 +193,22 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
     }
 
     @media (max-width: 768px) {
+        .footer-partners {
+            padding: 20px 20px;
+        }
+
         .partners-container {
             flex-direction: column;
-            gap: 16px;
+            gap: 20px;
         }
 
         .partner-logos {
-            gap: 16px;
+            gap: 24px;
         }
 
-        .partner-divider {
-            display: none;
-        }
-
-        .partner-item {
-            font-size: 12px;
-        }
-
-        .partner-item i {
-            font-size: 20px;
+        .partner-logo-item img {
+            max-height: 40px;
+            max-width: 120px;
         }
     }
 </style>

@@ -1205,12 +1205,19 @@ $categories = get_all_service_categories_ctr();
         }
 
         .community-image {
-            height: 180px;
+            height: 220px;
             background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
+        }
+
+        .community-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .community-image i {
@@ -1435,12 +1442,19 @@ $categories = get_all_service_categories_ctr();
         }
 
         .story-image {
-            height: 200px;
+            height: 280px;
             background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
+        }
+
+        .story-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .story-image i {
@@ -1902,7 +1916,7 @@ $categories = get_all_service_categories_ctr();
             <div class="community-grid">
                 <div class="community-card">
                     <div class="community-image">
-                        <i class="fas fa-palette"></i>
+                        <img src="assets/images/experiences/kente-weaving.jpg" alt="Kente Weaving" onerror="this.parentElement.innerHTML='<i class=\'fas fa-palette\'></i>';">
                         <span class="community-tag">Craft Village</span>
                     </div>
                     <div class="community-content">
@@ -1917,7 +1931,7 @@ $categories = get_all_service_categories_ctr();
 
                 <div class="community-card">
                     <div class="community-image">
-                        <i class="fas fa-utensils"></i>
+                        <img src="assets/images/experiences/cooking-class.jpg" alt="Cooking Class" onerror="this.parentElement.innerHTML='<i class=\'fas fa-utensils\'></i>';">
                         <span class="community-tag">Culinary</span>
                     </div>
                     <div class="community-content">
@@ -1932,7 +1946,7 @@ $categories = get_all_service_categories_ctr();
 
                 <div class="community-card">
                     <div class="community-image">
-                        <i class="fas fa-drum"></i>
+                        <img src="assets/images/experiences/drumming-dance.jpg" alt="Traditional Drumming" onerror="this.parentElement.innerHTML='<i class=\'fas fa-drum\'></i>';">
                         <span class="community-tag">Cultural</span>
                     </div>
                     <div class="community-content">
@@ -1947,7 +1961,7 @@ $categories = get_all_service_categories_ctr();
 
                 <div class="community-card">
                     <div class="community-image">
-                        <i class="fas fa-fish"></i>
+                        <img src="assets/images/experiences/fishing-village.jpg" alt="Fishing Village" onerror="this.parentElement.innerHTML='<i class=\'fas fa-fish\'></i>';">
                         <span class="community-tag">Eco-Tourism</span>
                     </div>
                     <div class="community-content">
@@ -2010,7 +2024,7 @@ $categories = get_all_service_categories_ctr();
             <div class="stories-grid">
                 <div class="story-card">
                     <div class="story-image">
-                        <i class="fas fa-user"></i>
+                        <img src="assets/images/providers/kwadwo-asante.jpg" alt="Kwadwo Asante" onerror="this.parentElement.innerHTML='<i class=\'fas fa-user\'></i>';">
                         <span class="story-badge">Tour Guide</span>
                     </div>
                     <div class="story-content">
@@ -2036,7 +2050,7 @@ $categories = get_all_service_categories_ctr();
 
                 <div class="story-card">
                     <div class="story-image">
-                        <i class="fas fa-user"></i>
+                        <img src="assets/images/providers/akosua-mensah.jpg" alt="Akosua Mensah" onerror="this.parentElement.innerHTML='<i class=\'fas fa-user\'></i>';">
                         <span class="story-badge">Accommodation</span>
                     </div>
                     <div class="story-content">
@@ -2062,7 +2076,7 @@ $categories = get_all_service_categories_ctr();
 
                 <div class="story-card">
                     <div class="story-image">
-                        <i class="fas fa-user"></i>
+                        <img src="assets/images/providers/yaw-boateng.jpg" alt="Yaw Boateng" onerror="this.parentElement.innerHTML='<i class=\'fas fa-user\'></i>';">
                         <span class="story-badge">Transport</span>
                     </div>
                     <div class="story-content">
