@@ -12,6 +12,11 @@ require_once '../settings/core.php';
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../css/navigation.css" rel="stylesheet">
     <link href="../css/footer.css" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/accessibility.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
+    <script src="../js/translator.js"></script>
+    <script src="../js/accessibility.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -526,6 +531,128 @@ require_once '../settings/core.php';
             .impact-stat:last-child {
                 border-bottom: none;
             }
+        }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] body {
+            background: #1a1a1a !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .impact-bar {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .impact-stat {
+            border-right-color: #404040 !important;
+            border-bottom-color: #404040 !important;
+        }
+
+        [data-theme="dark"] .impact-stat i {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .impact-stat h3 {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .impact-stat p {
+            color: #a0a0a0 !important;
+        }
+
+        [data-theme="dark"] .why-section {
+            background: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .why-content h2 {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .why-content p {
+            color: #b0b0b0 !important;
+        }
+
+        [data-theme="dark"] .benefits-list li span {
+            color: #c0c0c0 !important;
+        }
+
+        [data-theme="dark"] .experiences-section {
+            background: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .section-header h2 {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .section-header p {
+            color: #a0a0a0 !important;
+        }
+
+        [data-theme="dark"] .experience-card {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .experience-content h3 {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .experience-location {
+            color: #a0a0a0 !important;
+        }
+
+        [data-theme="dark"] .experience-content p {
+            color: #b0b0b0 !important;
+        }
+
+        [data-theme="dark"] .experience-footer {
+            border-top-color: #404040 !important;
+        }
+
+        [data-theme="dark"] .experience-price {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .experience-price span {
+            color: #a0a0a0 !important;
+        }
+
+        [data-theme="dark"] .btn-book {
+            background: #52b788 !important;
+            color: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .btn-book:hover {
+            background: #40916c !important;
+            color: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .why-ghana-section {
+            background: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .partner-card {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .partner-card:hover {
+            background: #3d3d3d !important;
+            border-color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .partner-card h4 {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .partner-card .location {
+            color: #a0a0a0 !important;
+        }
+
+        [data-theme="dark"] .partner-stats span {
+            color: #a0a0a0 !important;
+        }
+
+        [data-theme="dark"] .partner-stats span strong {
+            color: #52b788 !important;
         }
     </style>
 </head>

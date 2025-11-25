@@ -27,6 +27,11 @@ foreach ($festivals as $festival) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../css/navigation.css" rel="stylesheet">
     <link href="../css/footer.css" rel="stylesheet">
+    <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/accessibility.css" rel="stylesheet">
+    <script src="../js/dark-mode.js"></script>
+    <script src="../js/translator.js"></script>
+    <script src="../js/accessibility.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -320,6 +325,96 @@ foreach ($festivals as $festival) {
             .date-box {
                 justify-self: center;
             }
+        }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] body {
+            background: #1a1a1a !important;
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .intro-text {
+            color: #b0b0b0 !important;
+        }
+
+        [data-theme="dark"] .featured-section {
+            background: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .section-header h2 {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .section-header p {
+            color: #a0a0a0 !important;
+        }
+
+        [data-theme="dark"] .featured-card {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .festival-name {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .festival-date,
+        [data-theme="dark"] .festival-location {
+            color: #a0a0a0 !important;
+        }
+
+        [data-theme="dark"] .festival-description {
+            color: #b0b0b0 !important;
+        }
+
+        [data-theme="dark"] .btn-view {
+            background: #52b788 !important;
+            color: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .btn-view:hover {
+            background: #40916c !important;
+            color: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .festivals-list {
+            background: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .month-section h3 {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .festival-list-item {
+            background: #2d2d2d !important;
+            border-color: #404040 !important;
+        }
+
+        [data-theme="dark"] .festival-list-item:hover {
+            border-color: #52b788 !important;
+            background: #3d3d3d !important;
+        }
+
+        [data-theme="dark"] .date-box {
+            background: #52b788 !important;
+            color: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .festival-info h4 {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .festival-meta span {
+            color: #a0a0a0 !important;
+        }
+
+        [data-theme="dark"] .btn-cta {
+            background: #d4a017 !important;
+            color: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .btn-cta:hover {
+            background: #b8860b !important;
+            color: #1a1a1a !important;
         }
     </style>
 </head>

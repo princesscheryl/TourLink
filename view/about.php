@@ -149,6 +149,52 @@ require_once '../settings/core.php';
             padding: 30px 20px;
             margin-top: 80px;
         }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] body {
+            background: #1a1a1a !important;
+        }
+
+        [data-theme="dark"] .content-card {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] .content-card h2 {
+            color: #52b788 !important;
+            border-bottom-color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .content-card h3 {
+            color: #74c69d !important;
+        }
+
+        [data-theme="dark"] .content-card p {
+            color: #c0c0c0 !important;
+        }
+
+        [data-theme="dark"] .content-card ul {
+            color: #c0c0c0 !important;
+        }
+
+        [data-theme="dark"] .content-card ul li {
+            color: #c0c0c0 !important;
+        }
+
+        [data-theme="dark"] .team-member {
+            background: #3d3d3d !important;
+        }
+
+        [data-theme="dark"] .member-name {
+            color: #e0e0e0 !important;
+        }
+
+        [data-theme="dark"] .member-role {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] .member-bio {
+            color: #b0b0b0 !important;
+        }
     </style>
 </head>
 <body>

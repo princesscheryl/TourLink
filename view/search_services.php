@@ -45,7 +45,22 @@ if ($services && is_array($services)) {
     // Region filter
     if ($region_filter) {
         $services = array_filter($services, function($service) use ($region_filter) {
-            return stripos($service['service_location'], $region_filter) !== false;
+            // Check service location
+            if (stripos($service['service_location'] ?? '', $region_filter) !== false) {
+                return true;
+            }
+            // Check provider region
+            if (stripos($service['provider_region'] ?? '', $region_filter) !== false) {
+                return true;
+            }
+            // Check available regions (JSON array)
+            if (!empty($service['available_regions'])) {
+                $regions = json_decode($service['available_regions'], true);
+                if (is_array($regions) && in_array($region_filter, $regions)) {
+                    return true;
+                }
+            }
+            return false;
         });
     }
 
