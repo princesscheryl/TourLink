@@ -24,15 +24,16 @@ class Service extends db_connection
      * @param string $available_regions (JSON string)
      * @param int $max_capacity
      * @param string $service_images (JSON string)
+     * @param int $festival_id (optional - link service to a festival)
      * @return int|bool Service ID on success, false on failure
      */
-    public function add_service($provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions = null, $max_capacity = null, $service_images = null)
+    public function add_service($provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions = null, $max_capacity = null, $service_images = null, $festival_id = null)
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, service_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')"
+            "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, festival_id, service_status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')"
         );
-        $stmt->bind_param("iissdsssis", $provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images);
+        $stmt->bind_param("iissdssisis", $provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images, $festival_id);
 
         if ($stmt->execute()) {
             return $this->last_insert_id();
@@ -183,7 +184,7 @@ class Service extends db_connection
     {
         $allowed_fields = ['service_title', 'category_id', 'service_description', 'base_price', 'pricing_unit',
                           'service_location', 'available_regions', 'max_capacity', 'service_images',
-                          'availability_status', 'service_status'];
+                          'availability_status', 'service_status', 'festival_id'];
 
         $updates = [];
         $params = [];
@@ -235,6 +236,41 @@ class Service extends db_connection
         $stmt->bind_param("i", $service_id);
 
         return $stmt->execute();
+    }
+
+    /**
+     * Get services by festival
+     * @param int $festival_id
+     * @return array|bool Array of services or false
+     */
+    public function get_services_by_festival($festival_id)
+    {
+        $sql = "SELECT s.*,
+                       sc.category_name,
+                       sp.business_name as provider_name,
+                       sp.region as provider_region,
+                       sp.average_rating as provider_rating,
+                       u.first_name as provider_first_name,
+                       u.last_name as provider_last_name,
+                       f.festival_name,
+                       f.start_date as festival_start_date,
+                       f.end_date as festival_end_date
+                FROM tl_services s
+                INNER JOIN tl_service_categories sc ON s.category_id = sc.category_id
+                INNER JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
+                INNER JOIN tl_users u ON sp.user_id = u.user_id
+                LEFT JOIN tl_festivals f ON s.festival_id = f.festival_id
+                WHERE s.festival_id = ?
+                AND s.service_status = 'active'
+                AND s.availability_status = 'available'
+                ORDER BY s.is_premium_listing DESC, s.date_created DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $festival_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     /**

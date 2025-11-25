@@ -2,6 +2,7 @@
 require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
 require_once '../controllers/service_category_controller.php';
+require_once '../classes/festival_class.php';
 
 // Get filter parameters
 $category_filter = isset($_GET['category']) ? (int)$_GET['category'] : null;
@@ -9,14 +10,28 @@ $min_price = isset($_GET['min_price']) && $_GET['min_price'] !== '' ? (float)$_G
 $max_price = isset($_GET['max_price']) && $_GET['max_price'] !== '' ? (float)$_GET['max_price'] : null;
 $min_rating = isset($_GET['rating']) && $_GET['rating'] !== '' ? (float)$_GET['rating'] : null;
 $region_filter = isset($_GET['region']) ? trim($_GET['region']) : null;
+$festival_filter = isset($_GET['festival']) ? (int)$_GET['festival'] : null;
 $sort_by = isset($_GET['sort']) ? trim($_GET['sort']) : 'newest';
 
+// Get festival info if filtering by festival
+$festival_info = null;
+if ($festival_filter) {
+    $festival_class = new Festival();
+    $festival_info = $festival_class->get_festival_by_id($festival_filter);
+}
+
 // Get services
-if ($category_filter) {
+if ($festival_filter) {
+    $services = get_services_by_festival_ctr($festival_filter);
+} elseif ($category_filter) {
     $services = get_services_by_category_ctr($category_filter);
 } else {
     $services = get_all_services_ctr();
 }
+
+// Check for upcoming festivals in the current month
+$festival_class = new Festival();
+$upcoming_festivals = $festival_class->get_upcoming_festivals(5);
 
 // Apply additional filters
 if ($services && is_array($services)) {
@@ -757,6 +772,61 @@ if (isset($_SESSION['user_id'])) {
             <p>Discover amazing experiences across Ghana</p>
         </div>
     </div>
+
+    <?php if ($festival_info): ?>
+    <!-- Festival Banner -->
+    <div style="background: linear-gradient(135deg, #d4a017 0%, #f4c430 100%); padding: 24px 0; margin-bottom: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div class="main-container">
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <div style="font-size: 48px;">🎉</div>
+                <div style="flex: 1; min-width: 250px;">
+                    <h2 style="color: #1b4332; font-weight: 800; margin: 0 0 8px 0; font-size: 1.8rem;">
+                        <?php echo htmlspecialchars($festival_info['festival_name']); ?> Festival
+                    </h2>
+                    <p style="color: #2d6a4f; margin: 0; font-size: 1.1rem; font-weight: 500;">
+                        <?php echo date('F j', strtotime($festival_info['start_date'])); ?>
+                        <?php if ($festival_info['end_date'] && $festival_info['end_date'] != $festival_info['start_date']): ?>
+                            - <?php echo date('F j, Y', strtotime($festival_info['end_date'])); ?>
+                        <?php else: ?>
+                            , <?php echo date('Y', strtotime($festival_info['start_date'])); ?>
+                        <?php endif; ?>
+                        • <?php echo htmlspecialchars($festival_info['region']); ?> Region
+                    </p>
+                    <?php if (!empty($festival_info['description'])): ?>
+                        <p style="color: #1b4332; margin: 12px 0 0 0; font-size: 0.95rem; line-height: 1.5;">
+                            <?php echo htmlspecialchars(substr($festival_info['description'], 0, 180)); ?>...
+                        </p>
+                    <?php endif; ?>
+                </div>
+                <div>
+                    <a href="all_services.php" style="background: #1b4332; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; transition: all 0.3s;">
+                        View All Services
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php elseif (!empty($upcoming_festivals)): ?>
+    <!-- Upcoming Festivals Quick Links -->
+    <div style="background: #f8f9fa; padding: 20px 0; margin-bottom: 24px; border-top: 3px solid #d4a017;">
+        <div class="main-container">
+            <div style="display: flex; align-items: center; gap: 16px; overflow-x: auto; padding-bottom: 8px;">
+                <span style="color: #1b4332; font-weight: 600; white-space: nowrap;">
+                    <i class="fas fa-calendar-alt" style="color: #d4a017;"></i> Upcoming Festivals:
+                </span>
+                <?php foreach (array_slice($upcoming_festivals, 0, 4) as $fest): ?>
+                    <a href="all_services.php?festival=<?php echo $fest['festival_id']; ?>"
+                       style="background: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; color: #2d6a4f; font-weight: 500; white-space: nowrap; border: 2px solid #e5e7eb; transition: all 0.3s; font-size: 0.9rem;">
+                        <?php echo htmlspecialchars($fest['festival_name']); ?>
+                        <span style="color: #999; font-size: 0.85rem;">
+                            (<?php echo date('M j', strtotime($fest['start_date'])); ?>)
+                        </span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="main-container">
         <div class="row">

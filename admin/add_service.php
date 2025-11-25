@@ -2,6 +2,7 @@
 require_once '../settings/core.php';
 require_once '../classes/service_provider_class.php';
 require_once '../controllers/service_category_controller.php';
+require_once '../classes/festival_class.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -20,6 +21,10 @@ if (!$provider) {
 
 // Get categories
 $categories = get_all_service_categories_ctr();
+
+// Get festivals
+$festival_class = new Festival();
+$festivals = $festival_class->get_all_festivals();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -753,6 +758,25 @@ $categories = get_all_service_categories_ctr();
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Link to Festival (Optional)</label>
+                                <select class="form-select" id="festival_id" name="festival_id">
+                                    <option value="">Not linked to any festival</option>
+                                    <?php if ($festivals): ?>
+                                        <?php foreach ($festivals as $festival): ?>
+                                            <option value="<?php echo $festival['festival_id']; ?>">
+                                                <?php echo htmlspecialchars($festival['festival_name']); ?>
+                                                - <?php echo date('M d, Y', strtotime($festival['start_date'])); ?>
+                                                (<?php echo htmlspecialchars($festival['region']); ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                                <p class="form-hint">
+                                    <i class="fas fa-calendar-alt"></i> Link your service to a Ghanaian festival to boost visibility during festival season
+                                </p>
                             </div>
 
                             <div class="form-group">

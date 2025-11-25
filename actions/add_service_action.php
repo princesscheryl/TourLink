@@ -34,6 +34,7 @@ $base_price = isset($_POST['base_price']) ? (float)$_POST['base_price'] : 0;
 $pricing_unit = isset($_POST['pricing_unit']) ? trim($_POST['pricing_unit']) : 'per_person';
 $service_location = isset($_POST['service_location']) ? trim($_POST['service_location']) : '';
 $max_capacity = isset($_POST['max_capacity']) && $_POST['max_capacity'] !== '' ? (int)$_POST['max_capacity'] : null;
+$festival_id = isset($_POST['festival_id']) && $_POST['festival_id'] !== '' ? (int)$_POST['festival_id'] : null;
 
 // Handle available regions
 $available_regions = null;
@@ -235,7 +236,8 @@ $service_id = add_service_ctr(
     $service_location,
     $available_regions,
     $max_capacity,
-    $service_images
+    $service_images,
+    $festival_id
 );
 
 if ($service_id) {

@@ -51,6 +51,17 @@ class Admin extends db_connection
     {
         $stats = [];
 
+        // NORTH STAR METRIC: High-Quality Completed Experiences (4+ star rated bookings)
+        $result = $this->db->query("
+            SELECT COUNT(*) as total
+            FROM tl_bookings b
+            INNER JOIN tl_reviews r ON b.booking_id = r.booking_id
+            WHERE b.booking_status = 'completed'
+            AND r.rating >= 4
+            AND r.review_status = 'approved'
+        ");
+        $stats['high_quality_experiences'] = $result->fetch_assoc()['total'];
+
         // Total revenue generated for providers
         $result = $this->db->query("SELECT COALESCE(SUM(total_amount), 0) as total FROM tl_bookings WHERE booking_status IN ('confirmed', 'completed')");
         $stats['total_revenue'] = $result->fetch_assoc()['total'];
@@ -82,6 +93,27 @@ class Admin extends db_connection
         // This month's revenue
         $result = $this->db->query("SELECT COALESCE(SUM(total_amount), 0) as total FROM tl_bookings WHERE booking_status IN ('confirmed', 'completed') AND MONTH(booking_date) = MONTH(CURRENT_DATE()) AND YEAR(booking_date) = YEAR(CURRENT_DATE())");
         $stats['monthly_revenue'] = $result->fetch_assoc()['total'];
+
+        // Monthly Active Tourists (tourists who completed bookings this month)
+        $result = $this->db->query("
+            SELECT COUNT(DISTINCT tourist_id) as total
+            FROM tl_bookings
+            WHERE booking_status = 'completed'
+            AND MONTH(completion_date) = MONTH(CURRENT_DATE())
+            AND YEAR(completion_date) = YEAR(CURRENT_DATE())
+        ");
+        $stats['monthly_active_tourists'] = $result->fetch_assoc()['total'] ?? 0;
+
+        // Monthly Active Providers (providers who received completed bookings this month)
+        $result = $this->db->query("
+            SELECT COUNT(DISTINCT s.provider_id) as total
+            FROM tl_bookings b
+            JOIN tl_services s ON b.service_id = s.service_id
+            WHERE b.booking_status = 'completed'
+            AND MONTH(b.completion_date) = MONTH(CURRENT_DATE())
+            AND YEAR(b.completion_date) = YEAR(CURRENT_DATE())
+        ");
+        $stats['monthly_active_providers'] = $result->fetch_assoc()['total'] ?? 0;
 
         // Pending bookings
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_bookings WHERE booking_status = 'pending'");

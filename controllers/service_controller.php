@@ -7,10 +7,10 @@ require_once __DIR__ . '/../classes/service_class.php';
  */
 
 // Add new service
-function add_service_ctr($provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions = null, $max_capacity = null, $service_images = null)
+function add_service_ctr($provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions = null, $max_capacity = null, $service_images = null, $festival_id = null)
 {
     $service = new Service();
-    $service_id = $service->add_service($provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images);
+    $service_id = $service->add_service($provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images, $festival_id);
 
     if ($service_id) {
         return $service_id;
@@ -116,6 +116,19 @@ function get_premium_services_ctr($limit = 6)
 {
     $service = new Service();
     $result = $service->get_premium_services($limit);
+
+    if ($result) {
+        return $result;
+    } else {
+        return false;
+    }
+}
+
+// Get services by festival
+function get_services_by_festival_ctr($festival_id)
+{
+    $service = new Service();
+    $result = $service->get_services_by_festival($festival_id);
 
     if ($result) {
         return $result;
