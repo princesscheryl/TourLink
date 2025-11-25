@@ -361,10 +361,10 @@ require_once '../settings/core.php';
             color: white;
         }
 
-        /* Community Partners */
-        .partners-section {
+        /* Why Visit Ghana Section */
+        .why-ghana-section {
             padding: 80px 0;
-            background: white;
+            background: #f8f9fa;
         }
 
         .partners-grid {
@@ -617,190 +617,174 @@ require_once '../settings/core.php';
         </div>
     </section>
 
-    <section class="experiences-section">
+    <!-- Why Visit Ghana Section -->
+    <section class="why-ghana-section">
         <div class="container-main">
-            <div class="section-header">
-                <h2>Featured Village Experiences</h2>
-                <p>Curated experiences that connect you with Ghana's rich cultural heritage</p>
+            <div class="section-header" style="text-align: center; max-width: 800px; margin: 0 auto 60px;">
+                <span class="header-badge" style="background: rgba(212, 160, 23, 0.1); color: #d4a017; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                    <i class="fas fa-star"></i> Discover Ghana
+                </span>
+                <h2 style="font-size: 2.5rem; font-weight: 800; margin: 20px 0; color: #1b4332;">Why Visit Ghana</h2>
+                <p style="font-size: 1.1rem; color: #666; line-height: 1.8;">Experience the heartbeat of West Africa - where ancient kingdoms meet modern vibrancy, golden beaches stretch endlessly, and every corner tells a story of resilience, culture, and warm hospitality.</p>
             </div>
 
-            <div class="experiences-grid">
-                <div class="experience-card">
-                    <div class="experience-image">
-                        <i class="fas fa-palette"></i>
-                        <span class="experience-tag">Craft Village</span>
-                        <span class="experience-duration">Full Day</span>
-                    </div>
-                    <div class="experience-content">
-                        <h3>Kente Weaving Masterclass</h3>
-                        <p class="experience-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Bonwire, Ashanti Region
-                        </p>
-                        <p>Learn the ancient art of Kente weaving from master craftsmen. Create your own strip to take home as a meaningful souvenir.</p>
-                        <div class="experience-footer">
-                            <span class="experience-price">GH&#8373; 250 <span>/ person</span></span>
-                            <a href="all_services.php?region=Ashanti" class="btn-book">View Details</a>
-                        </div>
-                    </div>
-                </div>
+            <!-- History & Culture -->
+            <div style="background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%); border-radius: 24px; padding: 60px 48px; margin-bottom: 48px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; right: 0; width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; transform: translate(30%, -30%);"></div>
+                <div style="position: absolute; bottom: 0; left: 0; width: 200px; height: 200px; background: rgba(212, 160, 23, 0.1); border-radius: 50%; transform: translate(-30%, 30%);"></div>
 
-                <div class="experience-card">
-                    <div class="experience-image">
-                        <i class="fas fa-utensils"></i>
-                        <span class="experience-tag">Culinary</span>
-                        <span class="experience-duration">Half Day</span>
-                    </div>
-                    <div class="experience-content">
-                        <h3>Farm-to-Table Cooking</h3>
-                        <p class="experience-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Elmina, Central Region
-                        </p>
-                        <p>Visit local farms, harvest fresh ingredients, and learn to prepare traditional Ghanaian dishes with local mothers.</p>
-                        <div class="experience-footer">
-                            <span class="experience-price">GH&#8373; 180 <span>/ person</span></span>
-                            <a href="all_services.php?region=Central" class="btn-book">View Details</a>
+                <div style="position: relative; z-index: 1;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;">
+                        <div>
+                            <div style="display: inline-block; background: rgba(212, 160, 23, 0.2); border: 2px solid #d4a017; padding: 12px 24px; border-radius: 30px; margin-bottom: 24px;">
+                                <span style="color: #d4a017; font-weight: 700; font-size: 16px; letter-spacing: 1px;">🇬🇭 GATEWAY TO AFRICA</span>
+                            </div>
+                            <h3 style="font-size: 2.2rem; font-weight: 800; color: white; margin-bottom: 20px; line-height: 1.2;">A Nation of Firsts & Pioneers</h3>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 1.05rem; line-height: 1.8; margin-bottom: 24px;">
+                                Ghana was the <strong>first sub-Saharan African nation to gain independence</strong> in 1957, led by the visionary Kwame Nkrumah. This spirit of liberation continues to define Ghanaian identity - proud, welcoming, and forward-thinking.
+                            </p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px;">
+                                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #d4a017;">
+                                    <div style="font-size: 2rem; font-weight: 800; color: #d4a017;">1957</div>
+                                    <div style="color: white; font-size: 0.95rem; margin-top: 4px;">Independence Year</div>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; border-left: 4px solid #d4a017;">
+                                    <div style="font-size: 2rem; font-weight: 800; color: #d4a017;">70+</div>
+                                    <div style="color: white; font-size: 0.95rem; margin-top: 4px;">Ethnic Groups</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="experience-card">
-                    <div class="experience-image">
-                        <i class="fas fa-drum"></i>
-                        <span class="experience-tag">Cultural</span>
-                        <span class="experience-duration">3 Hours</span>
-                    </div>
-                    <div class="experience-content">
-                        <h3>Drumming & Dance Workshop</h3>
-                        <p class="experience-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Kokrobite, Greater Accra
-                        </p>
-                        <p>Learn traditional Ga rhythms and dance movements from village elders at the famous Academy of African Music.</p>
-                        <div class="experience-footer">
-                            <span class="experience-price">GH&#8373; 150 <span>/ person</span></span>
-                            <a href="all_services.php?region=Greater+Accra" class="btn-book">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="experience-card">
-                    <div class="experience-image">
-                        <i class="fas fa-fish"></i>
-                        <span class="experience-tag">Eco-Tourism</span>
-                        <span class="experience-duration">Full Day</span>
-                    </div>
-                    <div class="experience-content">
-                        <h3>Fishing Village Experience</h3>
-                        <p class="experience-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Ada Foah, Greater Accra
-                        </p>
-                        <p>Join local fishermen on the Volta River, learn traditional net casting, and enjoy the freshest catch prepared by village women.</p>
-                        <div class="experience-footer">
-                            <span class="experience-price">GH&#8373; 200 <span>/ person</span></span>
-                            <a href="all_services.php?region=Greater+Accra" class="btn-book">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="experience-card">
-                    <div class="experience-image">
-                        <i class="fas fa-mortar-pestle"></i>
-                        <span class="experience-tag">Heritage</span>
-                        <span class="experience-duration">Half Day</span>
-                    </div>
-                    <div class="experience-content">
-                        <h3>Shea Butter Making</h3>
-                        <p class="experience-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Tamale, Northern Region
-                        </p>
-                        <p>Visit women's cooperatives and learn the traditional process of making shea butter, from nut harvesting to final product.</p>
-                        <div class="experience-footer">
-                            <span class="experience-price">GH&#8373; 160 <span>/ person</span></span>
-                            <a href="all_services.php?region=Northern" class="btn-book">View Details</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="experience-card">
-                    <div class="experience-image">
-                        <i class="fas fa-home"></i>
-                        <span class="experience-tag">Immersive</span>
-                        <span class="experience-duration">2 Days</span>
-                    </div>
-                    <div class="experience-content">
-                        <h3>Village Homestay</h3>
-                        <p class="experience-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Larabanga, Northern Region
-                        </p>
-                        <p>Stay with a local family, participate in daily activities, and experience rural Ghanaian life from the inside.</p>
-                        <div class="experience-footer">
-                            <span class="experience-price">GH&#8373; 350 <span>/ person</span></span>
-                            <a href="all_services.php?region=Northern" class="btn-book">View Details</a>
+                        <div style="text-align: right;">
+                            <!-- Replace with real image: assets/images/ghana/independence-square.jpg -->
+                            <img src="../assets/images/ghana/independence-square.jpg" alt="Independence Square Accra"
+                                 style="width: 100%; height: 400px; object-fit: cover; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);"
+                                 onerror="this.style.background='linear-gradient(135deg, rgba(212,160,23,0.3), rgba(27,67,50,0.3))'; this.alt='Independence Square - Accra, Ghana';">
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section class="partners-section">
-        <div class="container-main">
-            <div class="section-header">
-                <h2>Our Community Partners</h2>
-                <p>Meet the local leaders making community tourism possible</p>
+            <!-- Cultural Heritage Grid -->
+            <div style="margin-bottom: 60px;">
+                <h3 style="font-size: 2rem; font-weight: 700; color: #1b4332; margin-bottom: 32px; text-align: center;">
+                    <i class="fas fa-heart" style="color: #d4a017;"></i> Rich Cultural Tapestry
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s;">
+                        <!-- Replace with real image: assets/images/ghana/kente-weaving.jpg -->
+                        <img src="../assets/images/ghana/kente-weaving.jpg" alt="Kente Cloth Weaving"
+                             style="width: 100%; height: 220px; object-fit: cover;"
+                             onerror="this.style.background='linear-gradient(135deg, #d4a017, #f4c430)'; this.alt='Kente Weaving - Bonwire, Ghana';">
+                        <div style="padding: 24px;">
+                            <h4 style="font-size: 1.3rem; font-weight: 700; color: #1b4332; margin-bottom: 12px;">Kente Cloth</h4>
+                            <p style="color: #666; line-height: 1.7; font-size: 0.95rem;">Handwoven silk and cotton fabric native to the Akan people. Each pattern tells a story and carries deep symbolic meaning passed down through generations.</p>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s;">
+                        <!-- Replace with real image: assets/images/ghana/adinkra-symbols.jpg -->
+                        <img src="../assets/images/ghana/adinkra-symbols.jpg" alt="Adinkra Symbols"
+                             style="width: 100%; height: 220px; object-fit: cover;"
+                             onerror="this.style.background='linear-gradient(135deg, #2d6a4f, #1b4332)'; this.alt='Adinkra Symbols - Ghana';">
+                        <div style="padding: 24px;">
+                            <h4 style="font-size: 1.3rem; font-weight: 700; color: #1b4332; margin-bottom: 12px;">Adinkra Symbols</h4>
+                            <p style="color: #666; line-height: 1.7; font-size: 0.95rem;">Visual symbols representing concepts and proverbs. Sankofa ("go back and fetch it") teaches us to learn from the past to build the future.</p>
+                        </div>
+                    </div>
+
+                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s;">
+                        <!-- Replace with real image: assets/images/ghana/drumming-dancing.jpg -->
+                        <img src="../assets/images/ghana/drumming-dancing.jpg" alt="Traditional Drumming"
+                             style="width: 100%; height: 220px; object-fit: cover;"
+                             onerror="this.style.background='linear-gradient(135deg, #d4a017, #1b4332)'; this.alt='Traditional Drumming - Ghana';">
+                        <div style="padding: 24px;">
+                            <h4 style="font-size: 1.3rem; font-weight: 700; color: #1b4332; margin-bottom: 12px;">Music & Dance</h4>
+                            <p style="color: #666; line-height: 1.7; font-size: 0.95rem;">From the rhythmic beats of the djembe to the energetic Azonto dance, Ghanaian music is the soul of West African culture and has influenced genres worldwide.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="partners-grid">
-                <div class="partner-card">
-                    <div class="partner-avatar">
-                        <i class="fas fa-user"></i>
+            <!-- Must-Visit Destinations -->
+            <div>
+                <h3 style="font-size: 2rem; font-weight: 700; color: #1b4332; margin-bottom: 16px; text-align: center;">
+                    <i class="fas fa-map-marked-alt" style="color: #d4a017;"></i> Must-Visit Destinations
+                </h3>
+                <p style="text-align: center; color: #666; margin-bottom: 40px; font-size: 1.05rem;">From UNESCO World Heritage Sites to pristine beaches and wildlife reserves</p>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px;">
+                    <!-- Cape Coast Castle -->
+                    <div style="position: relative; border-radius: 20px; overflow: hidden; height: 360px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
+                        <!-- Replace with real image: assets/images/ghana/cape-coast-castle.jpg -->
+                        <img src="../assets/images/ghana/cape-coast-castle.jpg" alt="Cape Coast Castle"
+                             style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                             onerror="this.style.background='linear-gradient(135deg, rgba(27,67,50,0.8), rgba(45,106,79,0.9))'; this.alt='Cape Coast Castle - Ghana';">
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 32px 28px;">
+                            <span style="background: #d4a017; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">UNESCO Site</span>
+                            <h4 style="color: white; font-size: 1.6rem; font-weight: 800; margin: 12px 0 8px;">Cape Coast Castle</h4>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">A powerful testament to the transatlantic slave trade. Walk through the "Door of No Return" and honor the memory of millions who passed through these walls.</p>
+                        </div>
                     </div>
-                    <h4>Nana Yaw Asare</h4>
-                    <p class="location">Bonwire Kente Village</p>
-                    <div class="partner-stats">
-                        <span><strong>45</strong> tours hosted</span>
-                        <span><strong>4.9</strong> rating</span>
+
+                    <!-- Kakum National Park -->
+                    <div style="position: relative; border-radius: 20px; overflow: hidden; height: 360px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
+                        <!-- Replace with real image: assets/images/ghana/kakum-canopy-walkway.jpg -->
+                        <img src="../assets/images/ghana/kakum-canopy-walkway.jpg" alt="Kakum Canopy Walkway"
+                             style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                             onerror="this.style.background='linear-gradient(135deg, rgba(45,106,79,0.8), rgba(27,67,50,0.9))'; this.alt='Kakum Canopy Walkway - Ghana';">
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 32px 28px;">
+                            <span style="background: #2d6a4f; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Nature</span>
+                            <h4 style="color: white; font-size: 1.6rem; font-weight: 800; margin: 12px 0 8px;">Kakum National Park</h4>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">Walk 40 meters above the rainforest floor on suspended canopy bridges. Spot rare birds, butterflies, and forest elephants in this pristine ecosystem.</p>
+                        </div>
+                    </div>
+
+                    <!-- Mole National Park -->
+                    <div style="position: relative; border-radius: 20px; overflow: hidden; height: 360px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
+                        <!-- Replace with real image: assets/images/ghana/mole-national-park.jpg -->
+                        <img src="../assets/images/ghana/mole-national-park.jpg" alt="Mole National Park Elephants"
+                             style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                             onerror="this.style.background='linear-gradient(135deg, rgba(212,160,23,0.7), rgba(244,196,48,0.8))'; this.alt='Mole National Park - Ghana';">
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 32px 28px;">
+                            <span style="background: #d4a017; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Wildlife</span>
+                            <h4 style="color: white; font-size: 1.6rem; font-weight: 800; margin: 12px 0 8px;">Mole National Park</h4>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">Ghana's largest wildlife refuge. See elephants, antelopes, baboons, and over 300 bird species in their natural savanna habitat.</p>
+                        </div>
+                    </div>
+
+                    <!-- Labadi Beach -->
+                    <div style="position: relative; border-radius: 20px; overflow: hidden; height: 360px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
+                        <!-- Replace with real image: assets/images/ghana/labadi-beach.jpg -->
+                        <img src="../assets/images/ghana/labadi-beach.jpg" alt="Labadi Beach Accra"
+                             style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                             onerror="this.style.background='linear-gradient(135deg, rgba(45,106,79,0.7), rgba(212,160,23,0.6))'; this.alt='Labadi Beach - Accra, Ghana';">
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 32px 28px;">
+                            <span style="background: #2d6a4f; color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Beach</span>
+                            <h4 style="color: white; font-size: 1.6rem; font-weight: 800; margin: 12px 0 8px;">Labadi Beach</h4>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">Feel the Atlantic breeze at Accra's most vibrant beach. Enjoy live music, fresh coconuts, and stunning sunsets while locals play beach football.</p>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="partner-card">
-                    <div class="partner-avatar">
-                        <i class="fas fa-user"></i>
+            <!-- Why Choose Ghana Call-out -->
+            <div style="background: linear-gradient(135deg, rgba(212,160,23,0.1), rgba(27,67,50,0.05)); border: 2px solid #d4a017; border-radius: 20px; padding: 48px; margin-top: 60px; text-align: center;">
+                <h3 style="font-size: 2rem; font-weight: 800; color: #1b4332; margin-bottom: 20px;">Experience "Akwaaba" - The Spirit of Welcome</h3>
+                <p style="font-size: 1.15rem; color: #2d6a4f; line-height: 1.9; max-width: 900px; margin: 0 auto 32px;">
+                    Ghanaians are renowned for their warm hospitality. "Akwaaba" means "welcome" in Twi, and you'll hear it everywhere you go. From bustling markets in Accra to serene villages in the north, Ghanaians embrace visitors as family.
+                </p>
+                <div style="display: flex; justify-content: center; gap: 40px; margin-top: 32px; flex-wrap: wrap;">
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 800; color: #d4a017;">Safe</div>
+                        <div style="color: #666; font-size: 1rem; margin-top: 4px;">Most stable democracy in West Africa</div>
                     </div>
-                    <h4>Mama Efua</h4>
-                    <p class="location">Elmina Cooking School</p>
-                    <div class="partner-stats">
-                        <span><strong>120</strong> tours hosted</span>
-                        <span><strong>5.0</strong> rating</span>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 800; color: #d4a017;">English</div>
+                        <div style="color: #666; font-size: 1rem; margin-top: 4px;">Official language - easy communication</div>
                     </div>
-                </div>
-
-                <div class="partner-card">
-                    <div class="partner-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h4>Kofi Mensah</h4>
-                    <p class="location">Kokrobite Drum Academy</p>
-                    <div class="partner-stats">
-                        <span><strong>200+</strong> tours hosted</span>
-                        <span><strong>4.8</strong> rating</span>
-                    </div>
-                </div>
-
-                <div class="partner-card">
-                    <div class="partner-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h4>Alhassan Ibrahim</h4>
-                    <p class="location">Larabanga Homestays</p>
-                    <div class="partner-stats">
-                        <span><strong>80</strong> tours hosted</span>
-                        <span><strong>4.9</strong> rating</span>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 800; color: #d4a017;">Year-Round</div>
+                        <div style="color: #666; font-size: 1rem; margin-top: 4px;">Tropical climate perfect for travel</div>
                     </div>
                 </div>
             </div>
