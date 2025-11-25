@@ -1,5 +1,5 @@
 <?php
-require_once 'includes/auth_check.php';
+require_once 'includes_platform/auth_check.php';
 require_once '../classes/admin_class.php';
 
 // Check dashboard access
@@ -477,13 +477,13 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-brand">
-            <a href="dashboard.php">TourLink<span>.</span></a>
+            <a href="platform_dashboard.php">TourLink<span>.</span></a>
             <small>Administration</small>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-title">Overview</div>
-            <a href="dashboard.php" class="nav-link active">
+            <a href="platform_dashboard.php" class="nav-link active">
                 <i class="fas fa-th-large"></i>
                 Dashboard
             </a>
@@ -499,11 +499,11 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
                 <i class="fas fa-users"></i>
                 Users
             </a>
-            <a href="providers.php" class="nav-link">
+            <a href="manage_providers.php" class="nav-link">
                 <i class="fas fa-store"></i>
                 Providers
             </a>
-            <a href="bookings.php" class="nav-link">
+            <a href="manage_bookings.php" class="nav-link">
                 <i class="fas fa-calendar-check"></i>
                 Bookings
             </a>
@@ -515,7 +515,7 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
 
         <div class="nav-section">
             <div class="nav-section-title">Content</div>
-            <a href="festivals.php" class="nav-link">
+            <a href="manage_festivals.php" class="nav-link">
                 <i class="fas fa-drum"></i>
                 Festivals
             </a>
@@ -530,7 +530,7 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
         </div>
 
         <div class="nav-section" style="margin-top: auto;">
-            <a href="logout.php" class="nav-link">
+            <a href="platform_logout.php" class="nav-link">
                 <i class="fas fa-sign-out-alt"></i>
                 Sign Out
             </a>

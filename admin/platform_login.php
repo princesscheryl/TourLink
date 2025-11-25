@@ -3,7 +3,7 @@ session_start();
 
 // Redirect if already logged in
 if (isset($_SESSION['admin_id'])) {
-    header("Location: dashboard.php");
+    header("Location: platform_dashboard.php");
     exit();
 }
 
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['admin_name'] = $result['first_name'] . ' ' . $result['last_name'];
             $_SESSION['admin_role'] = $result['role'];
             $_SESSION['admin_email'] = $result['email'];
-            header("Location: dashboard.php");
+            header("Location: platform_dashboard.php");
             exit();
         } else {
             $error = 'Invalid email or password';

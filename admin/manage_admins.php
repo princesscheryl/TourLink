@@ -1,5 +1,5 @@
 <?php
-require_once 'includes/auth_check.php';
+require_once 'includes_platform/auth_check.php';
 require_once '../classes/admin_class.php';
 
 // Super admin only
@@ -255,7 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && has_privilege('add_admins')) {
                 <p style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Admin Portal</p>
             </div>
             <nav class="sidebar-nav">
-                <a href="dashboard.php" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a href="platform_dashboard.php" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
                 <div class="nav-section">Management</div>
                 <a href="manage_providers.php" class="nav-item"><i class="fas fa-store"></i> Providers</a>
                 <a href="manage_bookings.php" class="nav-item"><i class="fas fa-calendar-check"></i> Bookings</a>
@@ -264,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && has_privilege('add_admins')) {
                 <div class="nav-section">Administration</div>
                 <a href="manage_admins.php" class="nav-item active"><i class="fas fa-user-shield"></i> Admins</a>
                 <div class="nav-section">Account</div>
-                <a href="logout.php" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="platform_logout.php" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </nav>
         </aside>
 
