@@ -1442,7 +1442,7 @@ $categories = get_all_service_categories_ctr();
         }
 
         .story-image {
-            height: 280px;
+            height: 240px;
             background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
             display: flex;
             align-items: center;
@@ -1455,6 +1455,7 @@ $categories = get_all_service_categories_ctr();
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
         }
 
         .story-image i {

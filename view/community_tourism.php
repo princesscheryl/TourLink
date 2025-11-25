@@ -572,7 +572,7 @@ require_once '../settings/core.php';
 
     <section class="why-section">
         <div class="container-main">
-            <div class="why-grid">
+            <div style="max-width: 900px; margin: 0 auto;">
                 <div class="why-content">
                     <h2>Why Choose Community Tourism?</h2>
                     <p>Community-based tourism puts local people at the heart of the travel experience. Unlike conventional tourism, your money goes directly to the communities you visit, creating sustainable livelihoods and preserving cultural heritage.</p>
@@ -599,20 +599,6 @@ require_once '../settings/core.php';
                         </li>
                     </ul>
                 </div>
-                <div class="why-image">
-                    <div class="why-image-card">
-                        <i class="fas fa-palette"></i>
-                        <span>Kente Weaving</span>
-                    </div>
-                    <div class="why-image-card">
-                        <i class="fas fa-utensils"></i>
-                        <span>Local Cuisine</span>
-                    </div>
-                    <div class="why-image-card">
-                        <i class="fas fa-drum"></i>
-                        <span>Traditional Music</span>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -630,9 +616,6 @@ require_once '../settings/core.php';
 
             <!-- History & Culture -->
             <div style="background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%); border-radius: 24px; padding: 60px 48px; margin-bottom: 48px; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: 0; right: 0; width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; transform: translate(30%, -30%);"></div>
-                <div style="position: absolute; bottom: 0; left: 0; width: 200px; height: 200px; background: rgba(212, 160, 23, 0.1); border-radius: 50%; transform: translate(-30%, 30%);"></div>
-
                 <div style="position: relative; z-index: 1;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;">
                         <div>
