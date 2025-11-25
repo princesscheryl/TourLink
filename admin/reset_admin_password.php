@@ -24,8 +24,13 @@ $role = 'super_admin';
 // Generate password hash
 $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-// Check if admin exists
-$check = $db->db_fetch_one("SELECT * FROM tl_admins WHERE email = ?", [$email]);
+// Check if admin exists using prepared statement
+$stmt = $db->db->prepare("SELECT * FROM tl_admins WHERE email = ?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+$check = $result->fetch_assoc();
+$stmt->close();
 
 if ($check) {
     // Update existing admin
@@ -38,6 +43,7 @@ if ($check) {
         echo "<h2 style='color: red;'>✗ Failed to update password</h2>";
         echo "<p>Error: " . $stmt->error . "</p>";
     }
+    $stmt->close();
 } else {
     // Create new admin
     $stmt = $db->db->prepare("INSERT INTO tl_admins (email, password, first_name, last_name, role, is_active) VALUES (?, ?, ?, ?, ?, 1)");
@@ -49,6 +55,7 @@ if ($check) {
         echo "<h2 style='color: red;'>✗ Failed to create admin</h2>";
         echo "<p>Error: " . $stmt->error . "</p>";
     }
+    $stmt->close();
 }
 
 echo "<hr>";
