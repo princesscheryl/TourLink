@@ -133,7 +133,7 @@ class Admin extends db_connection
         $sql = "SELECT b.*, s.service_title, u.first_name, u.last_name, u.email
                 FROM tl_bookings b
                 JOIN tl_services s ON b.service_id = s.service_id
-                JOIN tl_users u ON b.user_id = u.user_id
+                JOIN tl_users u ON b.tourist_id = u.user_id
                 ORDER BY b.booking_date DESC
                 LIMIT ?";
         $stmt = $this->db->prepare($sql);
@@ -181,7 +181,7 @@ class Admin extends db_connection
                        sp.business_name as provider_name
                 FROM tl_bookings b
                 JOIN tl_services s ON b.service_id = s.service_id
-                JOIN tl_users u ON b.user_id = u.user_id
+                JOIN tl_users u ON b.tourist_id = u.user_id
                 JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
                 ORDER BY b.booking_date DESC";
         return $this->db_fetch_all($sql);
@@ -214,7 +214,7 @@ class Admin extends db_connection
         $metrics['communities_reached'] = $result->fetch_assoc()['regions'];
 
         // Total tourist arrivals (unique users who booked)
-        $result = $this->db->query("SELECT COUNT(DISTINCT user_id) as tourists FROM tl_bookings");
+        $result = $this->db->query("SELECT COUNT(DISTINCT tourist_id) as tourists FROM tl_bookings");
         $metrics['tourist_arrivals'] = $result->fetch_assoc()['tourists'];
 
         // Provider income generated
