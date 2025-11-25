@@ -75,10 +75,6 @@ class Admin extends db_connection
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_services WHERE service_status = 'active'");
         $stats['total_services'] = $result->fetch_assoc()['total'];
 
-        // Rural providers (community tourism)
-        $result = $this->db->query("SELECT COUNT(*) as total FROM tl_service_providers WHERE is_rural_provider = 1");
-        $stats['rural_providers'] = $result->fetch_assoc()['total'] ?? 0;
-
         // This month's bookings
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_bookings WHERE MONTH(booking_date) = MONTH(CURRENT_DATE()) AND YEAR(booking_date) = YEAR(CURRENT_DATE())");
         $stats['monthly_bookings'] = $result->fetch_assoc()['total'];
