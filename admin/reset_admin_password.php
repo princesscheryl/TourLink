@@ -5,6 +5,10 @@
  * DELETE THIS FILE after use for security!
  */
 
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once '../settings/db_class.php';
 
 $db = new db_connection();
