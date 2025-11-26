@@ -112,6 +112,14 @@ foreach ($festivals as $festival) {
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
+        }
+
+        .festival-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
         }
 
         .festival-image i {
@@ -439,7 +447,14 @@ foreach ($festivals as $festival) {
                 <?php foreach ($featured as $fest): ?>
                 <div class="festival-card">
                     <div class="festival-image">
-                        <i class="fas fa-drum"></i>
+                        <?php if (!empty($fest['image_url'])): ?>
+                            <img src="<?php echo htmlspecialchars($fest['image_url']); ?>"
+                                 alt="<?php echo htmlspecialchars($fest['festival_name']); ?>"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <i class="fas fa-drum" style="display: none;"></i>
+                        <?php else: ?>
+                            <i class="fas fa-drum"></i>
+                        <?php endif; ?>
                         <div class="festival-date-badge">
                             <?php echo date('M d', strtotime($fest['start_date'])); ?>
                         </div>

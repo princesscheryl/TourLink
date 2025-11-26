@@ -654,6 +654,36 @@ require_once '../settings/core.php';
         [data-theme="dark"] .partner-stats span strong {
             color: #52b788 !important;
         }
+
+        /* Dark Mode - Rich Cultural Tapestry Section */
+        [data-theme="dark"] h3[style*="color: #1b4332"] {
+            color: #52b788 !important;
+        }
+
+        [data-theme="dark"] h4[style*="color: #1b4332"] {
+            color: #74c69d !important;
+        }
+
+        [data-theme="dark"] p[style*="color: #666"] {
+            color: #b0b0b0 !important;
+        }
+
+        [data-theme="dark"] div[style*="color: #666"] {
+            color: #b0b0b0 !important;
+        }
+
+        [data-theme="dark"] div[style*="background: white"] {
+            background: #2d2d2d !important;
+        }
+
+        [data-theme="dark"] p[style*="color: #2d6a4f"] {
+            color: #74c69d !important;
+        }
+
+        [data-theme="dark"] div[style*="background: linear-gradient(135deg, rgba(212,160,23,0.1)"] {
+            background: linear-gradient(135deg, rgba(82,183,136,0.15), rgba(64,145,108,0.1)) !important;
+            border-color: #52b788 !important;
+        }
     </style>
 </head>
 <body>

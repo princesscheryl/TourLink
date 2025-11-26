@@ -525,7 +525,7 @@ $regions = ['Greater Accra', 'Central', 'Ashanti', 'Northern', 'Western', 'Easte
                     <div class="service-card">
                         <?php
                         $images = json_decode($service['service_images'], true);
-                        $first_image = is_array($images) && !empty($images) ? $images[0] : null;
+                        $first_image = is_array($images) && !empty($images) ? '../' . $images[0] : null;
                         ?>
                         <?php if ($first_image): ?>
                             <img src="<?php echo htmlspecialchars($first_image); ?>"
