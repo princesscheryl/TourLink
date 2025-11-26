@@ -448,7 +448,14 @@ foreach ($festivals as $festival) {
                 <div class="festival-card">
                     <div class="festival-image">
                         <?php if (!empty($fest['image_url'])): ?>
-                            <img src="<?php echo htmlspecialchars($fest['image_url']); ?>"
+                            <?php
+                            // Add ../ prefix if the path doesn't start with http or /
+                            $image_src = $fest['image_url'];
+                            if (!preg_match('/^(https?:\/\/|\/)/i', $image_src)) {
+                                $image_src = '../' . $image_src;
+                            }
+                            ?>
+                            <img src="<?php echo htmlspecialchars($image_src); ?>"
                                  alt="<?php echo htmlspecialchars($fest['festival_name']); ?>"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <i class="fas fa-drum" style="display: none;"></i>
