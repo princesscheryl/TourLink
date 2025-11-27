@@ -77,11 +77,69 @@ $total_services = array_sum(array_column($regions, 'services'));
 </head>
 <body>
     <aside class="sidebar">
-        <div class="sidebar-brand"><a href="platform_dashboard.php">TourLink<span>.</span></a><small>Administration</small></div>
-        <div class="nav-section"><div class="nav-section-title">Overview</div><a href="platform_dashboard.php" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a><a href="impact.php" class="nav-link"><i class="fas fa-chart-line"></i> Impact Metrics</a></div>
-        <div class="nav-section"><div class="nav-section-title">Management</div><a href="users.php" class="nav-link"><i class="fas fa-users"></i> Users</a><a href="manage_providers.php" class="nav-link"><i class="fas fa-store"></i> Providers</a><a href="manage_bookings.php" class="nav-link"><i class="fas fa-calendar-check"></i> Bookings</a><a href="services.php" class="nav-link"><i class="fas fa-concierge-bell"></i> Services</a><a href="manage_discounts.php" class="nav-link"><i class="fas fa-tags"></i> Discount Codes</a></div>
-        <div class="nav-section"><div class="nav-section-title">Content</div><a href="manage_festivals.php" class="nav-link"><i class="fas fa-drum"></i> Festivals</a><a href="regions.php" class="nav-link active"><i class="fas fa-map-marked-alt"></i> Regions</a><a href="stories.php" class="nav-link"><i class="fas fa-book-open"></i> Success Stories</a></div>
-        <div class="nav-section" style="margin-top: auto;"><a href="platform_logout.php" class="nav-link"><i class="fas fa-sign-out-alt"></i> Sign Out</a></div>
+        <div class="sidebar-brand">
+            <a href="platform_dashboard.php">TourLink<span>.</span></a>
+            <small>Administration</small>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Overview</div>
+            <a href="platform_dashboard.php" class="nav-link">
+                <i class="fas fa-th-large"></i>
+                Dashboard
+            </a>
+            <a href="impact.php" class="nav-link">
+                <i class="fas fa-chart-line"></i>
+                Impact Metrics
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Management</div>
+            <a href="users.php" class="nav-link">
+                <i class="fas fa-users"></i>
+                Users
+            </a>
+            <a href="manage_providers.php" class="nav-link">
+                <i class="fas fa-store"></i>
+                Providers
+            </a>
+            <a href="manage_bookings.php" class="nav-link">
+                <i class="fas fa-calendar-check"></i>
+                Bookings
+            </a>
+            <a href="services.php" class="nav-link">
+                <i class="fas fa-concierge-bell"></i>
+                Services
+            </a>
+            <a href="manage_discounts.php" class="nav-link">
+                <i class="fas fa-tags"></i>
+                Discount Codes
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Content</div>
+            <a href="manage_festivals.php" class="nav-link">
+                <i class="fas fa-drum"></i>
+                Festivals
+            </a>
+            <a href="regions.php" class="nav-link active">
+                <i class="fas fa-map-marked-alt"></i>
+                Regions
+            </a>
+            <a href="stories.php" class="nav-link">
+                <i class="fas fa-book-open"></i>
+                Success Stories
+            </a>
+        </div>
+
+        <div class="nav-section" style="margin-top: auto;">
+            <a href="platform_logout.php" class="nav-link">
+                <i class="fas fa-sign-out-alt"></i>
+                Sign Out
+            </a>
+        </div>
     </aside>
 
     <main class="main-content">

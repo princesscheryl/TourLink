@@ -3,17 +3,18 @@ require_once 'includes_platform/auth_check.php';
 require_once '../settings/db_class.php';
 
 // Check admin access
-require_privilege('view_services');
+require_privilege('view_dashboard');
 
 // Get all services with provider details
 $db = new db_connection();
 
 $services = $db->db_fetch_all("
-    SELECT s.*, sp.business_name, u.first_name, u.last_name,
+    SELECT s.*, sp.business_name, u.first_name, u.last_name, sc.category_name,
            (SELECT COUNT(*) FROM tl_bookings WHERE service_id = s.service_id) as total_bookings
     FROM tl_services s
     JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
     JOIN tl_users u ON sp.user_id = u.user_id
+    LEFT JOIN tl_service_categories sc ON s.category_id = sc.category_id
     ORDER BY s.date_created DESC
     LIMIT 100
 ");

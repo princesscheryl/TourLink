@@ -3,7 +3,7 @@ require_once 'includes_platform/auth_check.php';
 require_once '../settings/db_class.php';
 
 // Check admin access
-require_privilege('view_users');
+require_privilege('view_dashboard');
 
 // Get all users with their details
 $db = new db_connection();
