@@ -1091,15 +1091,7 @@ foreach ($discounts as $d) {
                         window.location.reload();
                     }, 1500);
                 } else {
-                    let errorMessage = result.message;
-
-                    // Show debug info if available
-                    if (result.debug) {
-                        console.log('DEBUG INFO:', result.debug);
-                        errorMessage += '\n\nDEBUG INFO:\n' + JSON.stringify(result.debug, null, 2);
-                    }
-
-                    showAlert('error', errorMessage);
+                    showAlert('error', result.message);
                     submitBtn.disabled = false;
                     submitBtn.textContent = isEdit ? 'Update Discount Code' : 'Create Discount Code';
                 }

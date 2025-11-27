@@ -23,11 +23,7 @@ foreach ($required_fields as $field) {
     if (!isset($input[$field]) || trim($input[$field]) === '') {
         echo json_encode([
             'status' => 'error',
-            'message' => 'Missing required field: ' . $field,
-            'debug' => [
-                'received_data' => $input,
-                'missing_field' => $field
-            ]
+            'message' => 'Missing required field: ' . $field
         ]);
         exit();
     }
@@ -45,23 +41,13 @@ try {
     $valid_until = trim($input['valid_until']);
     $description = isset($input['description']) ? trim($input['description']) : null;
 
-    $debug_info = [
-        'received_valid_from' => $valid_from,
-        'received_valid_until' => $valid_until
-    ];
-
     // Convert DD/MM/YYYY to YYYY-MM-DD if needed
     if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $valid_from, $matches)) {
         $valid_from = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
-        $debug_info['converted_valid_from'] = $valid_from;
     }
     if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $valid_until, $matches)) {
         $valid_until = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
-        $debug_info['converted_valid_until'] = $valid_until;
     }
-
-    $debug_info['final_valid_from'] = $valid_from;
-    $debug_info['final_valid_until'] = $valid_until;
 
     // Validate discount code format
     if (!preg_match('/^[A-Z0-9]+$/', $code)) {
@@ -118,8 +104,7 @@ try {
 
     echo json_encode([
         'status' => 'error',
-        'message' => $e->getMessage(),
-        'debug' => isset($debug_info) ? $debug_info : ['error' => 'No debug info available']
+        'message' => $e->getMessage()
     ]);
 }
 ?>
