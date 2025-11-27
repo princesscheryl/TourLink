@@ -510,9 +510,13 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
 
     <script>
         function subscribePremium() {
-            if (confirm('Subscribe to Premium for GH₵150/month?\n\nYou will be redirected to payment.')) {
-                window.location.href = '../actions/initiate_premium_subscription.php';
-            }
+            // Disable button and show loading state
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            // Redirect to payment initialization
+            window.location.href = '../actions/initiate_premium_subscription.php';
         }
 
         function cancelSubscription() {
