@@ -34,15 +34,29 @@ if (!$services) {
     $services = [];
 }
 
-// Get subscription history
-$history_query = $db->db->prepare("
-    SELECT pl.*, sp.payment_date, sp.transaction_reference
-    FROM tl_premium_listings pl
-    LEFT JOIN tl_subscription_payments sp ON pl.premium_listing_id = sp.premium_listing_id
-    WHERE pl.provider_id = ?
-    ORDER BY pl.purchase_date DESC
-    LIMIT 10
-");
+// Get subscription history (backward compatible)
+// Check if premium_listing_id column exists in tl_subscription_payments
+$check_col = $db->db->query("SHOW COLUMNS FROM tl_subscription_payments LIKE 'premium_listing_id'");
+if ($check_col->num_rows > 0) {
+    // Column exists - use JOIN
+    $history_query = $db->db->prepare("
+        SELECT pl.*, sp.payment_date, sp.transaction_reference
+        FROM tl_premium_listings pl
+        LEFT JOIN tl_subscription_payments sp ON pl.premium_listing_id = sp.premium_listing_id
+        WHERE pl.provider_id = ?
+        ORDER BY pl.purchase_date DESC
+        LIMIT 10
+    ");
+} else {
+    // Column doesn't exist - query only premium_listings
+    $history_query = $db->db->prepare("
+        SELECT pl.*, pl.payment_reference as transaction_reference, pl.purchase_date as payment_date
+        FROM tl_premium_listings pl
+        WHERE pl.provider_id = ?
+        ORDER BY pl.purchase_date DESC
+        LIMIT 10
+    ");
+}
 $history_query->bind_param("i", $provider_id);
 $history_query->execute();
 $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -383,11 +397,11 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
 
                     <div class="stats-grid">
                         <div class="stat-box">
-                            <div class="stat-value"><?php echo number_format($active_subscription['views_count'] ?? 0); ?></div>
+                            <div class="stat-value"><?php echo isset($active_subscription['views_count']) ? number_format($active_subscription['views_count']) : 'N/A'; ?></div>
                             <div class="stat-label">Premium Views</div>
                         </div>
                         <div class="stat-box">
-                            <div class="stat-value"><?php echo number_format($active_subscription['bookings_count'] ?? 0); ?></div>
+                            <div class="stat-value"><?php echo isset($active_subscription['bookings_count']) ? number_format($active_subscription['bookings_count']) : 'N/A'; ?></div>
                             <div class="stat-label">Premium Bookings</div>
                         </div>
                     </div>
@@ -405,7 +419,14 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
                     </div>
                     <div class="status-detail">
                         <span class="status-label">Next Billing:</span>
-                        <span class="status-value"><?php echo date('M j, Y', strtotime($active_subscription['next_billing_date'])); ?></span>
+                        <span class="status-value">
+                            <?php
+                            $billing_date = isset($active_subscription['next_billing_date'])
+                                ? $active_subscription['next_billing_date']
+                                : $active_subscription['end_date'];
+                            echo date('M j, Y', strtotime($billing_date));
+                            ?>
+                        </span>
                     </div>
                     <div class="status-detail">
                         <span class="status-label">Monthly Fee:</span>

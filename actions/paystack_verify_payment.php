@@ -421,13 +421,13 @@ function process_premium_subscription_verification($reference) {
         $next_billing_date = $end_date;
         $subscription_amount = $subscription_data['amount']; // 150.00
 
-        // Create premium listing record
+        // Create premium listing record (using only base columns)
         $insert_listing = $conn->prepare("
             INSERT INTO tl_premium_listings
-            (provider_id, start_date, end_date, next_billing_date, amount_paid, status, auto_renew, is_subscription, payment_reference)
-            VALUES (?, ?, ?, ?, ?, 'active', 1, 1, ?)
+            (provider_id, start_date, end_date, amount_paid, status, auto_renew, payment_reference)
+            VALUES (?, ?, ?, ?, 'active', 1, ?)
         ");
-        $insert_listing->bind_param("isssds", $provider_id, $start_date, $end_date, $next_billing_date, $subscription_amount, $reference);
+        $insert_listing->bind_param("issds", $provider_id, $start_date, $end_date, $subscription_amount, $reference);
 
         if (!$insert_listing->execute()) {
             throw new Exception("Failed to create premium listing");
@@ -435,26 +435,43 @@ function process_premium_subscription_verification($reference) {
 
         $premium_listing_id = $conn->insert_id;
 
-        // Create subscription payment record
-        $insert_payment = $conn->prepare("
-            INSERT INTO tl_subscription_payments
-            (premium_listing_id, provider_id, subscription_tier, amount, billing_period_start, billing_period_end, payment_status, payment_date, transaction_reference)
-            VALUES (?, ?, 'Premium', ?, ?, ?, 'paid', NOW(), ?)
-        ");
-        $insert_payment->bind_param("iidsss", $premium_listing_id, $provider_id, $subscription_amount, $start_date, $end_date, $reference);
+        // Create subscription payment record (without premium_listing_id if column doesn't exist)
+        // Check if premium_listing_id column exists
+        $check_col = $conn->query("SHOW COLUMNS FROM tl_subscription_payments LIKE 'premium_listing_id'");
+
+        if ($check_col->num_rows > 0) {
+            // Column exists - use it
+            $insert_payment = $conn->prepare("
+                INSERT INTO tl_subscription_payments
+                (premium_listing_id, provider_id, subscription_tier, amount, billing_period_start, billing_period_end, payment_status, payment_date, transaction_reference)
+                VALUES (?, ?, 'Premium', ?, ?, ?, 'paid', NOW(), ?)
+            ");
+            $insert_payment->bind_param("iidsss", $premium_listing_id, $provider_id, $subscription_amount, $start_date, $end_date, $reference);
+        } else {
+            // Column doesn't exist - skip it
+            $insert_payment = $conn->prepare("
+                INSERT INTO tl_subscription_payments
+                (provider_id, subscription_tier, amount, billing_period_start, billing_period_end, payment_status, payment_date, transaction_reference)
+                VALUES (?, 'Premium', ?, ?, ?, 'paid', NOW(), ?)
+            ");
+            $insert_payment->bind_param("idsss", $provider_id, $subscription_amount, $start_date, $end_date, $reference);
+        }
 
         if (!$insert_payment->execute()) {
             throw new Exception("Failed to create subscription payment record");
         }
 
-        // Mark all provider's services as premium
-        $update_services = $conn->prepare("
-            UPDATE tl_services
-            SET is_premium = 1
-            WHERE provider_id = ?
-        ");
-        $update_services->bind_param("i", $provider_id);
-        $update_services->execute();
+        // Mark all provider's services as premium (if column exists)
+        $check_premium_col = $conn->query("SHOW COLUMNS FROM tl_services LIKE 'is_premium'");
+        if ($check_premium_col->num_rows > 0) {
+            $update_services = $conn->prepare("
+                UPDATE tl_services
+                SET is_premium = 1
+                WHERE provider_id = ?
+            ");
+            $update_services->bind_param("i", $provider_id);
+            $update_services->execute();
+        }
 
         error_log("Premium subscription activated - Provider: $provider_id, Listing: $premium_listing_id");
 

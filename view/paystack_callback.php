@@ -1,4 +1,9 @@
 <?php
+// Enable error display for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+
 session_start();
 require_once '../settings/core.php';
 
@@ -192,6 +197,15 @@ if (!$reference) {
                     },
                     body: JSON.stringify({ reference: reference })
                 });
+
+                // Check if response is JSON
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    showError('Server error: ' + text.substring(0, 200));
+                    return;
+                }
 
                 const data = await response.json();
                 console.log('Verification response:', data);
