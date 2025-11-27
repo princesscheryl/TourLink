@@ -24,15 +24,18 @@ class Booking extends db_connection
         // Handle service_duration (default to 1 if not provided)
         $service_duration = isset($booking_data['service_duration']) ? (int)$booking_data['service_duration'] : 1;
 
+        // Handle guest_details (optional)
+        $guest_details = isset($booking_data['guest_details']) ? $booking_data['guest_details'] : null;
+
         $stmt = $this->db->prepare(
             "INSERT INTO tl_bookings (booking_reference, service_id, tourist_id, provider_id,
             service_date, service_time, number_of_people, service_duration, original_amount, discount_amount,
-            total_amount, commission_amount, provider_earnings, special_requests)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            total_amount, commission_amount, provider_earnings, special_requests, guest_details)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
 
         $stmt->bind_param(
-            "siiissiiddddds",
+            "siiissiidddddss",
             $booking_reference,
             $booking_data['service_id'],
             $booking_data['tourist_id'],
@@ -46,7 +49,8 @@ class Booking extends db_connection
             $booking_data['total_amount'],
             $booking_data['commission_amount'],
             $booking_data['provider_earnings'],
-            $booking_data['special_requests']
+            $booking_data['special_requests'],
+            $guest_details
         );
 
         if ($stmt->execute()) {

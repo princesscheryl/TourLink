@@ -1574,6 +1574,9 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
             const form = document.getElementById('bookingForm');
             const serviceDate = document.getElementById('service_date').value;
             const serviceTime = document.getElementById('service_time').value;
+            const serviceId = document.getElementById('service_id').value;
+            const numberOfPeople = document.getElementById('number_of_people').value;
+            const serviceDuration = document.getElementById('service_duration').value || 1;
 
             // Validate form
             if (!serviceDate) {
@@ -1596,13 +1599,39 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                 return;
             }
 
-            // Show loading state
+            // Redirect to booking page with parameters
+            const params = new URLSearchParams({
+                service_id: serviceId,
+                date: serviceDate,
+                time: serviceTime,
+                guests: numberOfPeople,
+                duration: serviceDuration
+            });
+
+            window.location.href = 'book_service.php?' + params.toString();
+        }
+
+        // Legacy AJAX booking (deprecated - keeping for reference)
+        function submitBookingOld() {
+            const form = document.getElementById('bookingForm');
+            const serviceDate = document.getElementById('service_date').value;
+            const serviceTime = document.getElementById('service_time').value;
+
+            if (!serviceDate || !serviceTime) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Required Fields',
+                    text: 'Please select date and time.',
+                    confirmButtonColor: '#2d6a4f'
+                });
+                return;
+            }
+
             const bookBtn = document.querySelector('.btn-book');
             const originalText = bookBtn.innerHTML;
             bookBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Processing...';
             bookBtn.disabled = true;
 
-            // Submit booking via AJAX
             $.ajax({
                 url: '../actions/create_booking_action.php',
                 method: 'POST',
@@ -1610,10 +1639,8 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        // Close modal
                         bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
 
-                        // Show success message
                         Swal.fire({
                             icon: 'success',
                             title: 'Booking Requested!',

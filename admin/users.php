@@ -524,10 +524,6 @@ if ($users) {
                 <i class="fas fa-drum"></i>
                 Festivals
             </a>
-            <a href="stories.php" class="nav-link">
-                <i class="fas fa-book-open"></i>
-                Success Stories
-            </a>
         </div>
 
         <div class="nav-section" style="margin-top: auto;">
