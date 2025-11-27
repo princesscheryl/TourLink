@@ -1,12 +1,45 @@
 <?php
-header('Content-Type: application/json');
-session_start();
+// Enable error logging
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
 
-require_once '../settings/core.php';
-require_once '../settings/paystack_config.php';
-require_once '../controllers/booking_controller.php';
-require_once '../controllers/discount_controller.php';
-require_once '../settings/db_class.php';
+// Set up global error handler to catch all errors and return as JSON
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    error_log("PHP Error [$errno]: $errstr in $errfile:$errline");
+    if (!headers_sent()) {
+        header('Content-Type: application/json');
+    }
+    echo json_encode([
+        'status' => 'error',
+        'message' => "Server error: $errstr",
+        'debug' => [
+            'file' => basename($errfile),
+            'line' => $errline
+        ]
+    ]);
+    exit();
+});
+
+header('Content-Type: application/json');
+
+// Check if session is already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+try {
+    require_once '../settings/core.php';
+    require_once '../settings/paystack_config.php';
+    require_once '../controllers/booking_controller.php';
+    require_once '../controllers/discount_controller.php';
+    require_once '../settings/db_class.php';
+} catch (Exception $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Failed to load required files: ' . $e->getMessage()
+    ]);
+    exit();
+}
 
 // Check authentication
 if (!isset($_SESSION['user_id'])) {
@@ -355,8 +388,11 @@ function process_new_booking_verification($reference) {
  * Process premium subscription payment verification
  */
 function process_premium_subscription_verification($reference) {
+    error_log("Starting premium subscription verification for reference: $reference");
+
     // Get subscription data from session
     if (!isset($_SESSION['pending_premium_subscription'])) {
+        error_log("Premium verification failed: No pending subscription in session");
         echo json_encode([
             'status' => 'error',
             'message' => 'Subscription data not found in session'
@@ -365,9 +401,12 @@ function process_premium_subscription_verification($reference) {
     }
 
     $subscription_data = $_SESSION['pending_premium_subscription'];
+    error_log("Subscription data found: " . json_encode($subscription_data));
 
     // Verify transaction with Paystack
+    error_log("Calling Paystack verification API...");
     $verification_response = paystack_verify_transaction($reference);
+    error_log("Paystack response: " . json_encode($verification_response));
 
     if (!$verification_response || !isset($verification_response['status'])) {
         echo json_encode([
@@ -410,8 +449,16 @@ function process_premium_subscription_verification($reference) {
     }
 
     // Begin database transaction
+    error_log("Starting database transaction for premium subscription");
     $db = new db_connection();
     $conn = $db->db_conn();
+
+    if (!$conn) {
+        error_log("Database connection failed");
+        echo json_encode(['status' => 'error', 'message' => 'Database connection failed']);
+        return;
+    }
+
     mysqli_begin_transaction($conn);
 
     try {
@@ -421,19 +468,29 @@ function process_premium_subscription_verification($reference) {
         $next_billing_date = $end_date;
         $subscription_amount = $subscription_data['amount']; // 150.00
 
+        error_log("Inserting premium listing for provider $provider_id");
+
         // Create premium listing record (using only base columns)
         $insert_listing = $conn->prepare("
             INSERT INTO tl_premium_listings
             (provider_id, start_date, end_date, amount_paid, status, auto_renew, payment_reference)
             VALUES (?, ?, ?, ?, 'active', 1, ?)
         ");
+
+        if (!$insert_listing) {
+            error_log("Prepare failed: " . $conn->error);
+            throw new Exception("Failed to prepare premium listing insert: " . $conn->error);
+        }
+
         $insert_listing->bind_param("issds", $provider_id, $start_date, $end_date, $subscription_amount, $reference);
 
         if (!$insert_listing->execute()) {
-            throw new Exception("Failed to create premium listing");
+            error_log("Execute failed: " . $insert_listing->error);
+            throw new Exception("Failed to create premium listing: " . $insert_listing->error);
         }
 
         $premium_listing_id = $conn->insert_id;
+        error_log("Premium listing created with ID: $premium_listing_id");
 
         // Create subscription payment record (without premium_listing_id if column doesn't exist)
         // Check if premium_listing_id column exists

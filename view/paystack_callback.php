@@ -1,24 +1,32 @@
 <?php
-// Enable error display for debugging
+// Enable error display for debugging - SHOW ERRORS ON SCREEN
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
 ini_set('log_errors', 1);
 
-session_start();
-require_once '../settings/core.php';
+// Wrap everything in try-catch to prevent crashes
+try {
+    // Don't start session - core.php will do it
+    require_once '../settings/core.php';
 
-// Check authentication - Allow both tourists (bookings) and providers (subscriptions)
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login/login.php');
-    exit();
-}
+    // Check authentication - Allow both tourists (bookings) and providers (subscriptions)
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: ../login/login.php');
+        exit();
+    }
 
-// Get reference from URL
-$reference = isset($_GET['reference']) ? trim($_GET['reference']) : null;
+    // Get reference from URL
+    $reference = isset($_GET['reference']) ? trim($_GET['reference']) : null;
 
-if (!$reference) {
-    header('Location: my_bookings.php?error=no_reference');
-    exit();
+    if (!$reference) {
+        header('Location: my_bookings.php?error=no_reference');
+        exit();
+    }
+} catch (Exception $e) {
+    // Log error and display user-friendly message
+    error_log("Callback page error: " . $e->getMessage());
+    die("Error loading callback page: " . $e->getMessage() . "<br>Please contact support with reference: " . ($reference ?? 'N/A'));
 }
 ?>
 <!DOCTYPE html>

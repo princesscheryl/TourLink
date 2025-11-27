@@ -4,26 +4,51 @@ require_once 'controllers/service_controller.php';
 require_once 'controllers/service_category_controller.php';
 require_once 'classes/festival_class.php';
 
-// Get premium services for carousel
+// Get premium services for carousel (backward compatible)
 $db_temp = new db_connection();
 $db_temp->db_connect();
-$premium_query = $db_temp->db->query("
-    SELECT s.*, sp.business_name, sp.verification_status, sc.category_name,
-           AVG(r.rating) as average_rating,
-           COUNT(DISTINCT b.booking_id) as total_bookings
-    FROM tl_services s
-    JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
-    JOIN tl_service_categories sc ON s.category_id = sc.category_id
-    LEFT JOIN tl_reviews r ON s.service_id = r.service_id
-    LEFT JOIN tl_bookings b ON s.service_id = b.service_id
-    WHERE s.is_premium = 1
-    AND s.service_status = 'active'
-    AND sp.account_status = 'active'
-    GROUP BY s.service_id
-    ORDER BY s.date_created DESC
-    LIMIT 8
-");
-$premium_services = $premium_query ? $premium_query->fetch_all(MYSQLI_ASSOC) : [];
+
+// Check if is_premium column exists
+$check_col = $db_temp->db->query("SHOW COLUMNS FROM tl_services LIKE 'is_premium'");
+if ($check_col && $check_col->num_rows > 0) {
+    // Column exists - query premium services
+    $premium_query = $db_temp->db->query("
+        SELECT s.*, sp.business_name, sp.verification_status, sc.category_name,
+               AVG(r.rating) as average_rating,
+               COUNT(DISTINCT b.booking_id) as total_bookings
+        FROM tl_services s
+        JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
+        JOIN tl_service_categories sc ON s.category_id = sc.category_id
+        LEFT JOIN tl_reviews r ON s.service_id = r.service_id
+        LEFT JOIN tl_bookings b ON s.service_id = b.service_id
+        WHERE s.is_premium = 1
+        AND s.service_status = 'active'
+        AND sp.account_status = 'active'
+        GROUP BY s.service_id
+        ORDER BY s.date_created DESC
+        LIMIT 8
+    ");
+    $premium_services = $premium_query ? $premium_query->fetch_all(MYSQLI_ASSOC) : [];
+} else {
+    // Column doesn't exist - use is_premium_listing instead
+    $premium_query = $db_temp->db->query("
+        SELECT s.*, sp.business_name, sp.verification_status, sc.category_name,
+               AVG(r.rating) as average_rating,
+               COUNT(DISTINCT b.booking_id) as total_bookings
+        FROM tl_services s
+        JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
+        JOIN tl_service_categories sc ON s.category_id = sc.category_id
+        LEFT JOIN tl_reviews r ON s.service_id = r.service_id
+        LEFT JOIN tl_bookings b ON s.service_id = b.service_id
+        WHERE s.is_premium_listing = 1
+        AND s.service_status = 'active'
+        AND sp.account_status = 'active'
+        GROUP BY s.service_id
+        ORDER BY s.date_created DESC
+        LIMIT 8
+    ");
+    $premium_services = $premium_query ? $premium_query->fetch_all(MYSQLI_ASSOC) : [];
+}
 
 // Get featured services (fallback to all if no premium)
 $featured_services = get_premium_services_ctr(6);
