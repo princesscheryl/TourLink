@@ -5,7 +5,7 @@ require_once '../controllers/discount_controller.php';
 
 // Check if user is logged in and is admin
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'admin') {
-    header('Location: ../login/login.php');
+    header('Location: platform_login.php');
     exit();
 }
 
