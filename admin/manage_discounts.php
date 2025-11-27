@@ -2,7 +2,7 @@
 require_once 'includes_platform/auth_check.php';
 require_once '../controllers/discount_controller.php';
 
-// Check privilege for discount management (uses general admin privilege)
+//check privilege for discount management (uses general admin privilege)
 require_privilege('view_dashboard');
 
 // Fetch all discount codes
