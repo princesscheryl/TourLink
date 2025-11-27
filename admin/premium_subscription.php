@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../settings/core.php';
+require_once '../settings/db_class.php';
 require_once '../controllers/service_controller.php';
 
 // Check if provider is logged in
@@ -28,7 +29,10 @@ $check_active->execute();
 $active_subscription = $check_active->get_result()->fetch_assoc();
 
 // Get provider's services
-$services = get_provider_services_ctr($provider_id);
+$services = get_services_by_provider_ctr($provider_id);
+if (!$services) {
+    $services = [];
+}
 
 // Get subscription history
 $history_query = $db->db->prepare("
