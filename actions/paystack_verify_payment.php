@@ -415,33 +415,36 @@ function process_premium_subscription_verification($reference) {
     mysqli_begin_transaction($conn);
 
     try {
-        $premium_listing_id = $subscription_data['premium_listing_id'];
-        $subscription_payment_id = $subscription_data['subscription_payment_id'];
         $provider_id = $subscription_data['provider_id'];
+        $start_date = $subscription_data['start_date'];
+        $end_date = $subscription_data['end_date'];
+        $next_billing_date = $end_date;
+        $subscription_amount = $subscription_data['amount']; // 150.00
 
-        // Update subscription payment status
-        $update_payment = $conn->prepare("
-            UPDATE tl_subscription_payments
-            SET payment_status = 'paid',
-                payment_date = NOW(),
-                transaction_reference = ?
-            WHERE subscription_payment_id = ?
+        // Create premium listing record
+        $insert_listing = $conn->prepare("
+            INSERT INTO tl_premium_listings
+            (provider_id, start_date, end_date, next_billing_date, amount_paid, status, auto_renew, is_subscription, payment_reference)
+            VALUES (?, ?, ?, ?, ?, 'active', 1, 1, ?)
         ");
-        $update_payment->bind_param("si", $reference, $subscription_payment_id);
-        if (!$update_payment->execute()) {
-            throw new Exception("Failed to update payment status");
+        $insert_listing->bind_param("isssds", $provider_id, $start_date, $end_date, $next_billing_date, $subscription_amount, $reference);
+
+        if (!$insert_listing->execute()) {
+            throw new Exception("Failed to create premium listing");
         }
 
-        // Activate premium listing
-        $update_listing = $conn->prepare("
-            UPDATE tl_premium_listings
-            SET status = 'active',
-                payment_reference = ?
-            WHERE premium_listing_id = ?
+        $premium_listing_id = $conn->insert_id;
+
+        // Create subscription payment record
+        $insert_payment = $conn->prepare("
+            INSERT INTO tl_subscription_payments
+            (premium_listing_id, provider_id, subscription_tier, amount, billing_period_start, billing_period_end, payment_status, payment_date, transaction_reference)
+            VALUES (?, ?, 'Premium', ?, ?, ?, 'paid', NOW(), ?)
         ");
-        $update_listing->bind_param("si", $reference, $premium_listing_id);
-        if (!$update_listing->execute()) {
-            throw new Exception("Failed to activate premium listing");
+        $insert_payment->bind_param("iidsss", $premium_listing_id, $provider_id, $subscription_amount, $start_date, $end_date, $reference);
+
+        if (!$insert_payment->execute()) {
+            throw new Exception("Failed to create subscription payment record");
         }
 
         // Mark all provider's services as premium

@@ -4,7 +4,11 @@
  * Monthly subscription: GH₵150
  */
 
-session_start();
+// Check if session is already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -27,13 +31,12 @@ $provider_id = $_SESSION['provider_id'];
 $user_id = $_SESSION['user_id'];
 $provider_email = $_SESSION['email'];
 
-// Create subscription record
+// Check if already has active subscription
 $db = new db_connection();
 if (!$db->db_connect()) {
     die('Error: Could not connect to database');
 }
 
-// Check if already has active subscription
 $check = $db->db->prepare("
     SELECT premium_listing_id FROM tl_premium_listings
     WHERE provider_id = ?
@@ -52,102 +55,42 @@ if ($check->get_result()->num_rows > 0) {
     exit();
 }
 
-// Create new premium listing record
+// Generate payment reference
+$payment_reference = 'PREM-' . date('YmdHis') . '-' . $provider_id;
+$amount = 150.00;
 $start_date = date('Y-m-d');
 $end_date = date('Y-m-d', strtotime('+30 days'));
-$next_billing_date = $end_date;
-$amount = 150.00;
-$payment_reference = 'PREM-' . date('YmdHis') . '-' . $provider_id;
 
-$stmt = $db->db->prepare("
-    INSERT INTO tl_premium_listings
-    (provider_id, start_date, end_date, next_billing_date, amount_paid, status, auto_renew, is_subscription, payment_reference)
-    VALUES (?, ?, ?, ?, ?, 'pending', 1, 1, ?)
-");
+// Store subscription details in session (create records AFTER payment)
+$_SESSION['pending_premium_subscription'] = [
+    'provider_id' => $provider_id,
+    'amount' => $amount,
+    'start_date' => $start_date,
+    'end_date' => $end_date,
+    'reference' => $payment_reference,
+    'timestamp' => time()
+];
 
-if (!$stmt) {
-    die('Error: Could not prepare premium listing insert - ' . $db->db->error);
-}
+// Initialize Paystack transaction
+$metadata = [
+    'payment_type' => 'premium_subscription',
+    'provider_id' => $provider_id
+];
 
-$stmt->bind_param("isssds", $provider_id, $start_date, $end_date, $next_billing_date, $amount, $payment_reference);
+$paystack_response = paystack_initialize_transaction($amount, $provider_email, $payment_reference, $metadata);
 
-if ($stmt->execute()) {
-    $premium_listing_id = $db->db->insert_id;
-
-    if (!$premium_listing_id) {
-        die('Error: Could not get premium listing ID');
-    }
-
-    // Create subscription payment record
-    $billing_period_start = $start_date;
-    $billing_period_end = $end_date;
-
-    $payment_stmt = $db->db->prepare("
-        INSERT INTO tl_subscription_payments
-        (premium_listing_id, provider_id, subscription_tier, amount, billing_period_start, billing_period_end, payment_status, transaction_reference)
-        VALUES (?, ?, 'Premium', ?, ?, ?, 'pending', ?)
-    ");
-
-    if (!$payment_stmt) {
-        die('Error: Could not prepare subscription payment insert - ' . $db->db->error);
-    }
-
-    $payment_stmt->bind_param("iidsss", $premium_listing_id, $provider_id, $amount, $billing_period_start, $billing_period_end, $payment_reference);
-
-    if (!$payment_stmt->execute()) {
-        die('Error: Could not create subscription payment - ' . $payment_stmt->error);
-    }
-
-    $subscription_payment_id = $db->db->insert_id;
-
-    if (!$subscription_payment_id) {
-        die('Error: Could not get subscription payment ID');
-    }
-
-    // Store premium subscription details in session for verification
-    $_SESSION['pending_premium_subscription'] = [
-        'premium_listing_id' => $premium_listing_id,
-        'subscription_payment_id' => $subscription_payment_id,
-        'provider_id' => $provider_id,
-        'amount' => $amount,
-        'reference' => $payment_reference,
-        'timestamp' => time()
-    ];
-
-    // Initialize Paystack transaction
-    $metadata = [
-        'payment_type' => 'premium_subscription',
-        'provider_id' => $provider_id,
-        'premium_listing_id' => $premium_listing_id,
-        'subscription_payment_id' => $subscription_payment_id
-    ];
-
-    // Initialize Paystack transaction
-    echo "Initializing Paystack payment...<br>";
-    echo "Amount: " . $amount . "<br>";
-    echo "Email: " . $provider_email . "<br>";
-    echo "Reference: " . $payment_reference . "<br>";
-
-    $paystack_response = paystack_initialize_transaction($amount, $provider_email, $payment_reference, $metadata);
-
-    echo "Paystack response: <pre>" . print_r($paystack_response, true) . "</pre>";
-
-    if ($paystack_response && isset($paystack_response['status']) && $paystack_response['status'] === true) {
-        // Redirect to Paystack payment gateway
-        if (isset($paystack_response['data']['authorization_url'])) {
-            header('Location: ' . $paystack_response['data']['authorization_url']);
-            exit();
-        } else {
-            die('Error: No authorization URL in Paystack response');
-        }
+if ($paystack_response && isset($paystack_response['status']) && $paystack_response['status'] === true) {
+    // Redirect to Paystack payment gateway
+    if (isset($paystack_response['data']['authorization_url'])) {
+        header('Location: ' . $paystack_response['data']['authorization_url']);
+        exit();
     } else {
-        // Paystack initialization failed
-        $error_message = isset($paystack_response['message']) ? $paystack_response['message'] : 'Unknown error';
-        error_log("Paystack initialization failed for provider $provider_id: " . json_encode($paystack_response));
-        die('Error: Paystack initialization failed - ' . $error_message);
+        die('Error: No authorization URL in Paystack response');
     }
 } else {
-    error_log("Failed to create premium listing for provider $provider_id: " . $stmt->error);
-    die('Error: Failed to create premium listing - ' . $stmt->error);
+    // Paystack initialization failed
+    $error_message = isset($paystack_response['message']) ? $paystack_response['message'] : 'Unknown error';
+    error_log("Paystack initialization failed for provider $provider_id: " . json_encode($paystack_response));
+    die('Error: Paystack initialization failed - ' . $error_message);
 }
 ?>
