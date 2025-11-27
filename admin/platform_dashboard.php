@@ -527,10 +527,6 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
                 <i class="fas fa-drum"></i>
                 Festivals
             </a>
-            <a href="regions.php" class="nav-link">
-                <i class="fas fa-map-marked-alt"></i>
-                Regions
-            </a>
             <a href="stories.php" class="nav-link">
                 <i class="fas fa-book-open"></i>
                 Success Stories

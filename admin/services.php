@@ -141,7 +141,6 @@ if ($services) {
         <div class="nav-section">
             <div class="nav-section-title">Content</div>
             <a href="manage_festivals.php" class="nav-link"><i class="fas fa-drum"></i> Festivals</a>
-            <a href="regions.php" class="nav-link"><i class="fas fa-map-marked-alt"></i> Regions</a>
             <a href="stories.php" class="nav-link"><i class="fas fa-book-open"></i> Success Stories</a>
         </div>
         <div class="nav-section" style="margin-top: auto;">
