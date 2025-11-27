@@ -206,7 +206,7 @@ class Discount extends db_connection
         $code = strtoupper(trim($data['code']));
 
         $stmt->bind_param(
-            "ssdddiiisssiis",
+            "ssdddiissssiis",
             $code,
             $data['discount_type'],
             $data['discount_value'],
@@ -252,7 +252,7 @@ class Discount extends db_connection
         $code = strtoupper(trim($data['code']));
 
         $stmt->bind_param(
-            "ssdddiiisssisi",
+            "ssdddiissssisi",
             $code,
             $data['discount_type'],
             $data['discount_value'],
