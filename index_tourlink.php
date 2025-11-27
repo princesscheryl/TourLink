@@ -4,7 +4,28 @@ require_once 'controllers/service_controller.php';
 require_once 'controllers/service_category_controller.php';
 require_once 'classes/festival_class.php';
 
-// Get featured services
+// Get premium services for carousel
+$db_temp = new db_connection();
+$db_temp->db_connect();
+$premium_query = $db_temp->db->query("
+    SELECT s.*, sp.business_name, sp.verification_status, sc.category_name,
+           AVG(r.rating) as average_rating,
+           COUNT(DISTINCT b.booking_id) as total_bookings
+    FROM tl_services s
+    JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
+    JOIN tl_service_categories sc ON s.category_id = sc.category_id
+    LEFT JOIN tl_reviews r ON s.service_id = r.service_id
+    LEFT JOIN tl_bookings b ON s.service_id = b.service_id
+    WHERE s.is_premium = 1
+    AND s.service_status = 'active'
+    AND sp.account_status = 'active'
+    GROUP BY s.service_id
+    ORDER BY s.date_created DESC
+    LIMIT 8
+");
+$premium_services = $premium_query ? $premium_query->fetch_all(MYSQLI_ASSOC) : [];
+
+// Get featured services (fallback to all if no premium)
 $featured_services = get_premium_services_ctr(6);
 
 // Get upcoming festivals
@@ -1691,6 +1712,130 @@ $categories = get_all_service_categories_ctr();
             </div>
         </div>
     </section>
+
+    <!-- Premium Services Carousel -->
+    <?php if (!empty($premium_services)): ?>
+    <section class="premium-carousel-section" style="padding: 80px 0; background: #f8f9fa;">
+        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 40px;">
+            <div class="section-header" style="text-align: center; margin-bottom: 50px;">
+                <span style="color: #d4a017; font-weight: 600; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">
+                    <i class="fas fa-crown"></i> Featured Services
+                </span>
+                <h2 style="font-size: 36px; font-weight: 700; margin-top: 10px;">Premium Experiences</h2>
+                <p style="color: #666; font-size: 16px; max-width: 600px; margin: 10px auto 0;">
+                    Discover our top-rated and verified service providers
+                </p>
+            </div>
+
+            <div class="premium-carousel-container" style="position: relative;">
+                <div class="premium-carousel" id="premiumCarousel" style="display: flex; gap: 24px; overflow: hidden;">
+                    <?php foreach($premium_services as $index => $service):
+                        $images = json_decode($service['service_images'], true);
+                        $first_image = $images[0] ?? 'default.jpg';
+                        $rating = round($service['average_rating'] ?? 0, 1);
+                        $is_verified = $service['verification_status'] === 'verified';
+                    ?>
+                    <div class="premium-card" style="min-width: 350px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s;">
+                        <div style="position: relative;">
+                            <img src="uploads/services/<?php echo htmlspecialchars($first_image); ?>"
+                                 alt="<?php echo htmlspecialchars($service['service_title']); ?>"
+                                 style="width: 100%; height: 250px; object-fit: cover;">
+                            <div style="position: absolute; top: 12px; right: 12px; background: #d4a017; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                <i class="fas fa-crown"></i> Premium
+                            </div>
+                            <?php if ($is_verified): ?>
+                            <div style="position: absolute; top: 12px; left: 12px; background: #0f5132; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                <i class="fas fa-check-circle"></i> Verified
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <span style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <?php echo htmlspecialchars($service['category_name']); ?>
+                                </span>
+                            </div>
+                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; line-height: 1.3;">
+                                <?php echo htmlspecialchars($service['service_title']); ?>
+                            </h3>
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+                                <span style="color: #ffc107; font-size: 14px;">
+                                    <?php for($i = 0; $i < 5; $i++): ?>
+                                        <?php if ($i < floor($rating)): ?>
+                                            <i class="fas fa-star"></i>
+                                        <?php elseif ($i < ceil($rating)): ?>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        <?php else: ?>
+                                            <i class="far fa-star"></i>
+                                        <?php endif; ?>
+                                    <?php endfor; ?>
+                                </span>
+                                <span style="font-size: 14px; color: #666;"><?php echo $rating; ?></span>
+                                <span style="font-size: 14px; color: #999;">(<?php echo $service['total_bookings']; ?> bookings)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e9ecef;">
+                                <div>
+                                    <div style="font-size: 24px; font-weight: 700; color: #1b4332;">
+                                        GH₵ <?php echo number_format($service['base_price'], 0); ?>
+                                    </div>
+                                    <div style="font-size: 12px; color: #999;">
+                                        per <?php echo $service['pricing_unit'] === 'per_person' ? 'person' : ($service['pricing_unit'] === 'per_hour' ? 'hour' : 'day'); ?>
+                                    </div>
+                                </div>
+                                <a href="view/single_service.php?service_id=<?php echo $service['service_id']; ?>"
+                                   style="padding: 10px 20px; background: #1b4332; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <!-- Carousel Controls -->
+                <button onclick="scrollCarousel(-1)" style="position: absolute; left: -20px; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; background: white; border: 2px solid #1b4332; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                    <i class="fas fa-chevron-left" style="color: #1b4332;"></i>
+                </button>
+                <button onclick="scrollCarousel(1)" style="position: absolute; right: -20px; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; background: white; border: 2px solid #1b4332; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                    <i class="fas fa-chevron-right" style="color: #1b4332;"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    let currentScroll = 0;
+    const carousel = document.getElementById('premiumCarousel');
+    const cardWidth = 374; // 350px + 24px gap
+
+    function scrollCarousel(direction) {
+        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+        currentScroll += direction * cardWidth;
+
+        if (currentScroll < 0) currentScroll = 0;
+        if (currentScroll > maxScroll) currentScroll = maxScroll;
+
+        carousel.style.transform = `translateX(-${currentScroll}px)`;
+        carousel.style.transition = 'transform 0.5s ease';
+    }
+
+    // Auto-scroll every 5 seconds
+    setInterval(() => {
+        scrollCarousel(1);
+        // Reset to start when reaching the end
+        if (currentScroll >= carousel.scrollWidth - carousel.clientWidth) {
+            setTimeout(() => {
+                carousel.style.transition = 'none';
+                currentScroll = 0;
+                carousel.style.transform = `translateX(0)`;
+                setTimeout(() => {
+                    carousel.style.transition = 'transform 0.5s ease';
+                }, 50);
+            }, 500);
+        }
+    }, 5000);
+    </script>
+    <?php endif; ?>
 
     <!-- Search Bar -->
     <section class="search-section">

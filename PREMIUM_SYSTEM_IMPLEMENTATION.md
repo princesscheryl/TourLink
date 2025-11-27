@@ -2,7 +2,10 @@
 
 ## ✅ Completed
 1. SQL cleanup script updated (keeps tl_premium_listings & tl_subscription_payments)
-2. Database migration created (`sql/setup_premium_subscriptions.sql`)
+2. Database migrations created and made idempotent:
+   - `sql/drop_unused_tables.sql`
+   - `sql/setup_premium_subscriptions.sql` ✅ IMPORTED
+   - `sql/add_guest_details_to_bookings.sql` ✅ IMPORTED
 3. Premium subscription dashboard created (`admin/premium_subscription.php`)
 4. Payment system implemented:
    - `actions/initiate_premium_subscription.php`
@@ -10,6 +13,8 @@
    - `actions/process_premium_payment.php`
    - `actions/cancel_premium_subscription.php`
 5. Markdown files removed (DATABASE_CLEANUP.md, DARK_MODE_README.md)
+6. ✅ Premium subscription link added to provider dashboard with "Active" badge
+7. ✅ Featured services carousel implemented on index page with auto-rotation
 
 ## 🔧 Implementation Steps
 

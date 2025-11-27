@@ -536,6 +536,12 @@ $user_phone = $_SESSION['phone'] ?? '';
     </div>
 
     <script>
+        const serviceId = <?php echo $service_id; ?>;
+        const serviceDate = '<?php echo htmlspecialchars($service_date); ?>';
+        const serviceTime = '<?php echo htmlspecialchars($service_time); ?>';
+        const numberOfPeople = <?php echo $number_of_people; ?>;
+        const totalAmount = <?php echo $subtotal; ?>;
+
         document.getElementById('bookingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -544,7 +550,7 @@ $user_phone = $_SESSION['phone'] ?? '';
 
             // Disable submit button
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Processing...';
+            submitBtn.textContent = 'Initializing payment...';
 
             // Clear previous alerts
             alertBox.innerHTML = '';
@@ -552,23 +558,52 @@ $user_phone = $_SESSION['phone'] ?? '';
             try {
                 const formData = new FormData(this);
 
-                const response = await fetch('../actions/create_booking_with_payment.php', {
+                // Collect guest details
+                const guestDetails = {
+                    first_name: formData.get('first_name'),
+                    last_name: formData.get('last_name'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    booking_for: formData.get('booking_for'),
+                    travelling_for_work: formData.get('travelling_for_work') === 'yes',
+                    special_requests: formData.get('special_requests'),
+                    arrival_time: formData.get('arrival_time')
+                };
+
+                // Prepare payment data
+                const paymentData = {
+                    service_id: serviceId,
+                    service_date: serviceDate,
+                    service_time: serviceTime,
+                    number_of_people: numberOfPeople,
+                    total_amount: totalAmount,
+                    email: formData.get('email'),
+                    discount_code: '', // TODO: Add discount code field if needed
+                    guest_details: guestDetails
+                };
+
+                // Initialize Paystack payment
+                const response = await fetch('../actions/paystack_init_booking.php', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(paymentData)
                 });
 
                 const result = await response.json();
 
-                if (result.success) {
-                    // Redirect to payment page
-                    window.location.href = 'booking_payment.php?booking_id=' + result.booking_id;
+                if (result.status === 'success' && result.authorization_url) {
+                    // Redirect to Paystack payment gateway
+                    window.location.href = result.authorization_url;
                 } else {
-                    alertBox.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
+                    alertBox.innerHTML = `<div class="alert alert-danger">${result.message || 'Failed to initialize payment'}</div>`;
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Proceed to Payment';
                     window.scrollTo(0, 0);
                 }
             } catch (error) {
+                console.error('Payment initialization error:', error);
                 alertBox.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Proceed to Payment';

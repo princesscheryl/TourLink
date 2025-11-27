@@ -1,11 +1,12 @@
 <?php
 /**
- * Initiate Premium Subscription Payment
+ * Initiate Premium Subscription Payment via Paystack
  * Monthly subscription: GH₵150
  */
 
 session_start();
 require_once '../settings/core.php';
+require_once '../settings/paystack_config.php';
 
 // Check if provider is logged in
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'provider') {
@@ -15,6 +16,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'provider') {
 
 $provider_id = $_SESSION['provider_id'];
 $user_id = $_SESSION['user_id'];
+$provider_email = $_SESSION['email'];
 
 // Create subscription record
 $db = new db_connection();
@@ -66,9 +68,36 @@ if ($stmt->execute()) {
     $payment_stmt->execute();
     $subscription_payment_id = $db->db->insert_id;
 
-    // Redirect to payment page
-    header("Location: premium_payment.php?subscription_id=$subscription_payment_id");
-    exit();
+    // Store premium subscription details in session for verification
+    $_SESSION['pending_premium_subscription'] = [
+        'premium_listing_id' => $premium_listing_id,
+        'subscription_payment_id' => $subscription_payment_id,
+        'provider_id' => $provider_id,
+        'amount' => $amount,
+        'reference' => $payment_reference,
+        'timestamp' => time()
+    ];
+
+    // Initialize Paystack transaction
+    $metadata = [
+        'payment_type' => 'premium_subscription',
+        'provider_id' => $provider_id,
+        'premium_listing_id' => $premium_listing_id,
+        'subscription_payment_id' => $subscription_payment_id
+    ];
+
+    $paystack_response = paystack_initialize_transaction($amount, $provider_email, $payment_reference, $metadata);
+
+    if ($paystack_response && isset($paystack_response['status']) && $paystack_response['status'] === true) {
+        // Redirect to Paystack payment gateway
+        header('Location: ' . $paystack_response['data']['authorization_url']);
+        exit();
+    } else {
+        // Paystack initialization failed
+        error_log("Paystack initialization failed for provider $provider_id: " . json_encode($paystack_response));
+        header('Location: ../admin/premium_subscription.php?error=payment_init_failed');
+        exit();
+    }
 } else {
     error_log("Failed to create premium listing for provider $provider_id: " . $stmt->error);
     header('Location: ../admin/premium_subscription.php?error=failed');

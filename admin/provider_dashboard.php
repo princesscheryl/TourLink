@@ -43,6 +43,20 @@ $pending_bookings = array_filter($bookings ?: [], fn($b) => $b['booking_status']
 $confirmed_bookings = array_filter($bookings ?: [], fn($b) => $b['booking_status'] === 'confirmed');
 $completed_bookings = array_filter($bookings ?: [], fn($b) => $b['booking_status'] === 'completed');
 
+// Check if provider has active premium subscription
+$db_temp = new db_connection();
+$db_temp->db_connect();
+$premium_check = $db_temp->db->prepare("
+    SELECT premium_listing_id FROM tl_premium_listings
+    WHERE provider_id = ?
+    AND status = 'active'
+    AND end_date >= CURDATE()
+    LIMIT 1
+");
+$premium_check->bind_param("i", $provider['provider_id']);
+$premium_check->execute();
+$has_premium = $premium_check->get_result()->num_rows > 0;
+
 // Calculate profile completion
 $completion = 40;
 if (!empty($provider['business_name'])) $completion += 15;
@@ -727,6 +741,12 @@ if ($provider['verification_status'] === 'verified') $completion += 10;
                 </a>
                 <a href="provider_profile.php" class="nav-item">
                     <i class="fa fa-user-cog"></i> Business Profile
+                </a>
+                <a href="premium_subscription.php" class="nav-item">
+                    <i class="fa fa-crown"></i> Premium Subscription
+                    <?php if ($has_premium): ?>
+                        <span class="badge" style="background: #d4a017;">Active</span>
+                    <?php endif; ?>
                 </a>
             </div>
 

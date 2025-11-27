@@ -4,25 +4,56 @@ require_once '../settings/core.php';
 require_once '../controllers/booking_controller.php';
 
 // Check authentication
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'tourist') {
+if (!isset($_SESSION['user_id'])) {
     header('Location: ../login/login.php');
     exit();
 }
 
 $reference = isset($_GET['reference']) ? trim($_GET['reference']) : null;
-$booking_id = isset($_GET['booking_id']) ? (int)$_GET['booking_id'] : 0;
+$payment_type = isset($_GET['type']) ? trim($_GET['type']) : 'booking';
 
-if (!$reference || !$booking_id) {
-    header('Location: my_bookings.php');
+if (!$reference) {
+    if ($_SESSION['user_type'] === 'provider') {
+        header('Location: ../admin/premium_subscription.php');
+    } else {
+        header('Location: my_bookings.php');
+    }
     exit();
 }
 
-// Get booking details
-$booking = get_booking_by_id_ctr($booking_id);
+// Handle based on payment type
+if ($payment_type === 'premium') {
+    // Premium subscription success
+    if ($_SESSION['user_type'] !== 'provider') {
+        header('Location: ../index_tourlink.php');
+        exit();
+    }
 
-if (!$booking || $booking['tourist_id'] != $_SESSION['user_id']) {
-    header('Location: my_bookings.php');
-    exit();
+    $premium_listing_id = isset($_GET['listing_id']) ? (int)$_GET['listing_id'] : 0;
+    $is_premium = true;
+} else {
+    // Booking payment success
+    if ($_SESSION['user_type'] !== 'tourist') {
+        header('Location: ../index_tourlink.php');
+        exit();
+    }
+
+    $booking_id = isset($_GET['booking_id']) ? (int)$_GET['booking_id'] : 0;
+
+    if (!$booking_id) {
+        header('Location: my_bookings.php');
+        exit();
+    }
+
+    // Get booking details
+    $booking = get_booking_by_id_ctr($booking_id);
+
+    if (!$booking || $booking['tourist_id'] != $_SESSION['user_id']) {
+        header('Location: my_bookings.php');
+        exit();
+    }
+
+    $is_premium = false;
 }
 ?>
 <!DOCTYPE html>
@@ -218,8 +249,13 @@ if (!$booking || $booking['tourist_id'] != $_SESSION['user_id']) {
                 <i class="fas fa-check"></i>
             </div>
 
-            <h1>Payment Successful!</h1>
-            <p class="subtitle">Your booking has been confirmed. You will receive a confirmation email shortly.</p>
+            <?php if ($is_premium): ?>
+                <h1>Premium Subscription Activated!</h1>
+                <p class="subtitle">Your services are now featured. Enjoy increased visibility and more bookings!</p>
+            <?php else: ?>
+                <h1>Payment Successful!</h1>
+                <p class="subtitle">Your booking is awaiting provider confirmation. You will receive an email shortly.</p>
+            <?php endif; ?>
 
             <div class="reference-box">
                 <label>Payment Reference</label>
@@ -227,53 +263,104 @@ if (!$booking || $booking['tourist_id'] != $_SESSION['user_id']) {
             </div>
 
             <div class="booking-details">
-                <div class="detail-row">
-                    <span class="detail-label">Booking Reference</span>
-                    <span class="detail-value"><?php echo htmlspecialchars($booking['booking_reference']); ?></span>
-                </div>
+                <?php if ($is_premium): ?>
+                    <!-- Premium Subscription Details -->
+                    <div class="detail-row">
+                        <span class="detail-label">Subscription Plan</span>
+                        <span class="detail-value">Premium Listing</span>
+                    </div>
 
-                <div class="detail-row">
-                    <span class="detail-label">Service</span>
-                    <span class="detail-value"><?php echo htmlspecialchars($booking['service_title']); ?></span>
-                </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Billing Cycle</span>
+                        <span class="detail-value">Monthly</span>
+                    </div>
 
-                <div class="detail-row">
-                    <span class="detail-label">Booking Date</span>
-                    <span class="detail-value"><?php echo date('F j, Y', strtotime($booking['booking_date'])); ?></span>
-                </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Amount Paid</span>
+                        <span class="detail-value large">GH₵ 150.00</span>
+                    </div>
 
-                <?php if (!empty($booking['discount_amount']) && $booking['discount_amount'] > 0): ?>
-                <div class="detail-row">
-                    <span class="detail-label">Original Amount</span>
-                    <span class="detail-value">GH₵ <?php echo number_format($booking['total_amount'] + $booking['discount_amount'], 2); ?></span>
-                </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value" style="color: #28a745;">
+                            <i class="fas fa-crown"></i> Active
+                        </span>
+                    </div>
 
-                <div class="detail-row">
-                    <span class="detail-label">Discount Applied</span>
-                    <span class="detail-value" style="color: #28a745;">- GH₵ <?php echo number_format($booking['discount_amount'], 2); ?></span>
-                </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Next Billing</span>
+                        <span class="detail-value"><?php echo date('F j, Y', strtotime('+30 days')); ?></span>
+                    </div>
+                <?php else: ?>
+                    <!-- Booking Details -->
+                    <div class="detail-row">
+                        <span class="detail-label">Booking Reference</span>
+                        <span class="detail-value"><?php echo htmlspecialchars($booking['booking_reference']); ?></span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Service</span>
+                        <span class="detail-value"><?php echo htmlspecialchars($booking['service_title']); ?></span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Booking Date</span>
+                        <span class="detail-value"><?php echo date('F j, Y', strtotime($booking['booking_date'])); ?></span>
+                    </div>
+
+                    <?php if (!empty($booking['discount_amount']) && $booking['discount_amount'] > 0): ?>
+                    <div class="detail-row">
+                        <span class="detail-label">Original Amount</span>
+                        <span class="detail-value">GH₵ <?php echo number_format($booking['total_amount'] + $booking['discount_amount'], 2); ?></span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Discount Applied</span>
+                        <span class="detail-value" style="color: #28a745;">- GH₵ <?php echo number_format($booking['discount_amount'], 2); ?></span>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Amount Paid</span>
+                        <span class="detail-value large">GH₵ <?php echo number_format($booking['total_amount'], 2); ?></span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Booking Status</span>
+                        <span class="detail-value" style="color: #ffc107;">
+                            <i class="fas fa-clock"></i> Pending Confirmation
+                        </span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Payment Status</span>
+                        <span class="detail-value" style="color: #28a745;">
+                            <i class="fas fa-check-circle"></i> Paid
+                        </span>
+                    </div>
                 <?php endif; ?>
-
-                <div class="detail-row">
-                    <span class="detail-label">Amount Paid</span>
-                    <span class="detail-value large">GH₵ <?php echo number_format($booking['total_amount'], 2); ?></span>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Payment Status</span>
-                    <span class="detail-value" style="color: #28a745;">Confirmed</span>
-                </div>
             </div>
 
             <div class="action-buttons">
-                <a href="my_bookings.php" class="btn btn-primary">
-                    <i class="fas fa-calendar-check"></i>
-                    View My Bookings
-                </a>
-                <a href="all_services.php" class="btn btn-secondary">
-                    <i class="fas fa-search"></i>
-                    Browse More Services
-                </a>
+                <?php if ($is_premium): ?>
+                    <a href="../admin/provider_dashboard.php" class="btn btn-primary">
+                        <i class="fas fa-th-large"></i>
+                        Go to Dashboard
+                    </a>
+                    <a href="../admin/premium_subscription.php" class="btn btn-secondary">
+                        <i class="fas fa-crown"></i>
+                        View Subscription
+                    </a>
+                <?php else: ?>
+                    <a href="my_bookings.php" class="btn btn-primary">
+                        <i class="fas fa-calendar-check"></i>
+                        View My Bookings
+                    </a>
+                    <a href="all_services.php" class="btn btn-secondary">
+                        <i class="fas fa-search"></i>
+                        Browse More Services
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>

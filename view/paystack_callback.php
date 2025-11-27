@@ -2,8 +2,8 @@
 session_start();
 require_once '../settings/core.php';
 
-// Check authentication
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'tourist') {
+// Check authentication - Allow both tourists (bookings) and providers (subscriptions)
+if (!isset($_SESSION['user_id'])) {
     header('Location: ../login/login.php');
     exit();
 }
@@ -201,19 +201,36 @@ if (!$reference) {
                 if (data.status === 'success' && data.verified) {
                     document.getElementById('processingIcon').className = 'icon success';
                     document.getElementById('processingIcon').innerHTML = '<i class="fas fa-check-circle"></i>';
-                    document.getElementById('title').textContent = 'Payment Successful!';
-                    document.getElementById('description').textContent = 'Your booking has been confirmed.';
                     document.getElementById('successBox').style.display = 'block';
 
-                    setTimeout(() => {
-                        window.location.href = `payment_success.php?reference=${encodeURIComponent(reference)}&booking_id=${data.booking_id}`;
-                    }, 1500);
+                    // Handle different payment types
+                    if (data.payment_type === 'premium_subscription') {
+                        document.getElementById('title').textContent = 'Premium Subscription Activated!';
+                        document.getElementById('description').textContent = 'Your services are now featured.';
+
+                        setTimeout(() => {
+                            window.location.href = `payment_success.php?reference=${encodeURIComponent(reference)}&type=premium&listing_id=${data.premium_listing_id || 0}`;
+                        }, 1500);
+                    } else {
+                        document.getElementById('title').textContent = 'Payment Successful!';
+                        document.getElementById('description').textContent = 'Your booking is pending provider confirmation.';
+
+                        setTimeout(() => {
+                            window.location.href = `payment_success.php?reference=${encodeURIComponent(reference)}&booking_id=${data.booking_id}`;
+                        }, 1500);
+                    }
 
                 } else {
                     showError(data.message || 'Payment verification failed');
 
                     setTimeout(() => {
-                        window.location.href = 'my_bookings.php?payment_failed=1';
+                        // Redirect based on user type
+                        const userType = '<?php echo $_SESSION['user_type'] ?? 'tourist'; ?>';
+                        if (userType === 'provider') {
+                            window.location.href = '../admin/premium_subscription.php?payment_failed=1';
+                        } else {
+                            window.location.href = 'my_bookings.php?payment_failed=1';
+                        }
                     }, 5000);
                 }
 

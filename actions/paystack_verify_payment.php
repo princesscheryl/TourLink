@@ -9,7 +9,7 @@ require_once '../controllers/discount_controller.php';
 require_once '../settings/db_class.php';
 
 // Check authentication
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'tourist') {
+if (!isset($_SESSION['user_id'])) {
     echo json_encode([
         'status' => 'error',
         'message' => 'Session expired. Please login again.'
@@ -36,15 +36,34 @@ if (!isset($_SESSION['paystack_ref']) || $_SESSION['paystack_ref'] !== $referenc
 
 try {
     $user_id = $_SESSION['user_id'];
-    $booking_id = $_SESSION['paystack_booking_id'] ?? null;
+
+    // Determine payment type - check if this is a premium subscription or booking
+    $is_premium_subscription = isset($_SESSION['pending_premium_subscription']);
+    $is_new_booking = isset($_SESSION['pending_booking']);  // New Paystack flow
+    $is_old_booking = isset($_SESSION['paystack_booking_id']);  // Old flow
+
+    if ($is_premium_subscription) {
+        // Handle premium subscription payment
+        process_premium_subscription_verification($reference);
+        exit();
+    }
+
+    if ($is_new_booking) {
+        // Handle new Paystack booking flow (creates booking after payment)
+        process_new_booking_verification($reference);
+        exit();
+    }
+
+    if (!$is_old_booking) {
+        throw new Exception('Payment information not found in session');
+    }
+
+    // Continue with booking payment processing
+    $booking_id = $_SESSION['paystack_booking_id'];
     $expected_amount = $_SESSION['paystack_amount'] ?? 0;
     $discount_code = $_SESSION['paystack_discount_code'] ?? null;
     $discount_id = $_SESSION['paystack_discount_id'] ?? null;
     $discount_amount = $_SESSION['paystack_discount_amount'] ?? 0;
-
-    if (!$booking_id) {
-        throw new Exception('Booking information not found in session');
-    }
 
     // Verify transaction with Paystack
     $verification_response = paystack_verify_transaction($reference);
@@ -184,5 +203,282 @@ try {
         'verified' => false,
         'message' => $e->getMessage()
     ]);
+}
+
+/**
+ * Process new booking payment verification (Paystack flow)
+ * Creates booking after successful payment
+ */
+function process_new_booking_verification($reference) {
+    // Get booking data from session
+    if (!isset($_SESSION['pending_booking'])) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Booking data not found in session'
+        ]);
+        return;
+    }
+
+    $booking_data = $_SESSION['pending_booking'];
+
+    // Verify transaction with Paystack
+    $verification_response = paystack_verify_transaction($reference);
+
+    if (!$verification_response || !isset($verification_response['status'])) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'No response from payment gateway'
+        ]);
+        return;
+    }
+
+    if ($verification_response['status'] !== true) {
+        $error_msg = $verification_response['message'] ?? 'Payment verification failed';
+        echo json_encode([
+            'status' => 'error',
+            'message' => $error_msg
+        ]);
+        return;
+    }
+
+    // Extract transaction data
+    $transaction_data = $verification_response['data'] ?? [];
+    $payment_status = $transaction_data['status'] ?? null;
+    $amount_paid = isset($transaction_data['amount']) ? $transaction_data['amount'] / 100 : 0;
+    $customer_email = $transaction_data['customer']['email'] ?? '';
+    $authorization = $transaction_data['authorization'] ?? [];
+    $authorization_code = $authorization['authorization_code'] ?? '';
+    $payment_channel = $authorization['channel'] ?? 'card';
+
+    // Validate payment status
+    if ($payment_status !== 'success') {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Payment was not successful. Status: ' . ucfirst($payment_status)
+        ]);
+        return;
+    }
+
+    // Verify amount matches
+    if (abs($amount_paid - $booking_data['total_amount']) > 0.01) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Payment amount does not match booking total'
+        ]);
+        return;
+    }
+
+    // Begin database transaction
+    $db = new db_connection();
+    $conn = $db->db_conn();
+    mysqli_begin_transaction($conn);
+
+    try {
+        // Generate booking reference
+        $booking_reference = 'TLBK-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
+
+        // Create booking in database
+        require_once '../controllers/booking_controller.php';
+
+        $booking_id = create_booking_ctr(
+            $booking_data['service_id'],
+            $_SESSION['user_id'],
+            $booking_data['service_date'],
+            $booking_data['service_time'],
+            $booking_data['number_of_people'],
+            $booking_data['total_amount'],
+            'pending',  // booking_status - awaiting provider confirmation
+            'paid',     // payment_status
+            $booking_reference,
+            $booking_data['discount_code'],
+            json_encode($booking_data['guest_details'])
+        );
+
+        if (!$booking_id) {
+            throw new Exception("Failed to create booking");
+        }
+
+        error_log("Booking created - ID: $booking_id, Reference: $booking_reference");
+
+        // Record payment
+        $payment_sql = "INSERT INTO tl_payments
+                       (booking_id, tourist_id, amount, currency, payment_method,
+                        transaction_ref, authorization_code, payment_channel, payment_date)
+                       VALUES (?, ?, ?, 'GHS', 'paystack', ?, ?, ?, NOW())";
+        $payment_stmt = $conn->prepare($payment_sql);
+        $payment_stmt->bind_param(
+            "iidsss",
+            $booking_id,
+            $_SESSION['user_id'],
+            $amount_paid,
+            $reference,
+            $authorization_code,
+            $payment_channel
+        );
+
+        if (!$payment_stmt->execute()) {
+            throw new Exception("Failed to record payment");
+        }
+
+        $payment_id = $conn->insert_id;
+        error_log("Payment recorded - ID: $payment_id");
+
+        // Commit transaction
+        mysqli_commit($conn);
+
+        // Clear session booking data
+        unset($_SESSION['pending_booking']);
+
+        // Return success
+        echo json_encode([
+            'status' => 'success',
+            'verified' => true,
+            'payment_type' => 'booking',
+            'message' => 'Payment successful! Your booking is pending provider confirmation.',
+            'booking_id' => $booking_id,
+            'booking_reference' => $booking_reference,
+            'amount' => number_format($booking_data['total_amount'], 2),
+            'payment_reference' => $reference
+        ]);
+
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        error_log("Database error during booking verification: " . $e->getMessage());
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+    }
+}
+
+/**
+ * Process premium subscription payment verification
+ */
+function process_premium_subscription_verification($reference) {
+    // Get subscription data from session
+    if (!isset($_SESSION['pending_premium_subscription'])) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Subscription data not found in session'
+        ]);
+        return;
+    }
+
+    $subscription_data = $_SESSION['pending_premium_subscription'];
+
+    // Verify transaction with Paystack
+    $verification_response = paystack_verify_transaction($reference);
+
+    if (!$verification_response || !isset($verification_response['status'])) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'No response from payment gateway'
+        ]);
+        return;
+    }
+
+    if ($verification_response['status'] !== true) {
+        $error_msg = $verification_response['message'] ?? 'Payment verification failed';
+        echo json_encode([
+            'status' => 'error',
+            'message' => $error_msg
+        ]);
+        return;
+    }
+
+    // Extract transaction data
+    $transaction_data = $verification_response['data'] ?? [];
+    $payment_status = $transaction_data['status'] ?? null;
+    $amount_paid = isset($transaction_data['amount']) ? $transaction_data['amount'] / 100 : 0;
+
+    // Validate payment status
+    if ($payment_status !== 'success') {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Payment was not successful. Status: ' . ucfirst($payment_status)
+        ]);
+        return;
+    }
+
+    // Verify amount matches
+    if (abs($amount_paid - $subscription_data['amount']) > 0.01) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Payment amount does not match subscription cost'
+        ]);
+        return;
+    }
+
+    // Begin database transaction
+    $db = new db_connection();
+    $conn = $db->db_conn();
+    mysqli_begin_transaction($conn);
+
+    try {
+        $premium_listing_id = $subscription_data['premium_listing_id'];
+        $subscription_payment_id = $subscription_data['subscription_payment_id'];
+        $provider_id = $subscription_data['provider_id'];
+
+        // Update subscription payment status
+        $update_payment = $conn->prepare("
+            UPDATE tl_subscription_payments
+            SET payment_status = 'paid',
+                payment_date = NOW(),
+                transaction_reference = ?
+            WHERE subscription_payment_id = ?
+        ");
+        $update_payment->bind_param("si", $reference, $subscription_payment_id);
+        if (!$update_payment->execute()) {
+            throw new Exception("Failed to update payment status");
+        }
+
+        // Activate premium listing
+        $update_listing = $conn->prepare("
+            UPDATE tl_premium_listings
+            SET status = 'active',
+                payment_reference = ?
+            WHERE premium_listing_id = ?
+        ");
+        $update_listing->bind_param("si", $reference, $premium_listing_id);
+        if (!$update_listing->execute()) {
+            throw new Exception("Failed to activate premium listing");
+        }
+
+        // Mark all provider's services as premium
+        $update_services = $conn->prepare("
+            UPDATE tl_services
+            SET is_premium = 1
+            WHERE provider_id = ?
+        ");
+        $update_services->bind_param("i", $provider_id);
+        $update_services->execute();
+
+        error_log("Premium subscription activated - Provider: $provider_id, Listing: $premium_listing_id");
+
+        // Commit transaction
+        mysqli_commit($conn);
+
+        // Clear session subscription data
+        unset($_SESSION['pending_premium_subscription']);
+
+        // Return success
+        echo json_encode([
+            'status' => 'success',
+            'verified' => true,
+            'payment_type' => 'premium_subscription',
+            'message' => 'Premium subscription activated! Your services are now featured.',
+            'premium_listing_id' => $premium_listing_id,
+            'amount' => number_format($subscription_data['amount'], 2),
+            'payment_reference' => $reference
+        ]);
+
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        error_log("Database error during premium subscription verification: " . $e->getMessage());
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ]);
+    }
 }
 ?>
