@@ -101,7 +101,7 @@ function create_discount_code_ctr($code, $discount_type, $discount_value, $min_b
         'applicable_to' => 'all',
         'applicable_ids' => null,
         'is_active' => 1,
-        'created_by' => $_SESSION['user_id'] ?? null,
+        'created_by' => $_SESSION['admin_id'] ?? null,
         'description' => $description
     ];
 

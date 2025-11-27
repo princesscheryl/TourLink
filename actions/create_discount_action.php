@@ -5,8 +5,8 @@ session_start();
 require_once '../settings/core.php';
 require_once '../controllers/discount_controller.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
+// Check if admin is logged in
+if (!isset($_SESSION['admin_id'])) {
     echo json_encode([
         'status' => 'error',
         'message' => 'Unauthorized access'
@@ -80,7 +80,7 @@ try {
     );
 
     if ($result) {
-        error_log("Discount code created - Code: $code, Type: $discount_type, Value: $discount_value, Created by: " . $_SESSION['user_id']);
+        error_log("Discount code created - Code: $code, Type: $discount_type, Value: $discount_value, Created by: " . $_SESSION['admin_id']);
 
         echo json_encode([
             'status' => 'success',

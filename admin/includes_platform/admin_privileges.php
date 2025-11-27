@@ -79,7 +79,7 @@ function has_privilege($privilege) {
 /**
  * Require a specific privilege or redirect
  */
-function require_privilege($privilege, $redirect = 'dashboard.php') {
+function require_privilege($privilege, $redirect = 'platform_dashboard.php') {
     if (!has_privilege($privilege)) {
         $_SESSION['admin_error'] = 'You do not have permission to access this feature.';
         header("Location: $redirect");

@@ -5,8 +5,8 @@ session_start();
 require_once '../settings/core.php';
 require_once '../controllers/discount_controller.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
+// Check if admin is logged in
+if (!isset($_SESSION['admin_id'])) {
     echo json_encode([
         'status' => 'error',
         'message' => 'Unauthorized access'

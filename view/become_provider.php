@@ -365,7 +365,7 @@ require_once '../settings/core.php';
 
         .testimonials-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 30px;
             margin-top: 40px;
         }
@@ -768,35 +768,45 @@ require_once '../settings/core.php';
     <!-- Testimonials Section -->
     <section class="testimonials-section">
         <div class="container">
-            <h2 class="section-title">What providers like you say</h2>
+            <h2 class="section-title">Success Stories from Our Providers</h2>
             <div class="testimonials-grid">
                 <div class="testimonial-card">
-                    <p class="testimonial-text">"I was able to list within 15 minutes, and no more than two hours later, I had my first booking!"</p>
+                    <p class="testimonial-text">"Within 6 months of joining TourLink, I expanded from solo tours to hiring 3 additional guides. The platform connected me with tourists from all over the world who wanted authentic Accra experiences."</p>
                     <div class="testimonial-author">
-                        <div class="author-avatar">KA</div>
+                        <div class="author-avatar">KM</div>
                         <div class="author-info">
-                            <h5>Kwame Asante</h5>
-                            <p>Accra-based tour guide</p>
+                            <h5>Kwame Mensah</h5>
+                            <p>Accra Heritage Tours</p>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
-                    <p class="testimonial-text">"TourLink is the most straightforward platform to work with. Everything is clear. It's easy. And it frees us up to focus on the guest experience."</p>
+                    <p class="testimonial-text">"TourLink connected me with international tourists who appreciate authentic Ghanaian crafts. My income tripled in the first year, and now I employ 5 other artisans from my community."</p>
                     <div class="testimonial-author">
-                        <div class="author-avatar">AM</div>
+                        <div class="author-avatar">AO</div>
                         <div class="author-info">
-                            <h5>Ama Mensah</h5>
-                            <p>Cultural Experience Provider</p>
+                            <h5>Abena Osei</h5>
+                            <p>Kumasi Traditional Crafts</p>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
-                    <p class="testimonial-text">"After joining TourLink and setting up the listing, my bookings went up significantly and bookings were coming in five to six months in advance."</p>
+                    <p class="testimonial-text">"Started with one car, now managing a fleet of five vehicles serving tourists across Ghana. TourLink gave me the platform to scale my business beyond what I ever imagined."</p>
                     <div class="testimonial-author">
-                        <div class="author-avatar">FB</div>
+                        <div class="author-avatar">YB</div>
                         <div class="author-info">
-                            <h5>Fiifi Boateng</h5>
-                            <p>Cape Coast Adventure Tours</p>
+                            <h5>Yaw Boateng</h5>
+                            <p>SafeRide Ghana</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"TourLink enabled me to create employment opportunities for women in my community. We now offer cultural tours that showcase Ga traditions, and our bookings are consistently full."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">ED</div>
+                        <div class="author-info">
+                            <h5>Efua Dadzie</h5>
+                            <p>Women of Ghana Tours</p>
                         </div>
                     </div>
                 </div>
