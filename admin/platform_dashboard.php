@@ -515,6 +515,10 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
                 <i class="fas fa-concierge-bell"></i>
                 Services
             </a>
+            <a href="manage_discounts.php" class="nav-link">
+                <i class="fas fa-tags"></i>
+                Discount Codes
+            </a>
         </div>
 
         <div class="nav-section">
