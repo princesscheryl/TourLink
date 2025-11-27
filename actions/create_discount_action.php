@@ -17,17 +17,17 @@ if (!isset($_SESSION['admin_id'])) {
 // Get POST data
 $input = json_decode(file_get_contents('php://input'), true);
 
-// DEBUG: Log received data
-error_log("=== DISCOUNT CODE DEBUG ===");
-error_log("Received input: " . json_encode($input));
-
 // Validate required fields
 $required_fields = ['code', 'discount_type', 'discount_value', 'valid_from', 'valid_until'];
 foreach ($required_fields as $field) {
     if (!isset($input[$field]) || trim($input[$field]) === '') {
         echo json_encode([
             'status' => 'error',
-            'message' => 'Missing required field: ' . $field
+            'message' => 'Missing required field: ' . $field,
+            'debug' => [
+                'received_data' => $input,
+                'missing_field' => $field
+            ]
         ]);
         exit();
     }
@@ -45,19 +45,23 @@ try {
     $valid_until = trim($input['valid_until']);
     $description = isset($input['description']) ? trim($input['description']) : null;
 
-    // DEBUG: Log processed dates
-    error_log("Valid from after trim: [$valid_from]");
-    error_log("Valid until after trim: [$valid_until]");
+    $debug_info = [
+        'received_valid_from' => $valid_from,
+        'received_valid_until' => $valid_until
+    ];
 
     // Convert DD/MM/YYYY to YYYY-MM-DD if needed
     if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $valid_from, $matches)) {
         $valid_from = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
-        error_log("Converted valid_from to: $valid_from");
+        $debug_info['converted_valid_from'] = $valid_from;
     }
     if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $valid_until, $matches)) {
         $valid_until = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
-        error_log("Converted valid_until to: $valid_until");
+        $debug_info['converted_valid_until'] = $valid_until;
     }
+
+    $debug_info['final_valid_from'] = $valid_from;
+    $debug_info['final_valid_until'] = $valid_until;
 
     // Validate discount code format
     if (!preg_match('/^[A-Z0-9]+$/', $code)) {
@@ -114,7 +118,8 @@ try {
 
     echo json_encode([
         'status' => 'error',
-        'message' => $e->getMessage()
+        'message' => $e->getMessage(),
+        'debug' => isset($debug_info) ? $debug_info : ['error' => 'No debug info available']
     ]);
 }
 ?>
