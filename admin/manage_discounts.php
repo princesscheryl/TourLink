@@ -1026,8 +1026,15 @@ foreach ($discounts as $d) {
             document.getElementById('discountModal').classList.add('active');
             document.getElementById('modalAlert').classList.remove('active');
 
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('validFrom').value = today;
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            document.getElementById('validFrom').value = todayStr;
+
+            // Set validUntil to 30 days from today by default
+            const futureDate = new Date(today);
+            futureDate.setDate(futureDate.getDate() + 30);
+            const futureDateStr = futureDate.toISOString().split('T')[0];
+            document.getElementById('validUntil').value = futureDateStr;
         }
 
         function closeModal() {
@@ -1051,6 +1058,17 @@ foreach ($discounts as $d) {
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
             const isEdit = document.getElementById('discountId').value !== '';
+
+            // Ensure date format is YYYY-MM-DD
+            const validFromInput = document.getElementById('validFrom');
+            const validUntilInput = document.getElementById('validUntil');
+
+            if (validFromInput.value) {
+                data.valid_from = validFromInput.value;
+            }
+            if (validUntilInput.value) {
+                data.valid_until = validUntilInput.value;
+            }
 
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
