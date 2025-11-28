@@ -470,6 +470,10 @@ if ($users) {
         .modal-overlay.active {
             display: flex !important;
         }
+        
+        .modal-overlay:not(.active) {
+            display: none !important;
+        }
 
         .modal {
             background: white;
@@ -516,6 +520,8 @@ if ($users) {
             justify-content: center;
             border-radius: 6px;
             transition: all 0.2s;
+            z-index: 2002;
+            position: relative;
         }
 
         .modal-close:hover {
@@ -1000,7 +1006,18 @@ if ($users) {
         }
 
         function closeUserModal() {
-            document.getElementById('userModal').classList.remove('active');
+            const modal = document.getElementById('userModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+                
+                // Remove inline styles from modal content
+                const modalContent = modal.querySelector('.modal');
+                if (modalContent) {
+                    modalContent.style.display = '';
+                    modalContent.style.visibility = '';
+                }
+            }
         }
 
         // Close modal when clicking outside
