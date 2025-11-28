@@ -679,7 +679,12 @@ if (!$regional_revenue) {
                 <!-- Booking Trends Chart -->
                 <div class="analytics-card">
                     <div class="analytics-card-header">
-                        <h3 class="analytics-card-title">Booking Trends (Last 6 Months)</h3>
+                        <div>
+                            <h3 class="analytics-card-title">Booking Trends (Last 6 Months)</h3>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                                Total: <?php echo array_sum(array_column($booking_trends, 'bookings')); ?> bookings
+                            </p>
+                        </div>
                     </div>
                     <div class="analytics-card-body">
                         <div class="chart-container-large">
@@ -691,7 +696,12 @@ if (!$regional_revenue) {
                 <!-- Revenue Trends Chart -->
                 <div class="analytics-card">
                     <div class="analytics-card-header">
-                        <h3 class="analytics-card-title">Revenue Trends (Last 6 Months)</h3>
+                        <div>
+                            <h3 class="analytics-card-title">Revenue Trends (Last 6 Months)</h3>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                                Total: GHS <?php echo number_format(array_sum(array_column($booking_trends, 'revenue')), 2); ?>
+                            </p>
+                        </div>
                     </div>
                     <div class="analytics-card-body">
                         <div class="chart-container-large">
@@ -706,11 +716,31 @@ if (!$regional_revenue) {
                 <!-- Booking Status Breakdown -->
                 <div class="analytics-card">
                     <div class="analytics-card-header">
-                        <h3 class="analytics-card-title">Booking Status Distribution</h3>
+                        <div>
+                            <h3 class="analytics-card-title">Booking Status Distribution</h3>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                                Breakdown of all bookings by current status
+                            </p>
+                        </div>
                     </div>
                     <div class="analytics-card-body">
                         <div class="chart-container">
                             <canvas id="statusChart"></canvas>
+                        </div>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                            <?php 
+                            $totalBookings = array_sum($status_breakdown);
+                            foreach ($status_breakdown as $status => $count): 
+                                $percent = $totalBookings > 0 ? round(($count / $totalBookings) * 100, 1) : 0;
+                            ?>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 13px;">
+                                <span style="color: #64748b;">
+                                    <strong style="color: #1e293b;"><?php echo ucfirst($status); ?>:</strong> 
+                                    <?php echo $count; ?> bookings
+                                </span>
+                                <span style="color: #1b4332; font-weight: 600;"><?php echo $percent; ?>%</span>
+                            </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
@@ -718,11 +748,31 @@ if (!$regional_revenue) {
                 <!-- Regional Distribution -->
                 <div class="analytics-card">
                     <div class="analytics-card-header">
-                        <h3 class="analytics-card-title">Regional Provider Distribution</h3>
+                        <div>
+                            <h3 class="analytics-card-title">Regional Provider Distribution</h3>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                                Verified providers across TourLink's operational regions
+                            </p>
+                        </div>
                     </div>
                     <div class="analytics-card-body">
                         <div class="chart-container">
                             <canvas id="regionalChart"></canvas>
+                        </div>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                            <?php 
+                            $totalProviders = array_sum(array_column($regional_stats, 'provider_count'));
+                            foreach ($regional_stats as $region): 
+                                $percent = $totalProviders > 0 ? round(($region['provider_count'] / $totalProviders) * 100, 1) : 0;
+                            ?>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 13px;">
+                                <span style="color: #64748b;">
+                                    <strong style="color: #1e293b;"><?php echo htmlspecialchars($region['region']); ?>:</strong> 
+                                    <?php echo $region['provider_count']; ?> providers
+                                </span>
+                                <span style="color: #1b4332; font-weight: 600;"><?php echo $percent; ?>%</span>
+                            </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>
@@ -731,7 +781,12 @@ if (!$regional_revenue) {
             <!-- Service Category Performance -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Service Category Performance</h3>
+                    <div>
+                        <h3 class="card-title">Service Category Performance</h3>
+                        <p style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                            Booking activity by service category - hover over bars for detailed metrics
+                        </p>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="chart-container-large">
@@ -743,7 +798,12 @@ if (!$regional_revenue) {
             <!-- Regional Revenue Breakdown -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Regional Revenue Breakdown</h3>
+                    <div>
+                        <h3 class="card-title">Regional Revenue Breakdown</h3>
+                        <p style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                            Revenue generated by region - hover over bars for provider and booking details
+                        </p>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="chart-container-large">
@@ -787,7 +847,9 @@ if (!$regional_revenue) {
                     backgroundColor: 'rgba(27, 67, 50, 0.1)',
                     tension: 0.4,
                     fill: true,
-                    borderWidth: 2
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }]
             },
             options: {
@@ -797,6 +859,13 @@ if (!$regional_revenue) {
                     legend: {
                         display: true,
                         position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Bookings: ' + context.parsed.y;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -804,6 +873,16 @@ if (!$regional_revenue) {
                         beginAtZero: true,
                         ticks: {
                             stepSize: 1
+                        },
+                        title: {
+                            display: true,
+                            text: 'Number of Bookings'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
                         }
                     }
                 }
@@ -833,6 +912,13 @@ if (!$regional_revenue) {
                     legend: {
                         display: true,
                         position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Revenue: GHS ' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -842,6 +928,16 @@ if (!$regional_revenue) {
                             callback: function(value) {
                                 return 'GHS ' + value.toLocaleString();
                             }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Revenue (GHS)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
                         }
                     }
                 }
@@ -854,6 +950,7 @@ if (!$regional_revenue) {
         
         const statusLabels = Object.keys(statusData);
         const statusCounts = Object.values(statusData);
+        const totalStatus = statusCounts.reduce((a, b) => a + b, 0);
         const statusColors = {
             'pending': '#fef3c7',
             'confirmed': '#dbeafe',
@@ -869,7 +966,8 @@ if (!$regional_revenue) {
                 datasets: [{
                     data: statusCounts,
                     backgroundColor: statusLabels.map(s => statusColors[s] || '#e2e8f0'),
-                    borderWidth: 0
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
                 }]
             },
             options: {
@@ -877,8 +975,42 @@ if (!$regional_revenue) {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
-                    }
+                        position: 'bottom',
+                        labels: {
+                            padding: 12,
+                            font: {
+                                size: 12
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        const percent = totalStatus > 0 ? ((value / totalStatus) * 100).toFixed(1) : 0;
+                                        return {
+                                            text: label + ': ' + value + ' (' + percent + '%)',
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            strokeStyle: data.datasets[0].borderColor,
+                                            lineWidth: data.datasets[0].borderWidth,
+                                            hidden: false,
+                                            index: i
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const percent = totalStatus > 0 ? ((value / totalStatus) * 100).toFixed(1) : 0;
+                                return label + ': ' + value + ' bookings (' + percent + '% of total)';
+                            }
+                        }
+                    },
                 }
             }
         });
@@ -889,6 +1021,7 @@ if (!$regional_revenue) {
         
         const regionalLabels = regionalData.map(r => r.region);
         const regionalCounts = regionalData.map(r => parseInt(r.provider_count));
+        const totalRegional = regionalCounts.reduce((a, b) => a + b, 0);
         const regionalColors = ['#1b4332', '#2d6a4f', '#40916c', '#52b788', '#74c69d'];
 
         new Chart(regionalCtx, {
@@ -898,7 +1031,8 @@ if (!$regional_revenue) {
                 datasets: [{
                     data: regionalCounts,
                     backgroundColor: regionalColors.slice(0, regionalLabels.length),
-                    borderWidth: 0
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
                 }]
             },
             options: {
@@ -906,8 +1040,42 @@ if (!$regional_revenue) {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
-                    }
+                        position: 'bottom',
+                        labels: {
+                            padding: 12,
+                            font: {
+                                size: 12
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        const percent = totalRegional > 0 ? ((value / totalRegional) * 100).toFixed(1) : 0;
+                                        return {
+                                            text: label + ': ' + value + ' (' + percent + '%)',
+                                            fillStyle: data.datasets[0].backgroundColor[i],
+                                            strokeStyle: data.datasets[0].borderColor,
+                                            lineWidth: data.datasets[0].borderWidth,
+                                            hidden: false,
+                                            index: i
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const percent = totalRegional > 0 ? ((value / totalRegional) * 100).toFixed(1) : 0;
+                                return label + ': ' + value + ' providers (' + percent + '% of total)';
+                            }
+                        }
+                    },
                 }
             }
         });
@@ -918,6 +1086,8 @@ if (!$regional_revenue) {
         
         const categoryLabels = categoryData.map(c => c.category_name);
         const categoryBookings = categoryData.map(c => parseInt(c.booking_count || 0));
+        const categoryServices = categoryData.map(c => parseInt(c.service_count || 0));
+        const categoryRevenue = categoryData.map(c => parseFloat(c.revenue || 0));
 
         new Chart(categoryCtx, {
             type: 'bar',
@@ -937,14 +1107,39 @@ if (!$regional_revenue) {
                 indexAxis: 'y',
                 plugins: {
                     legend: {
-                        display: false
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                const index = context.dataIndex;
+                                return [
+                                    'Services: ' + categoryServices[index],
+                                    'Revenue: GHS ' + categoryRevenue[index].toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                                ];
+                            }
+                        }
                     }
                 },
                 scales: {
                     x: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1
+                            stepSize: 1,
+                            callback: function(value) {
+                                return value + ' bookings';
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Number of Bookings'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Service Categories'
                         }
                     }
                 }
@@ -957,6 +1152,9 @@ if (!$regional_revenue) {
         
         const regionalRevenueLabels = regionalRevenueData.map(r => r.region);
         const regionalRevenueAmounts = regionalRevenueData.map(r => parseFloat(r.revenue || 0));
+        const regionalBookingCounts = regionalRevenueData.map(r => parseInt(r.booking_count || 0));
+        const regionalProviderCounts = regionalRevenueData.map(r => parseInt(r.provider_count || 0));
+        const totalRevenue = regionalRevenueAmounts.reduce((a, b) => a + b, 0);
 
         new Chart(regionalRevenueCtx, {
             type: 'bar',
@@ -977,6 +1175,22 @@ if (!$regional_revenue) {
                     legend: {
                         display: true,
                         position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                const index = context.dataIndex;
+                                const percent = totalRevenue > 0 ? ((regionalRevenueAmounts[index] / totalRevenue) * 100).toFixed(1) : 0;
+                                return [
+                                    'Providers: ' + regionalProviderCounts[index],
+                                    'Bookings: ' + regionalBookingCounts[index],
+                                    'Share: ' + percent + '% of total revenue'
+                                ];
+                            },
+                            label: function(context) {
+                                return 'Revenue: GHS ' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -986,6 +1200,16 @@ if (!$regional_revenue) {
                             callback: function(value) {
                                 return 'GHS ' + value.toLocaleString();
                             }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Revenue (GHS)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Regions'
                         }
                     }
                 }
