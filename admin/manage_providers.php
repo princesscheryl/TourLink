@@ -1,21 +1,59 @@
 <?php
-require_once 'includes_platform/auth_check.php';
-require_once '../settings/db_class.php';
+/**
+ * Admin Provider Management Page
+ * Displays all service providers with statistics and management capabilities
+ */
+// Enable error reporting at the very top before any includes
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
 
-// Check privilege
-require_privilege('view_providers');
+// Start output buffering to catch any errors
+ob_start();
 
-// Get providers
-$db = new db_connection();
-$db->db_connect();
-$providers = $db->db_fetch_all("
-    SELECT sp.*, u.email, u.account_status as user_active,
-           (SELECT COUNT(*) FROM tl_services WHERE provider_id = sp.provider_id) as service_count,
-           (SELECT COUNT(*) FROM tl_bookings b JOIN tl_services s ON b.service_id = s.service_id WHERE s.provider_id = sp.provider_id) as booking_count
-    FROM tl_service_providers sp
-    JOIN tl_users u ON sp.user_id = u.user_id
-    ORDER BY sp.created_at DESC
-");
+try {
+    require_once 'includes_platform/auth_check.php';
+    require_once '../settings/db_class.php';
+    
+    // Check privilege
+    require_privilege('view_providers');
+} catch (Exception $e) {
+    ob_clean();
+    die("Error loading required files: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+} catch (Error $e) {
+    ob_clean();
+    die("Fatal error: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+}
+
+try {
+    // Initialize database connection
+    $db = new db_connection();
+    if (!$db->db_connect()) {
+        throw new Exception("Database connection failed. Please contact the administrator.");
+    }
+
+    // Retrieve all providers with related user information and statistics
+    // Uses date_registered from users table for ordering since providers table has no created_at column
+    $providers = $db->db_fetch_all("
+        SELECT sp.*, u.email, u.account_status as user_active,
+               (SELECT COUNT(*) FROM tl_services WHERE provider_id = sp.provider_id) as service_count,
+               (SELECT COUNT(*) FROM tl_bookings b JOIN tl_services s ON b.service_id = s.service_id WHERE s.provider_id = sp.provider_id) as booking_count
+        FROM tl_service_providers sp
+        JOIN tl_users u ON sp.user_id = u.user_id
+        ORDER BY u.date_registered DESC
+    ");
+
+    // Handle query failure gracefully
+    if ($providers === false) {
+        $providers = [];
+    }
+} catch (Exception $e) {
+    ob_clean();
+    die("Error loading providers: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+} catch (Error $e) {
+    ob_clean();
+    die("Fatal error loading providers: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+}
 
 // Handle actions
 $message = '';
@@ -43,14 +81,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Refresh data
+    // Refresh data after action
+    // Uses date_registered from users table for ordering since providers table has no created_at column
     $providers = $db->db_fetch_all("
         SELECT sp.*, u.email, u.account_status as user_active,
                (SELECT COUNT(*) FROM tl_services WHERE provider_id = sp.provider_id) as service_count,
                (SELECT COUNT(*) FROM tl_bookings b JOIN tl_services s ON b.service_id = s.service_id WHERE s.provider_id = sp.provider_id) as booking_count
         FROM tl_service_providers sp
         JOIN tl_users u ON sp.user_id = u.user_id
-        ORDER BY sp.created_at DESC
+        ORDER BY u.date_registered DESC
     ");
 }
 ?>
@@ -335,3 +374,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<?php
+// End output buffering and flush
+ob_end_flush();
+?>
