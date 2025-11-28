@@ -871,34 +871,42 @@ if ($users) {
                 .then(text => {
                     try {
                         const data = JSON.parse(text);
-                        if (data.success) {
+                        if (data.success && data.user) {
                             displayUserDetails(data.user);
                         } else {
                             modalBody.innerHTML = `<div class="modal-error">${data.message || 'Failed to load user details'}</div>`;
                         }
                     } catch (e) {
-                        modalBody.innerHTML = '<div class="modal-error">Invalid response from server</div>';
+                        console.error('Parse error:', e, 'Response:', text);
+                        modalBody.innerHTML = '<div class="modal-error">Invalid response from server. Check console.</div>';
                     }
                 })
                 .catch(error => {
-                    modalBody.innerHTML = `<div class="modal-error">Error loading user details. Please try again.</div>`;
+                    console.error('Fetch error:', error);
+                    modalBody.innerHTML = `<div class="modal-error">Error: ${error.message}. Check console.</div>`;
                 });
         }
 
         function displayUserDetails(user) {
+            console.log('displayUserDetails called', user);
             const modalBody = document.getElementById('modalBody');
             const modal = document.getElementById('userModal');
             
-            if (!modalBody || !user) {
-                if (modalBody) {
-                    modalBody.innerHTML = '<div class="modal-error">Unable to display user details</div>';
-                }
+            if (!modalBody) {
+                console.error('modalBody not found');
+                return;
+            }
+            
+            if (!user) {
+                console.error('user data is null');
+                modalBody.innerHTML = '<div class="modal-error">User data is missing</div>';
                 return;
             }
             
             // Ensure modal is visible
             if (modal) {
                 modal.style.display = 'flex';
+                modal.classList.add('active');
             }
             
             let html = `
@@ -979,6 +987,16 @@ if ($users) {
             }
             
             modalBody.innerHTML = html;
+            console.log('Modal content set, HTML length:', html.length);
+            
+            // Force visibility
+            if (modal) {
+                const modalContent = modal.querySelector('.modal');
+                if (modalContent) {
+                    modalContent.style.display = 'block';
+                    modalContent.style.visibility = 'visible';
+                }
+            }
         }
 
         function closeUserModal() {
