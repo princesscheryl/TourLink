@@ -61,7 +61,24 @@ $amount = 150.00;
 $start_date = date('Y-m-d');
 $end_date = date('Y-m-d', strtotime('+30 days'));
 
-// Store subscription details in session (create records AFTER payment)
+// Store subscription details in DATABASE (not just session, because session can be lost)
+// Insert into tl_subscription_payments with pending status
+$insert_stmt = $db->db->prepare("
+    INSERT INTO tl_subscription_payments
+    (provider_id, amount, payment_reference, payment_method, payment_status, subscription_type, start_date, end_date, created_at)
+    VALUES (?, ?, ?, 'paystack', 'pending', 'premium_monthly', ?, ?, NOW())
+");
+
+if (!$insert_stmt) {
+    die('Error: Could not prepare insert statement - ' . $db->db->error);
+}
+
+$insert_stmt->bind_param("idsss", $provider_id, $amount, $payment_reference, $start_date, $end_date);
+if (!$insert_stmt->execute()) {
+    die('Error: Could not insert pending payment - ' . $insert_stmt->error);
+}
+
+// Also store in session as backup (for immediate verification)
 $_SESSION['pending_premium_subscription'] = [
     'provider_id' => $provider_id,
     'amount' => $amount,

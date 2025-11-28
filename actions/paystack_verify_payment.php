@@ -426,18 +426,61 @@ function process_new_booking_verification($reference) {
 function process_premium_subscription_verification($reference) {
     error_log("Starting premium subscription verification for reference: $reference");
 
-    // Get subscription data from session
-    if (!isset($_SESSION['pending_premium_subscription'])) {
-        error_log("Premium verification failed: No pending subscription in session");
+    // FIRST: Try to get subscription data from DATABASE (more reliable than session)
+    $db = new db_connection();
+    $db->db_connect();
+
+    $pending_stmt = $db->db->prepare("
+        SELECT provider_id, amount, start_date, end_date, payment_reference
+        FROM tl_subscription_payments
+        WHERE payment_reference = ?
+        AND payment_status = 'pending'
+        LIMIT 1
+    ");
+
+    $subscription_data = null;
+
+    if ($pending_stmt) {
+        $pending_stmt->bind_param("s", $reference);
+        $pending_stmt->execute();
+        $result = $pending_stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $subscription_data = [
+                'provider_id' => $row['provider_id'],
+                'amount' => floatval($row['amount']),
+                'start_date' => $row['start_date'],
+                'end_date' => $row['end_date'],
+                'reference' => $row['payment_reference']
+            ];
+            error_log("Subscription data found in DATABASE: " . json_encode($subscription_data));
+        }
+    }
+
+    // FALLBACK: If not in database, check session (backward compatibility)
+    if (!$subscription_data && isset($_SESSION['pending_premium_subscription'])) {
+        $subscription_data = $_SESSION['pending_premium_subscription'];
+        error_log("Subscription data found in SESSION (fallback): " . json_encode($subscription_data));
+    }
+
+    // If still not found, fail
+    if (!$subscription_data) {
+        error_log("Premium verification failed: No pending subscription found in database or session");
         echo json_encode([
             'status' => 'error',
-            'message' => 'Subscription data not found in session'
+            'verified' => false,
+            'message' => 'Subscription data not found. Payment reference: ' . $reference,
+            'debug' => [
+                'reference' => $reference,
+                'session_has_data' => isset($_SESSION['pending_premium_subscription']),
+                'user_logged_in' => isset($_SESSION['user_id'])
+            ]
         ]);
         return;
     }
 
-    $subscription_data = $_SESSION['pending_premium_subscription'];
-    error_log("Subscription data found: " . json_encode($subscription_data));
+    error_log("Using subscription data: " . json_encode($subscription_data));
 
     // Verify transaction with Paystack
     error_log("Calling Paystack verification API...");
@@ -528,30 +571,43 @@ function process_premium_subscription_verification($reference) {
         $premium_listing_id = $conn->insert_id;
         error_log("Premium listing created with ID: $premium_listing_id");
 
-        // Create subscription payment record (without premium_listing_id if column doesn't exist)
+        // UPDATE the existing pending payment record to mark as completed
         // Check if premium_listing_id column exists
         $check_col = $conn->query("SHOW COLUMNS FROM tl_subscription_payments LIKE 'premium_listing_id'");
 
         if ($check_col->num_rows > 0) {
-            // Column exists - use it
-            $insert_payment = $conn->prepare("
-                INSERT INTO tl_subscription_payments
-                (premium_listing_id, provider_id, subscription_tier, amount, billing_period_start, billing_period_end, payment_status, payment_date, transaction_reference)
-                VALUES (?, ?, 'Premium', ?, ?, ?, 'paid', NOW(), ?)
+            // Column exists - include it in update
+            $update_payment = $conn->prepare("
+                UPDATE tl_subscription_payments
+                SET payment_status = 'completed',
+                    premium_listing_id = ?,
+                    payment_date = NOW(),
+                    updated_at = NOW()
+                WHERE payment_reference = ?
+                AND payment_status = 'pending'
             ");
-            $insert_payment->bind_param("iidsss", $premium_listing_id, $provider_id, $subscription_amount, $start_date, $end_date, $reference);
+            $update_payment->bind_param("is", $premium_listing_id, $reference);
         } else {
-            // Column doesn't exist - skip it
-            $insert_payment = $conn->prepare("
-                INSERT INTO tl_subscription_payments
-                (provider_id, subscription_tier, amount, billing_period_start, billing_period_end, payment_status, payment_date, transaction_reference)
-                VALUES (?, 'Premium', ?, ?, ?, 'paid', NOW(), ?)
+            // Column doesn't exist - update without it
+            $update_payment = $conn->prepare("
+                UPDATE tl_subscription_payments
+                SET payment_status = 'completed',
+                    payment_date = NOW(),
+                    updated_at = NOW()
+                WHERE payment_reference = ?
+                AND payment_status = 'pending'
             ");
-            $insert_payment->bind_param("idsss", $provider_id, $subscription_amount, $start_date, $end_date, $reference);
+            $update_payment->bind_param("s", $reference);
         }
 
-        if (!$insert_payment->execute()) {
-            throw new Exception("Failed to create subscription payment record");
+        if (!$update_payment->execute()) {
+            throw new Exception("Failed to update subscription payment record: " . $update_payment->error);
+        }
+
+        if ($update_payment->affected_rows === 0) {
+            error_log("Warning: No pending payment record was updated for reference $reference");
+        } else {
+            error_log("Successfully updated payment record for reference $reference");
         }
 
         // Mark all provider's services as premium (if column exists)
