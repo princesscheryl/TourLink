@@ -1,4 +1,9 @@
 <?php
+// Enable error display for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+
 require_once 'settings/core.php';
 require_once 'controllers/service_controller.php';
 require_once 'controllers/service_category_controller.php';

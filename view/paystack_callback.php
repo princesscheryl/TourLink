@@ -197,6 +197,10 @@ try {
         async function verifyPayment() {
             const reference = '<?php echo htmlspecialchars($reference); ?>';
 
+            // Log session info for debugging
+            console.log('Payment Reference:', reference);
+            console.log('Verifying payment...');
+
             try {
                 const response = await fetch('../actions/paystack_verify_payment.php', {
                     method: 'POST',
@@ -206,17 +210,30 @@ try {
                     body: JSON.stringify({ reference: reference })
                 });
 
+                console.log('Response status:', response.status);
+
                 // Check if response is JSON
                 const contentType = response.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
                     const text = await response.text();
-                    console.error('Non-JSON response:', text);
-                    showError('Server error: ' + text.substring(0, 200));
+                    console.error('Non-JSON response received:', text);
+
+                    // Show more detailed error on page
+                    showError('Server returned an error. Please check console for details. Error preview: ' + text.substring(0, 500));
+
+                    // Also display the full error in the page for debugging
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; background: #000; color: #0f0; padding: 20px; max-height: 200px; overflow: auto; font-family: monospace; font-size: 12px; z-index: 10000;';
+                    errorDiv.textContent = 'FULL ERROR OUTPUT:\n' + text;
+                    document.body.appendChild(errorDiv);
                     return;
                 }
 
                 const data = await response.json();
                 console.log('Verification response:', data);
+                console.log('Status:', data.status);
+                console.log('Verified:', data.verified);
+                console.log('Message:', data.message);
 
                 document.getElementById('spinnerWrapper').style.display = 'none';
 

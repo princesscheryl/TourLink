@@ -1,6 +1,8 @@
 <?php
-// Enable error logging
+// Enable error display for debugging
 error_reporting(E_ALL);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
 ini_set('log_errors', 1);
 
 // Set up global error handler to catch all errors and return as JSON
@@ -14,7 +16,8 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
         'message' => "Server error: $errstr",
         'debug' => [
             'file' => basename($errfile),
-            'line' => $errline
+            'line' => $errline,
+            'full_error' => "$errstr in $errfile:$errline"
         ]
     ]);
     exit();
@@ -45,7 +48,12 @@ try {
 if (!isset($_SESSION['user_id'])) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'Session expired. Please login again.'
+        'message' => 'Session expired. Please login again.',
+        'debug' => [
+            'session_id' => session_id(),
+            'session_data_present' => !empty($_SESSION),
+            'session_keys' => array_keys($_SESSION)
+        ]
     ]);
     exit();
 }
@@ -57,7 +65,11 @@ $reference = isset($input['reference']) ? trim($input['reference']) : null;
 if (!$reference) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'No payment reference provided'
+        'message' => 'No payment reference provided',
+        'debug' => [
+            'input_received' => $input,
+            'raw_input' => file_get_contents('php://input')
+        ]
     ]);
     exit();
 }
@@ -75,20 +87,44 @@ try {
     $is_new_booking = isset($_SESSION['pending_booking']);  // New Paystack flow
     $is_old_booking = isset($_SESSION['paystack_booking_id']);  // Old flow
 
+    // Debug: Log what session data we have
+    error_log("Session debugging - User ID: $user_id");
+    error_log("Is premium subscription: " . ($is_premium_subscription ? 'YES' : 'NO'));
+    error_log("Is new booking: " . ($is_new_booking ? 'YES' : 'NO'));
+    error_log("Is old booking: " . ($is_old_booking ? 'YES' : 'NO'));
+    error_log("Session keys present: " . implode(', ', array_keys($_SESSION)));
+
     if ($is_premium_subscription) {
+        error_log("Processing premium subscription verification");
         // Handle premium subscription payment
         process_premium_subscription_verification($reference);
         exit();
     }
 
     if ($is_new_booking) {
+        error_log("Processing new booking verification");
         // Handle new Paystack booking flow (creates booking after payment)
         process_new_booking_verification($reference);
         exit();
     }
 
     if (!$is_old_booking) {
-        throw new Exception('Payment information not found in session');
+        // Add detailed debugging for missing session data
+        echo json_encode([
+            'status' => 'error',
+            'verified' => false,
+            'message' => 'Payment information not found in session. This usually means the session expired or was lost during payment.',
+            'debug' => [
+                'user_logged_in' => isset($_SESSION['user_id']),
+                'session_keys' => array_keys($_SESSION),
+                'is_premium' => $is_premium_subscription,
+                'is_new_booking' => $is_new_booking,
+                'is_old_booking' => $is_old_booking,
+                'reference' => $reference,
+                'suggestion' => 'The payment may have been successful but session was lost. Contact support with this reference number.'
+            ]
+        ]);
+        exit();
     }
 
     // Continue with booking payment processing
