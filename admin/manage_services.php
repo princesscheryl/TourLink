@@ -34,6 +34,9 @@ if ($services) {
     }
 }
 $total_count = $services ? count($services) : 0;
+
+// Set current page for sidebar
+$current_page = 'services';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -683,73 +686,10 @@ $total_count = $services ? count($services) : 0;
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <a href="provider_dashboard.php" class="sidebar-logo">
-                <span class="sidebar-logo-text">TourLink<span class="sidebar-logo-dot"></span></span>
-                <span class="sidebar-logo-badge">Provider</span>
-            </a>
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Main</div>
-                <a href="provider_dashboard.php" class="nav-item">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="../view/provider/manage_bookings.php" class="nav-item">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Bookings</span>
-                </a>
-                <a href="manage_services.php" class="nav-item active">
-                    <i class="fas fa-concierge-bell"></i>
-                    <span>My Services</span>
-                </a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Management</div>
-                <a href="add_service.php" class="nav-item">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Add Service</span>
-                </a>
-                <a href="provider_profile.php" class="nav-item">
-                    <i class="fas fa-user-tie"></i>
-                    <span>Business Profile</span>
-                </a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Other</div>
-                <a href="../index_tourlink.php" class="nav-item">
-                    <i class="fas fa-external-link-alt"></i>
-                    <span>View Site</span>
-                </a>
-                <a href="account_settings.php" class="nav-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Account Settings</span>
-                </a>
-                <a href="../login/logout.php" class="nav-item">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="provider-badge">
-                <div class="provider-avatar">
-                    <?php echo strtoupper(substr($provider['business_name'] ?? $_SESSION['first_name'], 0, 1)); ?>
-                </div>
-                <div class="provider-info">
-                    <h4><?php echo htmlspecialchars($provider['business_name'] ?? $_SESSION['first_name']); ?></h4>
-                    <span><?php echo ucfirst($provider['verification_status'] ?? 'Pending'); ?></span>
-                </div>
-            </div>
-        </div>
-    </aside>
+    <?php
+    // Include reusable sidebar component
+    include '../includes/provider_sidebar.php';
+    ?>
 
     <!-- Main Content -->
     <main class="main-content">

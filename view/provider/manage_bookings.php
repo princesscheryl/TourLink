@@ -40,6 +40,9 @@ $cancelled = array_filter($bookings, fn($b) => in_array($b['booking_status'], ['
 
 // Get current filter
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+
+// Set current page for sidebar
+$current_page = 'bookings';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -178,6 +181,21 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 
         .nav-item i { width: 20px; text-align: center; font-size: 1rem; }
 
+        .nav-item .badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .nav-item.active .badge {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Legacy support for nav-badge */
         .nav-badge {
             margin-left: auto;
             background: var(--danger);
@@ -567,7 +585,7 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
         @media (max-width: 1024px) {
             .sidebar { width: 80px; }
             .sidebar-logo-text, .sidebar-logo-badge, .nav-section-title, .nav-item span, .provider-info { display: none; }
-            .nav-badge { margin-left: 0; }
+            .nav-item .badge, .nav-badge { margin-left: 0; }
             .main-content { margin-left: 80px; }
         }
 
@@ -583,76 +601,10 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <a href="../../admin/provider_dashboard.php" class="sidebar-logo">
-                <span class="sidebar-logo-text">TourLink<span class="sidebar-logo-dot"></span></span>
-                <span class="sidebar-logo-badge">Provider</span>
-            </a>
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Main</div>
-                <a href="../../admin/provider_dashboard.php" class="nav-item">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="manage_bookings.php" class="nav-item active">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Bookings</span>
-                    <?php if (count($pending) > 0): ?>
-                        <span class="nav-badge"><?php echo count($pending); ?></span>
-                    <?php endif; ?>
-                </a>
-                <a href="../../admin/manage_services.php" class="nav-item">
-                    <i class="fas fa-concierge-bell"></i>
-                    <span>My Services</span>
-                </a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Management</div>
-                <a href="../../admin/add_service.php" class="nav-item">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Add Service</span>
-                </a>
-                <a href="../../admin/provider_profile.php" class="nav-item">
-                    <i class="fas fa-user-tie"></i>
-                    <span>Business Profile</span>
-                </a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Other</div>
-                <a href="../../index_tourlink.php" class="nav-item">
-                    <i class="fas fa-external-link-alt"></i>
-                    <span>View Site</span>
-                </a>
-                <a href="../../admin/account_settings.php" class="nav-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Account Settings</span>
-                </a>
-                <a href="../../login/logout.php" class="nav-item">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="provider-badge">
-                <div class="provider-avatar">
-                    <?php echo strtoupper(substr($provider['business_name'] ?? $_SESSION['first_name'], 0, 1)); ?>
-                </div>
-                <div class="provider-info">
-                    <h4><?php echo htmlspecialchars($provider['business_name'] ?? $_SESSION['first_name']); ?></h4>
-                    <span><?php echo ucfirst($provider['verification_status'] ?? 'Pending'); ?></span>
-                </div>
-            </div>
-        </div>
-    </aside>
+    <?php
+    // Include reusable sidebar component
+    include '../../includes/provider_sidebar.php';
+    ?>
 
     <!-- Main Content -->
     <main class="main-content">
