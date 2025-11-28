@@ -8,9 +8,22 @@
  * include '../includes/provider_sidebar.php';
  */
 
+// Determine the correct base path
+$in_view_folder = (strpos($_SERVER['PHP_SELF'], '/view/') !== false);
+$in_admin_folder = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false);
+
+// Set base path based on current location
+if ($in_view_folder) {
+    $base_path = '../../';
+} elseif ($in_admin_folder) {
+    $base_path = '../';
+} else {
+    $base_path = '';
+}
+
 // Ensure user is logged in as provider
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'provider') {
-    header('Location: ../login/login.php');
+    header('Location: ' . $base_path . 'login/login.php');
     exit();
 }
 
@@ -22,7 +35,7 @@ if (!isset($provider)) {
     
     // Ensure provider exists
     if (!$provider) {
-        header('Location: ../login/login.php');
+        header('Location: ' . $base_path . 'login/login.php');
         exit();
     }
 }
@@ -64,7 +77,7 @@ if (!isset($current_page)) {
 <!-- Sidebar -->
 <aside class="sidebar">
     <div class="sidebar-header">
-        <a href="provider_dashboard.php" class="sidebar-logo">
+        <a href="<?php echo $base_path; ?>admin/provider_dashboard.php" class="sidebar-logo">
             <span class="sidebar-logo-text">TourLink<span class="sidebar-logo-dot"></span></span>
             <span class="sidebar-logo-badge">Provider</span>
         </a>
@@ -73,29 +86,29 @@ if (!isset($current_page)) {
     <nav class="sidebar-nav">
         <div class="nav-section">
             <div class="nav-section-title">MAIN</div>
-            <a href="provider_dashboard.php" class="nav-item <?php echo $current_page === 'dashboard' ? 'active' : ''; ?>">
+            <a href="<?php echo $base_path; ?>admin/provider_dashboard.php" class="nav-item <?php echo $current_page === 'dashboard' ? 'active' : ''; ?>">
                 <i class="fa fa-th-large"></i> Dashboard
             </a>
-            <a href="../view/provider/manage_bookings.php" class="nav-item <?php echo $current_page === 'bookings' ? 'active' : ''; ?>">
+            <a href="<?php echo $base_path; ?>view/provider/manage_bookings.php" class="nav-item <?php echo $current_page === 'bookings' ? 'active' : ''; ?>">
                 <i class="fa fa-calendar-check"></i> Bookings
                 <?php if (count($pending_bookings) > 0): ?>
                     <span class="badge"><?php echo count($pending_bookings); ?></span>
                 <?php endif; ?>
             </a>
-            <a href="manage_services.php" class="nav-item <?php echo $current_page === 'services' ? 'active' : ''; ?>">
+            <a href="<?php echo $base_path; ?>admin/manage_services.php" class="nav-item <?php echo $current_page === 'services' ? 'active' : ''; ?>">
                 <i class="fa fa-briefcase"></i> My Services
             </a>
         </div>
 
         <div class="nav-section">
             <div class="nav-section-title">MANAGEMENT</div>
-            <a href="add_service.php" class="nav-item <?php echo $current_page === 'add_service' ? 'active' : ''; ?>">
+            <a href="<?php echo $base_path; ?>admin/add_service.php" class="nav-item <?php echo $current_page === 'add_service' ? 'active' : ''; ?>">
                 <i class="fa fa-plus-circle"></i> Add Service
             </a>
-            <a href="provider_profile.php" class="nav-item <?php echo $current_page === 'profile' ? 'active' : ''; ?>">
+            <a href="<?php echo $base_path; ?>admin/provider_profile.php" class="nav-item <?php echo $current_page === 'profile' ? 'active' : ''; ?>">
                 <i class="fa fa-user-cog"></i> Business Profile
             </a>
-            <a href="premium_subscription.php" class="nav-item <?php echo $current_page === 'premium' ? 'active' : ''; ?>">
+            <a href="<?php echo $base_path; ?>admin/premium_subscription.php" class="nav-item <?php echo $current_page === 'premium' ? 'active' : ''; ?>">
                 <i class="fa fa-crown"></i> Premium Subscription
                 <?php if ($has_premium): ?>
                     <span class="badge" style="background: #d4a017;">Active</span>
@@ -105,13 +118,13 @@ if (!isset($current_page)) {
 
         <div class="nav-section">
             <div class="nav-section-title">OTHER</div>
-            <a href="../index_tourlink.php" class="nav-item">
+            <a href="<?php echo $base_path; ?>index_tourlink.php" class="nav-item">
                 <i class="fa fa-external-link-alt"></i> View Site
             </a>
-            <a href="../view/profile_settings.php" class="nav-item <?php echo $current_page === 'settings' ? 'active' : ''; ?>">
+            <a href="<?php echo $base_path; ?>view/profile_settings.php" class="nav-item <?php echo $current_page === 'settings' ? 'active' : ''; ?>">
                 <i class="fa fa-cog"></i> Account Settings
             </a>
-            <a href="../login/logout.php" class="nav-item">
+            <a href="<?php echo $base_path; ?>login/logout.php" class="nav-item">
                 <i class="fa fa-sign-out-alt"></i> Logout
             </a>
         </div>
