@@ -29,11 +29,25 @@ class Service extends db_connection
      */
     public function add_service($provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions = null, $max_capacity = null, $service_images = null, $festival_id = null)
     {
-        $stmt = $this->db->prepare(
-            "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, festival_id, service_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')"
-        );
-        $stmt->bind_param("iissdssisis", $provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images, $festival_id);
+        // Check if festival_id column exists (backward compatibility)
+        $check_column = $this->db->query("SHOW COLUMNS FROM tl_services LIKE 'festival_id'");
+        $has_festival_column = ($check_column && $check_column->num_rows > 0);
+
+        if ($has_festival_column && $festival_id !== null) {
+            // Include festival_id in the query
+            $stmt = $this->db->prepare(
+                "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, festival_id, service_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')"
+            );
+            $stmt->bind_param("iissdssisis", $provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images, $festival_id);
+        } else {
+            // Exclude festival_id from the query
+            $stmt = $this->db->prepare(
+                "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, service_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')"
+            );
+            $stmt->bind_param("iissdssisi", $provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images);
+        }
 
         if ($stmt->execute()) {
             return $this->last_insert_id();
