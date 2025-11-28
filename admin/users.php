@@ -481,6 +481,7 @@ if ($users) {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 2001;
+            margin: 20px;
         }
 
         .modal-header {
@@ -865,13 +866,18 @@ if ($users) {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return response.json();
+                    return response.text();
                 })
-                .then(data => {
-                    if (data.success) {
-                        displayUserDetails(data.user);
-                    } else {
-                        modalBody.innerHTML = `<div class="modal-error">${data.message || 'Failed to load user details'}</div>`;
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            displayUserDetails(data.user);
+                        } else {
+                            modalBody.innerHTML = `<div class="modal-error">${data.message || 'Failed to load user details'}</div>`;
+                        }
+                    } catch (e) {
+                        modalBody.innerHTML = '<div class="modal-error">Invalid response from server</div>';
                     }
                 })
                 .catch(error => {
@@ -881,10 +887,18 @@ if ($users) {
 
         function displayUserDetails(user) {
             const modalBody = document.getElementById('modalBody');
+            const modal = document.getElementById('userModal');
             
             if (!modalBody || !user) {
-                modalBody.innerHTML = '<div class="modal-error">Unable to display user details</div>';
+                if (modalBody) {
+                    modalBody.innerHTML = '<div class="modal-error">Unable to display user details</div>';
+                }
                 return;
+            }
+            
+            // Ensure modal is visible
+            if (modal) {
+                modal.style.display = 'flex';
             }
             
             let html = `
