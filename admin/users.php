@@ -18,7 +18,7 @@ $users = $db->db_fetch_all("
     SELECT u.*, sp.business_name, sp.verification_status, sp.total_earnings
     FROM tl_users u
     LEFT JOIN tl_service_providers sp ON u.user_id = sp.user_id
-    ORDER BY u.date_created DESC
+    ORDER BY u.date_registered DESC
     LIMIT 100
 ");
 
@@ -664,7 +664,7 @@ if ($users) {
                                 </td>
                                 <td>
                                     <span style="font-size: 12px; color: #64748b;">
-                                        <?php echo date('M j, Y', strtotime($user['date_created'])); ?>
+                                        <?php echo date('M j, Y', strtotime($user['date_registered'])); ?>
                                     </span>
                                 </td>
                                 <td>

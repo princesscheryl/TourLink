@@ -13,7 +13,7 @@ require_privilege('view_providers');
 $db = new db_connection();
 $db->db_connect();
 $providers = $db->db_fetch_all("
-    SELECT sp.*, u.email, u.is_active as user_active,
+    SELECT sp.*, u.email, u.account_status as user_active,
            (SELECT COUNT(*) FROM tl_services WHERE provider_id = sp.provider_id) as service_count,
            (SELECT COUNT(*) FROM tl_bookings b JOIN tl_services s ON b.service_id = s.service_id WHERE s.provider_id = sp.provider_id) as booking_count
     FROM tl_service_providers sp
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Refresh data
     $providers = $db->db_fetch_all("
-        SELECT sp.*, u.email, u.is_active as user_active,
+        SELECT sp.*, u.email, u.account_status as user_active,
                (SELECT COUNT(*) FROM tl_services WHERE provider_id = sp.provider_id) as service_count,
                (SELECT COUNT(*) FROM tl_bookings b JOIN tl_services s ON b.service_id = s.service_id WHERE s.provider_id = sp.provider_id) as booking_count
         FROM tl_service_providers sp
