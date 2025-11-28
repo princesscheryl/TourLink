@@ -58,7 +58,6 @@ try {
                sp.verification_status, 
                sp.total_earnings,
                sp.region,
-               sp.phone as provider_phone,
                sp.business_registration_number,
                sp.years_of_experience,
                sp.languages_spoken
