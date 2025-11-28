@@ -1,28 +1,36 @@
 <?php
+/**
+ * Provider Services Management Page
+ * Allows service providers to view, filter, and manage their service listings
+ */
 require_once '../settings/core.php';
 require_once '../classes/service_provider_class.php';
 require_once '../classes/service_class.php';
 
-// Check if user is logged in
+// Verify user authentication before proceeding
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login/login.php");
     exit();
 }
 
-// Check if user is a provider
+// Validate that the logged-in user has a provider account
+// Providers must have a record in tl_service_providers table
 $provider_class = new ServiceProvider();
 $provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
 
 if (!$provider) {
+    // Redirect to provider registration if account doesn't exist
     header("Location: become_provider.php");
     exit();
 }
 
-// Get provider's services
+// Retrieve all services associated with this provider
+// Services are linked via provider_id foreign key
 $service_class = new Service();
 $services = $service_class->get_services_by_provider($provider['provider_id']);
 
-// Count by status
+// Categorize services by approval status for dashboard statistics
+// Status values: active (approved), pending_approval (awaiting review), inactive (rejected/disabled)
 $active_count = 0;
 $pending_count = 0;
 $inactive_count = 0;
@@ -35,7 +43,7 @@ if ($services) {
 }
 $total_count = $services ? count($services) : 0;
 
-// Set current page for sidebar
+// Set current page identifier for sidebar navigation highlighting
 $current_page = 'services';
 ?>
 <!DOCTYPE html>

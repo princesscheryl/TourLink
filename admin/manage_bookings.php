@@ -1,26 +1,34 @@
 <?php
+/**
+ * Admin Bookings Management Page
+ * Displays all platform bookings with statistics and filtering capabilities
+ */
 require_once 'includes_platform/auth_check.php';
 require_once '../settings/db_class.php';
 
-// Check privilege
+// Verify admin has permission to view bookings
 require_privilege('view_bookings');
 
-// Get bookings
+// Initialize database connection
 $db = new db_connection();
 $db->db_connect();
+
+// Retrieve all bookings with related user and provider information
+// Uses tourist_id to join with users table as bookings reference tourists, not general users
 $bookings = $db->db_fetch_all("
     SELECT b.*, s.service_name, s.service_price,
            u.first_name, u.last_name, u.email as user_email,
            sp.business_name
     FROM tl_bookings b
     JOIN tl_services s ON b.service_id = s.service_id
-    JOIN tl_users u ON b.user_id = u.user_id
+    JOIN tl_users u ON b.tourist_id = u.user_id
     JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
-    ORDER BY b.created_at DESC
+    ORDER BY b.booking_date DESC
     LIMIT 100
 ");
 
-// Calculate stats
+// Calculate booking statistics by status
+// Aggregates revenue and counts bookings in different states for dashboard display
 $total_revenue = 0;
 $completed_count = 0;
 $pending_count = 0;
@@ -30,6 +38,7 @@ if ($bookings) {
     foreach ($bookings as $b) {
         $status = $b['booking_status'] ?? 'unknown';
         if ($status === 'completed') {
+            // Only completed bookings contribute to revenue
             $total_revenue += $b['total_amount'] ?? 0;
             $completed_count++;
         } elseif ($status === 'pending') {
@@ -248,7 +257,7 @@ if ($bookings) {
                             </td>
                             <td><?php echo htmlspecialchars($booking['service_name']); ?></td>
                             <td><?php echo htmlspecialchars($booking['business_name']); ?></td>
-                            <td><?php echo date('M d, Y', strtotime($booking['created_at'] ?? $booking['booking_date'])); ?></td>
+                            <td><?php echo date('M d, Y', strtotime($booking['booking_date'])); ?></td>
                             <td class="amount">GH&#8373; <?php echo number_format($booking['total_amount'], 2); ?></td>
                             <td>
                                 <?php $status = $booking['booking_status'] ?? 'unknown'; ?>
