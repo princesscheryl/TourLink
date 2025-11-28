@@ -16,13 +16,12 @@ $impact_metrics = [
 ];
 
 // Regional impact breakdown
+// TourLink operates in 4 regions: Greater Accra, Central, Ashanti, and Northern
 $regional_impact = [
     ['region' => 'Greater Accra', 'providers' => 45, 'bookings' => 687, 'revenue' => 187650, 'growth' => 12.5],
     ['region' => 'Ashanti', 'providers' => 38, 'bookings' => 512, 'revenue' => 142340, 'growth' => 18.3],
     ['region' => 'Central', 'providers' => 22, 'bookings' => 298, 'revenue' => 78920, 'growth' => 8.7],
-    ['region' => 'Eastern', 'providers' => 18, 'bookings' => 186, 'revenue' => 52430, 'growth' => 15.2],
-    ['region' => 'Western', 'providers' => 15, 'bookings' => 124, 'revenue' => 34180, 'growth' => 6.4],
-    ['region' => 'Volta', 'providers' => 12, 'bookings' => 98, 'revenue' => 28450, 'growth' => 22.1]
+    ['region' => 'Northern', 'providers' => 18, 'bookings' => 186, 'revenue' => 52430, 'growth' => 15.2]
 ];
 
 // Monthly growth data for last 6 months
@@ -36,11 +35,14 @@ $monthly_growth = [
 ];
 
 // Service category performance
+// Categories match the service categories defined in tl_service_categories table
 $category_performance = [
     ['category' => 'Tour Guides', 'providers' => 52, 'bookings' => 734, 'avg_rating' => 4.7],
-    ['category' => 'Drivers', 'providers' => 38, 'bookings' => 521, 'avg_rating' => 4.5],
-    ['category' => 'Artisans', 'providers' => 28, 'bookings' => 312, 'avg_rating' => 4.8],
-    ['category' => 'Cultural Guides', 'providers' => 15, 'bookings' => 187, 'avg_rating' => 4.9],
+    ['category' => 'Drivers & Transportation', 'providers' => 38, 'bookings' => 521, 'avg_rating' => 4.5],
+    ['category' => 'Catering Services', 'providers' => 28, 'bookings' => 312, 'avg_rating' => 4.6],
+    ['category' => 'Translation & Interpretation', 'providers' => 15, 'bookings' => 187, 'avg_rating' => 4.8],
+    ['category' => 'Cultural Performances', 'providers' => 22, 'bookings' => 245, 'avg_rating' => 4.9],
+    ['category' => 'Artisans & Crafts', 'providers' => 25, 'bookings' => 198, 'avg_rating' => 4.7],
     ['category' => 'Accommodation', 'providers' => 12, 'bookings' => 89, 'avg_rating' => 4.6]
 ];
 ?>
