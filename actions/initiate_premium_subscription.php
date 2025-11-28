@@ -62,18 +62,85 @@ $start_date = date('Y-m-d');
 $end_date = date('Y-m-d', strtotime('+30 days'));
 
 // Store subscription details in DATABASE (not just session, because session can be lost)
-// Insert into tl_subscription_payments with pending status
-$insert_stmt = $db->db->prepare("
-    INSERT INTO tl_subscription_payments
-    (provider_id, amount, payment_reference, payment_method, payment_status, subscription_type, start_date, end_date, created_at)
-    VALUES (?, ?, ?, 'paystack', 'pending', 'premium_monthly', ?, ?, NOW())
-");
+// Check which columns exist (backward compatibility)
+$has_payment_reference = false;
+$has_subscription_type = false;
+$has_start_date = false;
+$has_end_date = false;
+$has_created_at = false;
 
-if (!$insert_stmt) {
-    die('Error: Could not prepare insert statement - ' . $db->db->error);
+$check_cols = $db->db->query("SHOW COLUMNS FROM tl_subscription_payments");
+if ($check_cols) {
+    while ($col = $check_cols->fetch_assoc()) {
+        $col_name = $col['Field'];
+        if ($col_name === 'payment_reference') $has_payment_reference = true;
+        if ($col_name === 'subscription_type') $has_subscription_type = true;
+        if ($col_name === 'start_date') $has_start_date = true;
+        if ($col_name === 'end_date') $has_end_date = true;
+        if ($col_name === 'created_at') $has_created_at = true;
+    }
 }
 
-$insert_stmt->bind_param("idsss", $provider_id, $amount, $payment_reference, $start_date, $end_date);
+// Build INSERT query based on available columns
+$columns = ['provider_id', 'amount'];
+$placeholders = ['?', '?'];
+$types = 'id';
+$params = [$provider_id, $amount];
+
+if ($has_payment_reference) {
+    // Use transaction_reference if payment_reference doesn't exist
+    $ref_column = 'payment_reference';
+    $check_txn = $db->db->query("SHOW COLUMNS FROM tl_subscription_payments LIKE 'transaction_reference'");
+    if ($check_txn && $check_txn->num_rows > 0 && !$has_payment_reference) {
+        $ref_column = 'transaction_reference';
+    }
+    $columns[] = $ref_column;
+    $placeholders[] = '?';
+    $types .= 's';
+    $params[] = $payment_reference;
+}
+
+$columns[] = 'payment_status';
+$placeholders[] = "'pending'";
+
+if ($has_subscription_type) {
+    $columns[] = 'subscription_type';
+    $placeholders[] = "'premium_monthly'";
+}
+
+if ($has_start_date) {
+    $columns[] = 'start_date';
+    $placeholders[] = '?';
+    $types .= 's';
+    $params[] = $start_date;
+}
+
+if ($has_end_date) {
+    $columns[] = 'end_date';
+    $placeholders[] = '?';
+    $types .= 's';
+    $params[] = $end_date;
+}
+
+if ($has_created_at) {
+    $columns[] = 'created_at';
+    $placeholders[] = 'NOW()';
+}
+
+$sql = "INSERT INTO tl_subscription_payments (" . implode(', ', $columns) . ") VALUES (" . implode(', ', $placeholders) . ")";
+
+$insert_stmt = $db->db->prepare($sql);
+if (!$insert_stmt) {
+    die('Error: Could not prepare insert statement - ' . $db->db->error . "\nSQL: " . $sql);
+}
+
+// Bind parameters dynamically
+$bind_params = [$types];
+foreach ($params as $key => $value) {
+    $bind_params[] = &$params[$key];
+}
+call_user_func_array([$insert_stmt, 'bind_param'], $bind_params);
+
 if (!$insert_stmt->execute()) {
     die('Error: Could not insert pending payment - ' . $insert_stmt->error);
 }

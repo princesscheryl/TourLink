@@ -16,10 +16,7 @@ define('PAYSTACK_VERIFY_ENDPOINT', PAYSTACK_API_URL . '/transaction/verify/');
 // App Configuration
 define('APP_ENVIRONMENT', 'test'); // Change to 'production' when going live
 
-// TEMPORARY: Using simple callback for debugging
-// Change back to paystack_callback.php once fixed
-define('PAYSTACK_CALLBACK_URL', 'http://169.239.251.102:442/~princess.donkor/tourlink/view/paystack_callback_simple.php');
-// define('PAYSTACK_CALLBACK_URL', 'http://169.239.251.102:442/~princess.donkor/tourlink/view/paystack_callback.php');
+define('PAYSTACK_CALLBACK_URL', 'http://169.239.251.102:442/~princess.donkor/tourlink/view/paystack_callback.php');
 
 /**
  * Initialize a Paystack transaction

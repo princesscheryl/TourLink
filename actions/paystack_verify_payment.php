@@ -430,10 +430,36 @@ function process_premium_subscription_verification($reference) {
     $db = new db_connection();
     $db->db_connect();
 
+    // Check which reference column exists
+    $has_payment_ref = false;
+    $has_transaction_ref = false;
+    $check_cols = $db->db->query("SHOW COLUMNS FROM tl_subscription_payments");
+    if ($check_cols) {
+        while ($col = $check_cols->fetch_assoc()) {
+            if ($col['Field'] === 'payment_reference') $has_payment_ref = true;
+            if ($col['Field'] === 'transaction_reference') $has_transaction_ref = true;
+        }
+    }
+
+    $ref_column = 'payment_reference';
+    if (!$has_payment_ref && $has_transaction_ref) {
+        $ref_column = 'transaction_reference';
+    }
+
+    // Build query with available columns
+    $select_columns = "provider_id, amount";
+    if ($db->db->query("SHOW COLUMNS FROM tl_subscription_payments LIKE 'start_date'")->num_rows > 0) {
+        $select_columns .= ", start_date";
+    }
+    if ($db->db->query("SHOW COLUMNS FROM tl_subscription_payments LIKE 'end_date'")->num_rows > 0) {
+        $select_columns .= ", end_date";
+    }
+    $select_columns .= ", $ref_column";
+
     $pending_stmt = $db->db->prepare("
-        SELECT provider_id, amount, start_date, end_date, payment_reference
+        SELECT $select_columns
         FROM tl_subscription_payments
-        WHERE payment_reference = ?
+        WHERE $ref_column = ?
         AND payment_status = 'pending'
         LIMIT 1
     ");
@@ -450,9 +476,9 @@ function process_premium_subscription_verification($reference) {
             $subscription_data = [
                 'provider_id' => $row['provider_id'],
                 'amount' => floatval($row['amount']),
-                'start_date' => $row['start_date'],
-                'end_date' => $row['end_date'],
-                'reference' => $row['payment_reference']
+                'start_date' => $row['start_date'] ?? date('Y-m-d'),
+                'end_date' => $row['end_date'] ?? date('Y-m-d', strtotime('+30 days')),
+                'reference' => $row[$ref_column]
             ];
             error_log("Subscription data found in DATABASE: " . json_encode($subscription_data));
         }
