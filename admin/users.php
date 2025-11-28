@@ -485,6 +485,8 @@ if ($users) {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 2001;
+            display: block;
+            visibility: visible;
         }
 
         .modal-header {
@@ -899,7 +901,19 @@ if ($users) {
         }
 
         function displayUserDetails(user) {
+            console.log('displayUserDetails called with user:', user);
             const modalBody = document.getElementById('modalBody');
+            
+            if (!modalBody) {
+                console.error('modalBody not found');
+                return;
+            }
+            
+            if (!user) {
+                console.error('User data is null or undefined');
+                modalBody.innerHTML = '<div class="modal-error">User data is missing</div>';
+                return;
+            }
             
             let html = `
                 <div class="user-detail-section">
@@ -978,7 +992,15 @@ if ($users) {
                 `;
             }
             
+            console.log('Setting modal body HTML, length:', html.length);
             modalBody.innerHTML = html;
+            console.log('Modal body updated');
+            
+            // Force a reflow to ensure visibility
+            const modal = document.getElementById('userModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
         }
 
         function closeUserModal() {
