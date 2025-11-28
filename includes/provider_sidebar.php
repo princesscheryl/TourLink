@@ -19,20 +19,40 @@ if (!isset($provider)) {
     require_once __DIR__ . '/../classes/service_provider_class.php';
     $provider_class = new ServiceProvider();
     $provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
+    
+    // Ensure provider exists
+    if (!$provider) {
+        header('Location: ../login/login.php');
+        exit();
+    }
 }
 
 // Get pending bookings count if not already loaded
 if (!isset($pending_bookings)) {
     require_once __DIR__ . '/../classes/booking_class.php';
+    require_once __DIR__ . '/../settings/db_class.php';
     $booking_class = new Booking();
-    $pending_bookings = $booking_class->get_provider_pending_bookings($_SESSION['provider_id']) ?: [];
+    $all_bookings = $booking_class->get_provider_bookings($provider['provider_id']) ?: [];
+    $pending_bookings = array_filter($all_bookings, function($b) {
+        return $b['booking_status'] === 'pending';
+    });
 }
 
 // Check premium status if not already loaded
 if (!isset($has_premium)) {
-    require_once __DIR__ . '/../classes/premium_listing_class.php';
-    $premium_class = new PremiumListing();
-    $has_premium = $premium_class->has_active_subscription($_SESSION['provider_id']);
+    require_once __DIR__ . '/../settings/db_class.php';
+    $db_temp = new db_connection();
+    $db_temp->db_connect();
+    $premium_check = $db_temp->db->prepare("
+        SELECT premium_listing_id FROM tl_premium_listings
+        WHERE provider_id = ?
+        AND status = 'active'
+        AND end_date >= CURDATE()
+        LIMIT 1
+    ");
+    $premium_check->bind_param("i", $provider['provider_id']);
+    $premium_check->execute();
+    $has_premium = $premium_check->get_result()->num_rows > 0;
 }
 
 // Set default current page if not specified

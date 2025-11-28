@@ -2,10 +2,22 @@
 require_once '../settings/core.php';
 require_once '../classes/service_class.php';
 require_once '../classes/booking_class.php';
+require_once '../classes/service_provider_class.php';
 
-$current_page = 'dashboard';
-include '../includes/provider_sidebar.php';
+// Check if user is provider
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'provider') {
+    header('Location: ../login/login.php');
+    exit();
+}
 
+// Load provider data
+$provider_class = new ServiceProvider();
+$provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
+
+if (!$provider) {
+    header('Location: ../login/login.php');
+    exit();
+}
 
 // Get provider's services
 $service_class = new Service();
