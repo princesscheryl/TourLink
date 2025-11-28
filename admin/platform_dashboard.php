@@ -19,6 +19,54 @@ $booking_trends = $admin->get_booking_trends();
 // Calculate north star metric growth
 $north_star = $stats['total_revenue'] ?? 0;
 $monthly_growth = $impact['growth_rate'] ?? 0;
+
+// Get additional analytics data for visualizations
+require_once '../settings/db_class.php';
+$db = new db_connection();
+$db->db_connect();
+
+// Booking status breakdown
+$status_breakdown = $db->db_fetch_all("SELECT booking_status, COUNT(*) as count FROM tl_bookings GROUP BY booking_status");
+$status_breakdown_array = [];
+if ($status_breakdown) {
+    foreach ($status_breakdown as $row) {
+        $status_breakdown_array[$row['booking_status']] = $row['count'];
+    }
+}
+$status_breakdown = $status_breakdown_array;
+
+// Service category performance
+$category_performance = $db->db_fetch_all("
+    SELECT sc.category_name, COUNT(s.service_id) as service_count, 
+           COUNT(b.booking_id) as booking_count,
+           COALESCE(SUM(b.total_amount), 0) as revenue
+    FROM tl_service_categories sc
+    LEFT JOIN tl_services s ON sc.category_id = s.category_id AND s.service_status = 'active'
+    LEFT JOIN tl_bookings b ON s.service_id = b.service_id AND b.booking_status IN ('confirmed', 'completed')
+    GROUP BY sc.category_id, sc.category_name
+    ORDER BY booking_count DESC
+    LIMIT 7
+");
+if (!$category_performance) {
+    $category_performance = [];
+}
+
+// Regional revenue breakdown
+$regional_revenue = $db->db_fetch_all("
+    SELECT sp.region, 
+           COUNT(DISTINCT sp.provider_id) as provider_count,
+           COUNT(b.booking_id) as booking_count,
+           COALESCE(SUM(b.total_amount), 0) as revenue
+    FROM tl_service_providers sp
+    LEFT JOIN tl_services s ON sp.provider_id = s.provider_id
+    LEFT JOIN tl_bookings b ON s.service_id = b.service_id AND b.booking_status IN ('confirmed', 'completed')
+    WHERE sp.verification_status = 'verified'
+    GROUP BY sp.region
+    ORDER BY revenue DESC
+");
+if (!$regional_revenue) {
+    $regional_revenue = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -348,6 +396,76 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
             height: 250px;
         }
 
+        .chart-container-large {
+            height: 300px;
+        }
+
+        /* Analytics Grid */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .analytics-card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .analytics-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .analytics-card-body {
+            padding: 24px;
+        }
+
+        /* Mini Stat Cards */
+        .mini-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .mini-stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .mini-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1b4332;
+            margin-bottom: 4px;
+        }
+
+        .mini-stat-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mini-stat-trend {
+            font-size: 10px;
+            color: #22c55e;
+            margin-top: 4px;
+        }
+
         /* Footer */
         .dashboard-footer {
             padding: 24px 32px;
@@ -380,6 +498,12 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
             }
             .content-row {
                 grid-template-columns: 1fr;
+            }
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            .mini-stat-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -550,14 +674,80 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
                 </div>
             </div>
 
-            <!-- Booking Trends Chart -->
+            <!-- Analytics Charts Row -->
+            <div class="analytics-grid">
+                <!-- Booking Trends Chart -->
+                <div class="analytics-card">
+                    <div class="analytics-card-header">
+                        <h3 class="analytics-card-title">Booking Trends (Last 6 Months)</h3>
+                    </div>
+                    <div class="analytics-card-body">
+                        <div class="chart-container-large">
+                            <canvas id="bookingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Trends Chart -->
+                <div class="analytics-card">
+                    <div class="analytics-card-header">
+                        <h3 class="analytics-card-title">Revenue Trends (Last 6 Months)</h3>
+                    </div>
+                    <div class="analytics-card-body">
+                        <div class="chart-container-large">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Analytics Row -->
+            <div class="analytics-grid">
+                <!-- Booking Status Breakdown -->
+                <div class="analytics-card">
+                    <div class="analytics-card-header">
+                        <h3 class="analytics-card-title">Booking Status Distribution</h3>
+                    </div>
+                    <div class="analytics-card-body">
+                        <div class="chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regional Distribution -->
+                <div class="analytics-card">
+                    <div class="analytics-card-header">
+                        <h3 class="analytics-card-title">Regional Provider Distribution</h3>
+                    </div>
+                    <div class="analytics-card-body">
+                        <div class="chart-container">
+                            <canvas id="regionalChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Category Performance -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Booking Trends (Last 6 Months)</h3>
+                    <h3 class="card-title">Service Category Performance</h3>
                 </div>
                 <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="bookingChart"></canvas>
+                    <div class="chart-container-large">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regional Revenue Breakdown -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Regional Revenue Breakdown</h3>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container-large">
+                        <canvas id="regionalRevenueChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -575,7 +765,7 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
 
     <script>
         // Booking Trends Chart
-        const ctx = document.getElementById('bookingChart').getContext('2d');
+        const bookingCtx = document.getElementById('bookingChart').getContext('2d');
         const bookingData = <?php echo json_encode($booking_trends); ?>;
 
         const labels = bookingData.map(item => {
@@ -585,9 +775,8 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
         });
 
         const bookings = bookingData.map(item => item.bookings);
-        const revenue = bookingData.map(item => parseFloat(item.revenue));
 
-        new Chart(ctx, {
+        new Chart(bookingCtx, {
             type: 'line',
             data: {
                 labels: labels.length ? labels : ['No data'],
@@ -597,7 +786,8 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
                     borderColor: '#1b4332',
                     backgroundColor: 'rgba(27, 67, 50, 0.1)',
                     tension: 0.4,
-                    fill: true
+                    fill: true,
+                    borderWidth: 2
                 }]
             },
             options: {
@@ -605,7 +795,8 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false
+                        display: true,
+                        position: 'top'
                     }
                 },
                 scales: {
@@ -613,6 +804,188 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
                         beginAtZero: true,
                         ticks: {
                             stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Revenue Trends Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenue = bookingData.map(item => parseFloat(item.revenue || 0));
+
+        new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: labels.length ? labels : ['No data'],
+                datasets: [{
+                    label: 'Revenue (GHS)',
+                    data: revenue.length ? revenue : [0],
+                    backgroundColor: 'rgba(27, 67, 50, 0.8)',
+                    borderColor: '#1b4332',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'GHS ' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Booking Status Breakdown Pie Chart
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        const statusData = <?php echo json_encode($status_breakdown); ?>;
+        
+        const statusLabels = Object.keys(statusData);
+        const statusCounts = Object.values(statusData);
+        const statusColors = {
+            'pending': '#fef3c7',
+            'confirmed': '#dbeafe',
+            'completed': '#dcfce7',
+            'cancelled': '#fee2e2',
+            'in_progress': '#f3e8ff'
+        };
+
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: statusLabels.map(s => s.charAt(0).toUpperCase() + s.slice(1)),
+                datasets: [{
+                    data: statusCounts,
+                    backgroundColor: statusLabels.map(s => statusColors[s] || '#e2e8f0'),
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Regional Provider Distribution Chart
+        const regionalCtx = document.getElementById('regionalChart').getContext('2d');
+        const regionalData = <?php echo json_encode($regional_stats); ?>;
+        
+        const regionalLabels = regionalData.map(r => r.region);
+        const regionalCounts = regionalData.map(r => parseInt(r.provider_count));
+        const regionalColors = ['#1b4332', '#2d6a4f', '#40916c', '#52b788', '#74c69d'];
+
+        new Chart(regionalCtx, {
+            type: 'pie',
+            data: {
+                labels: regionalLabels,
+                datasets: [{
+                    data: regionalCounts,
+                    backgroundColor: regionalColors.slice(0, regionalLabels.length),
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Service Category Performance Chart
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        const categoryData = <?php echo json_encode($category_performance); ?>;
+        
+        const categoryLabels = categoryData.map(c => c.category_name);
+        const categoryBookings = categoryData.map(c => parseInt(c.booking_count || 0));
+
+        new Chart(categoryCtx, {
+            type: 'bar',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    label: 'Bookings',
+                    data: categoryBookings,
+                    backgroundColor: 'rgba(27, 67, 50, 0.8)',
+                    borderColor: '#1b4332',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Regional Revenue Breakdown Chart
+        const regionalRevenueCtx = document.getElementById('regionalRevenueChart').getContext('2d');
+        const regionalRevenueData = <?php echo json_encode($regional_revenue); ?>;
+        
+        const regionalRevenueLabels = regionalRevenueData.map(r => r.region);
+        const regionalRevenueAmounts = regionalRevenueData.map(r => parseFloat(r.revenue || 0));
+
+        new Chart(regionalRevenueCtx, {
+            type: 'bar',
+            data: {
+                labels: regionalRevenueLabels,
+                datasets: [{
+                    label: 'Revenue (GHS)',
+                    data: regionalRevenueAmounts,
+                    backgroundColor: 'rgba(27, 67, 50, 0.8)',
+                    borderColor: '#1b4332',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'GHS ' + value.toLocaleString();
+                            }
                         }
                     }
                 }

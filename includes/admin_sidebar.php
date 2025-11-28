@@ -4,7 +4,7 @@
  * Reusable sidebar for all admin dashboard pages
  *
  * Usage:
- * $current_page = 'dashboard'; // or 'impact', 'users', 'providers', 'bookings', 'services', 'discounts', 'festivals'
+ * $current_page = 'dashboard'; // or 'users', 'providers', 'bookings', 'services', 'discounts', 'festivals'
  * include '../includes/admin_sidebar.php';
  */
 
@@ -40,10 +40,6 @@ if (!isset($current_page)) {
         <a href="<?php echo $base_path; ?>admin/platform_dashboard.php" class="nav-link <?php echo $current_page === 'dashboard' ? 'active' : ''; ?>">
             <i class="fas fa-th-large"></i>
             Dashboard
-        </a>
-        <a href="<?php echo $base_path; ?>admin/impact.php" class="nav-link <?php echo $current_page === 'impact' ? 'active' : ''; ?>">
-            <i class="fas fa-chart-line"></i>
-            Impact Metrics
         </a>
     </div>
 
