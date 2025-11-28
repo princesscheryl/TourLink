@@ -24,6 +24,15 @@ flush();
 
 echo "User ID: " . ($_SESSION['user_id'] ?? 'NOT SET') . "<br>";
 echo "Session Save Path: " . session_save_path() . "<br>";
+
+// Check if session file exists
+$session_file = session_save_path() . '/sess_' . session_id();
+echo "Session File Path: " . $session_file . "<br>";
+echo "Session File Exists: " . (file_exists($session_file) ? 'YES' : 'NO') . "<br>";
+if (file_exists($session_file)) {
+    echo "Session File Size: " . filesize($session_file) . " bytes<br>";
+    echo "Session File Modified: " . date('Y-m-d H:i:s', filemtime($session_file)) . "<br>";
+}
 flush();
 
 echo "<hr><h3>⚙️ Session Configuration:</h3>";

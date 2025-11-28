@@ -14,8 +14,9 @@ $is_payment_callback = (
 
 // Only check timeout if user is logged in AND not in callback
 if (isset($_SESSION['user_id']) && !$is_payment_callback) {
-    // Session timeout duration in seconds (15 minutes = 900 seconds)
-    $timeout_duration = 900;
+    // Session timeout duration in seconds (30 minutes = 1800 seconds)
+    // Increased to give users enough time during payment process
+    $timeout_duration = 1800;
 
     // Check if last activity timestamp exists
     if (isset($_SESSION['last_activity'])) {
