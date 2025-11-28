@@ -24,11 +24,13 @@ if ($check_col && $check_col->num_rows > 0) {
         FROM tl_services s
         JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
         JOIN tl_service_categories sc ON s.category_id = sc.category_id
+        JOIN tl_users u ON sp.user_id = u.user_id
         LEFT JOIN tl_reviews r ON s.service_id = r.service_id
         LEFT JOIN tl_bookings b ON s.service_id = b.service_id
         WHERE s.is_premium = 1
         AND s.service_status = 'active'
-        AND sp.account_status = 'active'
+        AND sp.verification_status = 'verified'
+        AND u.account_status = 'active'
         GROUP BY s.service_id
         ORDER BY s.date_created DESC
         LIMIT 8
@@ -43,11 +45,13 @@ if ($check_col && $check_col->num_rows > 0) {
         FROM tl_services s
         JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
         JOIN tl_service_categories sc ON s.category_id = sc.category_id
+        JOIN tl_users u ON sp.user_id = u.user_id
         LEFT JOIN tl_reviews r ON s.service_id = r.service_id
         LEFT JOIN tl_bookings b ON s.service_id = b.service_id
         WHERE s.is_premium_listing = 1
         AND s.service_status = 'active'
-        AND sp.account_status = 'active'
+        AND sp.verification_status = 'verified'
+        AND u.account_status = 'active'
         GROUP BY s.service_id
         ORDER BY s.date_created DESC
         LIMIT 8
