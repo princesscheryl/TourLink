@@ -1,11 +1,20 @@
 <?php
-session_start();
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 //for header redirection
 ob_start();
 
 // Include session timeout management (15 minute auto-logout)
-require_once __DIR__ . '/session_timeout.php';
+// Wrapped in try-catch to prevent crashes
+try {
+    require_once __DIR__ . '/session_timeout.php';
+} catch (Throwable $e) {
+    error_log("Session timeout error: " . $e->getMessage());
+    // Don't crash, just log the error
+}
 
 //funtion to check for login
 function isLoggedIn(){

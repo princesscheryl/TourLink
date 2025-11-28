@@ -4,8 +4,11 @@
  * Auto-logout users after 15 minutes of inactivity
  */
 
-// Only check timeout if user is logged in
-if (isset($_SESSION['user_id'])) {
+// Skip timeout check for payment callback pages to prevent interrupting payment verification
+$is_payment_callback = (strpos($_SERVER['REQUEST_URI'], 'paystack_callback.php') !== false);
+
+// Only check timeout if user is logged in AND not in callback
+if (isset($_SESSION['user_id']) && !$is_payment_callback) {
     // Session timeout duration in seconds (15 minutes = 900 seconds)
     $timeout_duration = 900;
 

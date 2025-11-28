@@ -5,28 +5,51 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 ini_set('log_errors', 1);
 
+// Prevent any output before headers
+ob_start();
+
+// Initialize variables
+$reference = null;
+$error_message = null;
+
 // Wrap everything in try-catch to prevent crashes
 try {
+    // Get reference FIRST before any redirects
+    $reference = isset($_GET['reference']) ? trim($_GET['reference']) : null;
+
+    if (!$reference) {
+        throw new Exception("No payment reference provided in URL");
+    }
+
     // Don't start session - core.php will do it
     require_once '../settings/core.php';
 
     // Check authentication - Allow both tourists (bookings) and providers (subscriptions)
     if (!isset($_SESSION['user_id'])) {
-        header('Location: ../login/login.php');
-        exit();
+        throw new Exception("User session not found. Session may have expired during payment. Reference: $reference");
     }
 
-    // Get reference from URL
-    $reference = isset($_GET['reference']) ? trim($_GET['reference']) : null;
+} catch (Throwable $e) {
+    // Catch ALL errors including fatal errors
+    $error_message = $e->getMessage();
+    error_log("Callback page error: " . $error_message);
 
-    if (!$reference) {
-        header('Location: my_bookings.php?error=no_reference');
-        exit();
-    }
-} catch (Exception $e) {
-    // Log error and display user-friendly message
-    error_log("Callback page error: " . $e->getMessage());
-    die("Error loading callback page: " . $e->getMessage() . "<br>Please contact support with reference: " . ($reference ?? 'N/A'));
+    // Display error on page instead of dying
+    ob_end_clean();
+    echo "<!DOCTYPE html><html><head><title>Payment Callback Error</title>";
+    echo "<style>body{font-family:monospace;padding:40px;background:#1a1a1a;color:#0f0;}</style></head><body>";
+    echo "<h1>⚠️ Payment Callback Error</h1>";
+    echo "<p><strong>Error:</strong> " . htmlspecialchars($error_message) . "</p>";
+    echo "<p><strong>Reference:</strong> " . htmlspecialchars($reference ?? 'N/A') . "</p>";
+    echo "<hr><h2>Debug Information:</h2>";
+    echo "<p><strong>Session Status:</strong> " . (session_status() === PHP_SESSION_ACTIVE ? 'Active' : 'Not Active') . "</p>";
+    echo "<p><strong>Session ID:</strong> " . session_id() . "</p>";
+    echo "<p><strong>User ID in Session:</strong> " . (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'NOT SET') . "</p>";
+    echo "<p><strong>Session Keys:</strong> " . implode(', ', array_keys($_SESSION ?? [])) . "</p>";
+    echo "<p><strong>GET Parameters:</strong> " . print_r($_GET, true) . "</p>";
+    echo "<hr><p><a href='../admin/premium_subscription.php'>← Back to Premium Subscription</a></p>";
+    echo "</body></html>";
+    exit();
 }
 ?>
 <!DOCTYPE html>
