@@ -43,87 +43,6 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
             color: #1e293b;
         }
 
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 260px;
-            height: 100vh;
-            background: #1b4332;
-            padding: 24px 0;
-            overflow-y: auto;
-            z-index: 100;
-        }
-
-        .sidebar-brand {
-            padding: 0 24px 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 24px;
-        }
-
-        .sidebar-brand a {
-            color: white;
-            text-decoration: none;
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .sidebar-brand span {
-            color: #d4a017;
-        }
-
-        .sidebar-brand small {
-            display: block;
-            color: rgba(255,255,255,0.6);
-            font-size: 11px;
-            font-weight: 400;
-            margin-top: 4px;
-        }
-
-        .nav-section {
-            padding: 0 16px;
-            margin-bottom: 24px;
-        }
-
-        .nav-section-title {
-            color: rgba(255,255,255,0.4);
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 0 8px;
-            margin-bottom: 8px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.2s;
-            margin-bottom: 2px;
-        }
-
-        .nav-link:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        .nav-link.active {
-            background: rgba(255,255,255,0.15);
-            color: white;
-        }
-
-        .nav-link i {
-            width: 18px;
-            font-size: 14px;
-        }
 
         /* Main Content */
         .main-content {
@@ -478,64 +397,12 @@ $monthly_growth = $impact['growth_rate'] ?? 0;
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-brand">
-            <a href="platform_dashboard.php">TourLink<span>.</span></a>
-            <small>Administration</small>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">Overview</div>
-            <a href="platform_dashboard.php" class="nav-link active">
-                <i class="fas fa-th-large"></i>
-                Dashboard
-            </a>
-            <a href="impact.php" class="nav-link">
-                <i class="fas fa-chart-line"></i>
-                Impact Metrics
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">Management</div>
-            <a href="users.php" class="nav-link">
-                <i class="fas fa-users"></i>
-                Users
-            </a>
-            <a href="manage_providers.php" class="nav-link">
-                <i class="fas fa-store"></i>
-                Providers
-            </a>
-            <a href="manage_bookings.php" class="nav-link">
-                <i class="fas fa-calendar-check"></i>
-                Bookings
-            </a>
-            <a href="services.php" class="nav-link">
-                <i class="fas fa-concierge-bell"></i>
-                Services
-            </a>
-            <a href="manage_discounts.php" class="nav-link">
-                <i class="fas fa-tags"></i>
-                Discount Codes
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">Content</div>
-            <a href="manage_festivals.php" class="nav-link">
-                <i class="fas fa-drum"></i>
-                Festivals
-            </a>
-        </div>
-
-        <div class="nav-section" style="margin-top: auto;">
-            <a href="platform_logout.php" class="nav-link">
-                <i class="fas fa-sign-out-alt"></i>
-                Sign Out
-            </a>
-        </div>
-    </aside>
+    <?php
+    // Set current page for sidebar highlighting
+    $current_page = 'dashboard';
+    // Include reusable admin sidebar component
+    include '../includes/admin_sidebar.php';
+    ?>
 
     <!-- Main Content -->
     <main class="main-content">

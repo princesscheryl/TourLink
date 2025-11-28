@@ -107,42 +107,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         body { font-family: 'Inter', sans-serif; background: #f5f5f5; }
         .admin-layout { display: flex; min-height: 100vh; }
 
-        .sidebar {
-            width: 260px;
-            background: #1b4332;
-            color: white;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .sidebar-header { padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-logo { font-size: 24px; font-weight: 700; color: white; text-decoration: none; }
-        .sidebar-logo span { color: #d4a017; }
-        .sidebar-nav { padding: 16px 0; }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 24px;
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            transition: all 0.2s;
-            font-size: 14px;
-        }
-
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; }
-        .nav-item i { width: 20px; }
-
-        .nav-section {
-            padding: 16px 24px 8px;
-            font-size: 11px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.4);
-            letter-spacing: 1px;
-        }
-
         .main-content { flex: 1; margin-left: 260px; padding: 32px; }
 
         .page-header {
@@ -245,26 +209,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="admin-layout">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <a href="../index_tourlink.php" class="sidebar-logo">TourLink<span>.</span></a>
-                <p style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Admin Portal</p>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="platform_dashboard.php" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
-                <div class="nav-section">Management</div>
-                <a href="manage_providers.php" class="nav-item active"><i class="fas fa-store"></i> Providers</a>
-                <a href="manage_bookings.php" class="nav-item"><i class="fas fa-calendar-check"></i> Bookings</a>
-                <a href="manage_festivals.php" class="nav-item"><i class="fas fa-drum"></i> Festivals</a>
-                <a href="manage_users.php" class="nav-item"><i class="fas fa-users"></i> Users</a>
-                <?php if (has_privilege('view_admins')): ?>
-                <div class="nav-section">Administration</div>
-                <a href="manage_admins.php" class="nav-item"><i class="fas fa-user-shield"></i> Admins</a>
-                <?php endif; ?>
-                <div class="nav-section">Account</div>
-                <a href="platform_logout.php" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </nav>
-        </aside>
+        <?php
+        // Set current page for sidebar highlighting
+        $current_page = 'providers';
+        // Include reusable admin sidebar component
+        include '../includes/admin_sidebar.php';
+        ?>
 
         <main class="main-content">
             <div class="page-header">
