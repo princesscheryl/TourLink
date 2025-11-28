@@ -21,22 +21,29 @@ if ($in_view_folder) {
     $base_path = '';
 }
 
-// Ensure user is logged in as provider
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'provider') {
+// Verify user authentication
+if (!isset($_SESSION['user_id'])) {
     header('Location: ' . $base_path . 'login/login.php');
     exit();
 }
 
 // Get provider data if not already loaded
+// Validates user is a provider by checking for provider record in database
 if (!isset($provider)) {
     require_once __DIR__ . '/../classes/service_provider_class.php';
     $provider_class = new ServiceProvider();
     $provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
     
-    // Ensure provider exists
+    // Redirect if no provider record exists
+    // This ensures only users with provider accounts can access provider pages
     if (!$provider) {
         header('Location: ' . $base_path . 'login/login.php');
         exit();
+    }
+    
+    // Set user_type in session if not already set for consistency
+    if (!isset($_SESSION['user_type'])) {
+        $_SESSION['user_type'] = 'provider';
     }
 }
 

@@ -3,6 +3,9 @@
  * Admin Bookings Management Page
  * Displays all platform bookings with statistics and filtering capabilities
  */
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'includes_platform/auth_check.php';
 require_once '../settings/db_class.php';
 
@@ -16,7 +19,7 @@ $db->db_connect();
 // Retrieve all bookings with related user and provider information
 // Uses tourist_id to join with users table as bookings reference tourists, not general users
 $bookings = $db->db_fetch_all("
-    SELECT b.*, s.service_name, s.service_price,
+    SELECT b.*, s.service_title as service_name, s.base_price as service_price,
            u.first_name, u.last_name, u.email as user_email,
            sp.business_name
     FROM tl_bookings b

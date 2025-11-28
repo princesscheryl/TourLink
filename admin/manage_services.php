@@ -3,6 +3,9 @@
  * Provider Services Management Page
  * Allows service providers to view, filter, and manage their service listings
  */
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once '../settings/core.php';
 require_once '../classes/service_provider_class.php';
 require_once '../classes/service_class.php';
