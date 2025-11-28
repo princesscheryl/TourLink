@@ -466,13 +466,13 @@ if ($users) {
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            z-index: 2000;
             align-items: center;
             justify-content: center;
         }
 
         .modal-overlay.active {
-            display: flex;
+            display: flex !important;
         }
 
         .modal {
@@ -483,6 +483,8 @@ if ($users) {
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2001;
         }
 
         .modal-header {
@@ -526,6 +528,7 @@ if ($users) {
 
         .modal-body {
             padding: 24px;
+            min-height: 100px;
         }
 
         .user-detail-section {
@@ -849,26 +852,49 @@ if ($users) {
 
         // View user details
         function viewUser(userId) {
+            console.log('viewUser called with ID:', userId);
             const modal = document.getElementById('userModal');
             const modalBody = document.getElementById('modalBody');
+            
+            if (!modal || !modalBody) {
+                console.error('Modal elements not found');
+                alert('Modal elements not found. Check console.');
+                return;
+            }
             
             // Show modal with loading state
             modal.classList.add('active');
             modalBody.innerHTML = '<div class="modal-loading">Loading user details...</div>';
+            console.log('Modal shown, fetching data...');
             
             // Fetch user details via AJAX
             fetch(`get_user_details.php?id=${userId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        displayUserDetails(data.user);
-                    } else {
-                        modalBody.innerHTML = `<div class="modal-error">${data.message || 'Failed to load user details'}</div>`;
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    console.log('Response text:', text);
+                    try {
+                        const data = JSON.parse(text);
+                        console.log('Parsed data:', data);
+                        if (data.success) {
+                            displayUserDetails(data.user);
+                        } else {
+                            modalBody.innerHTML = `<div class="modal-error">${data.message || 'Failed to load user details'}</div>`;
+                        }
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        console.error('Response text:', text);
+                        modalBody.innerHTML = '<div class="modal-error">Invalid response from server. Check console for details.</div>';
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    modalBody.innerHTML = '<div class="modal-error">An error occurred while loading user details.</div>';
+                    console.error('Fetch error:', error);
+                    modalBody.innerHTML = `<div class="modal-error">Error: ${error.message}. Check browser console for details.</div>`;
                 });
         }
 

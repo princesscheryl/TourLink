@@ -3,6 +3,11 @@
  * Get User Details Endpoint
  * Returns user details as JSON for the admin modal
  */
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Don't display errors in JSON response
+ini_set('log_errors', 1);
+
 require_once 'includes_platform/auth_check.php';
 require_once '../settings/db_class.php';
 
@@ -54,9 +59,12 @@ if (!$user) {
     exit();
 }
 
+// Clean up any potential output before JSON
+ob_clean();
+
 // Return user data
 echo json_encode([
     'success' => true,
     'user' => $user
-]);
+], JSON_PRETTY_PRINT);
 
