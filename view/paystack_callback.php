@@ -5,6 +5,24 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 ini_set('log_errors', 1);
 
+// Catch FATAL errors that occur before try-catch
+register_shutdown_function(function() {
+    $error = error_get_last();
+    if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        ob_end_clean();
+        echo "<!DOCTYPE html><html><head><title>Fatal Error</title>";
+        echo "<style>body{font-family:monospace;padding:40px;background:#1a1a1a;color:#ff6b6b;}</style></head><body>";
+        echo "<h1>🔴 FATAL PHP ERROR</h1>";
+        echo "<p><strong>Type:</strong> " . $error['type'] . "</p>";
+        echo "<p><strong>Message:</strong> " . htmlspecialchars($error['message']) . "</p>";
+        echo "<p><strong>File:</strong> " . htmlspecialchars($error['file']) . "</p>";
+        echo "<p><strong>Line:</strong> " . $error['line'] . "</p>";
+        echo "<hr><p><strong>Reference:</strong> " . htmlspecialchars($_GET['reference'] ?? 'N/A') . "</p>";
+        echo "<p><a href='../admin/premium_subscription.php'>← Back to Premium Subscription</a></p>";
+        echo "</body></html>";
+    }
+});
+
 // Prevent any output before headers
 ob_start();
 
