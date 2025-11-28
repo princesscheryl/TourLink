@@ -1,4 +1,9 @@
 <?php
+// Enable error display for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+
 require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
 require_once '../classes/service_provider_class.php';
@@ -226,26 +231,49 @@ if (empty($service_title) || empty($service_description) || $category_id <= 0 ||
 }
 
 // Add service to database
-$service_id = add_service_ctr(
-    $provider_id,
-    $category_id,
-    $service_title,
-    $service_description,
-    $base_price,
-    $pricing_unit,
-    $service_location,
-    $available_regions,
-    $max_capacity,
-    $service_images,
-    $festival_id
-);
+try {
+    $service_id = add_service_ctr(
+        $provider_id,
+        $category_id,
+        $service_title,
+        $service_description,
+        $base_price,
+        $pricing_unit,
+        $service_location,
+        $available_regions,
+        $max_capacity,
+        $service_images,
+        $festival_id
+    );
 
-if ($service_id) {
-    $_SESSION['success'] = "Service added successfully! It's now live and visible to tourists.";
-    header("Location: ../admin/manage_services.php");
-} else {
-    $_SESSION['error'] = "Failed to add service. Please try again.";
-    header("Location: ../admin/add_service.php");
+    if ($service_id) {
+        $_SESSION['success'] = "Service added successfully! It's now live and visible to tourists.";
+        header("Location: ../admin/manage_services.php");
+    } else {
+        $_SESSION['error'] = "Failed to add service. Please try again.";
+        header("Location: ../admin/add_service.php");
+    }
+} catch (Throwable $e) {
+    // Display detailed error instead of blank page
+    echo "<!DOCTYPE html><html><head><title>Service Creation Error</title>";
+    echo "<style>body{font-family:monospace;padding:40px;background:#1a1a1a;color:#ff6b6b;}</style></head><body>";
+    echo "<h1>🔴 Error Creating Service</h1>";
+    echo "<p><strong>Error Message:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . "</p>";
+    echo "<p><strong>Line:</strong> " . $e->getLine() . "</p>";
+    echo "<hr><h3>Form Data Received:</h3>";
+    echo "<pre>";
+    echo "Provider ID: $provider_id\n";
+    echo "Category ID: $category_id\n";
+    echo "Title: $service_title\n";
+    echo "Description: " . substr($service_description, 0, 100) . "...\n";
+    echo "Price: $base_price\n";
+    echo "Location: $service_location\n";
+    echo "Images: " . ($service_images ? 'YES' : 'NO') . "\n";
+    echo "</pre>";
+    echo "<hr><p><a href='../admin/add_service.php'>← Back to Add Service</a></p>";
+    echo "</body></html>";
+    exit();
 }
 exit();
 ?>
