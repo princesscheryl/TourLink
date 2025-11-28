@@ -457,6 +457,130 @@ if ($users) {
             background: #bfdbfe;
         }
 
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .user-detail-section {
+            margin-bottom: 24px;
+        }
+
+        .user-detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            width: 140px;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            color: #1e293b;
+            flex: 1;
+        }
+
+        .modal-loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .modal-error {
+            text-align: center;
+            padding: 40px;
+            color: #ef4444;
+        }
+
         @media (max-width: 1200px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -681,6 +805,19 @@ if ($users) {
         </div>
     </main>
 
+    <!-- User Details Modal -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">User Details</h2>
+                <button class="modal-close" onclick="closeUserModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="modal-loading">Loading user details...</div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', filterTable);
@@ -712,8 +849,141 @@ if ($users) {
 
         // View user details
         function viewUser(userId) {
-            // Navigate to user detail page or show modal
-            alert('User details view coming soon for user ID: ' + userId);
+            const modal = document.getElementById('userModal');
+            const modalBody = document.getElementById('modalBody');
+            
+            // Show modal with loading state
+            modal.classList.add('active');
+            modalBody.innerHTML = '<div class="modal-loading">Loading user details...</div>';
+            
+            // Fetch user details via AJAX
+            fetch(`get_user_details.php?id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayUserDetails(data.user);
+                    } else {
+                        modalBody.innerHTML = `<div class="modal-error">${data.message || 'Failed to load user details'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    modalBody.innerHTML = '<div class="modal-error">An error occurred while loading user details.</div>';
+                });
+        }
+
+        function displayUserDetails(user) {
+            const modalBody = document.getElementById('modalBody');
+            
+            let html = `
+                <div class="user-detail-section">
+                    <div class="section-title">Personal Information</div>
+                    <div class="detail-row">
+                        <div class="detail-label">Name</div>
+                        <div class="detail-value">${escapeHtml(user.first_name)} ${escapeHtml(user.last_name)}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value">${escapeHtml(user.email)}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Phone</div>
+                        <div class="detail-value">${escapeHtml(user.phone || 'N/A')}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">User Type</div>
+                        <div class="detail-value">
+                            <span class="badge badge-${user.user_type}">${escapeHtml(user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1))}</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Account Status</div>
+                        <div class="detail-value">
+                            <span class="badge badge-${user.account_status === 'active' ? 'verified' : 'pending'}">${escapeHtml(user.account_status || 'N/A')}</span>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Email Verified</div>
+                        <div class="detail-value">${user.email_verified ? 'Yes' : 'No'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Date Registered</div>
+                        <div class="detail-value">${formatDate(user.date_registered)}</div>
+                    </div>
+                    ${user.last_login ? `
+                    <div class="detail-row">
+                        <div class="detail-label">Last Login</div>
+                        <div class="detail-value">${formatDate(user.last_login)}</div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // Add provider details if user is a provider
+            if (user.user_type === 'provider' && user.business_name) {
+                html += `
+                    <div class="user-detail-section">
+                        <div class="section-title">Provider Information</div>
+                        <div class="detail-row">
+                            <div class="detail-label">Business Name</div>
+                            <div class="detail-value">${escapeHtml(user.business_name || 'N/A')}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Verification Status</div>
+                            <div class="detail-value">
+                                <span class="badge badge-${user.verification_status === 'verified' ? 'verified' : user.verification_status === 'pending' ? 'pending' : 'rejected'}">
+                                    ${escapeHtml((user.verification_status || 'pending').charAt(0).toUpperCase() + (user.verification_status || 'pending').slice(1))}
+                                </span>
+                            </div>
+                        </div>
+                        ${user.total_earnings ? `
+                        <div class="detail-row">
+                            <div class="detail-label">Total Earnings</div>
+                            <div class="detail-value">GHS ${parseFloat(user.total_earnings).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                        ` : ''}
+                        ${user.region ? `
+                        <div class="detail-row">
+                            <div class="detail-label">Region</div>
+                            <div class="detail-value">${escapeHtml(user.region)}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            modalBody.innerHTML = html;
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('userModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUserModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeUserModal();
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + 
+                   ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
     </script>
 </body>
