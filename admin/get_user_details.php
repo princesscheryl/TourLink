@@ -6,11 +6,6 @@
 // Start output buffering early to catch any unwanted output
 ob_start();
 
-// Enable error reporting
-error_reporting(E_ALL);
-ini_set('display_errors', 0);
-ini_set('log_errors', 1);
-
 try {
     // Check if session is already started
     if (session_status() === PHP_SESSION_NONE) {
@@ -117,9 +112,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Server error: ' . $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine()
+        'message' => 'Server error occurred'
     ]);
     exit();
 } catch (Error $e) {
@@ -128,9 +121,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Fatal error: ' . $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine()
+        'message' => 'Server error occurred'
     ]);
     exit();
 }

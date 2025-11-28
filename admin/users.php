@@ -1,8 +1,4 @@
 <?php
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 require_once 'includes_platform/auth_check.php';
 require_once '../settings/db_class.php';
 
@@ -485,8 +481,6 @@ if ($users) {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 2001;
-            display: block;
-            visibility: visible;
         }
 
         .modal-header {
@@ -854,64 +848,42 @@ if ($users) {
 
         // View user details
         function viewUser(userId) {
-            console.log('viewUser called with ID:', userId);
             const modal = document.getElementById('userModal');
             const modalBody = document.getElementById('modalBody');
             
             if (!modal || !modalBody) {
-                console.error('Modal elements not found');
-                alert('Modal elements not found. Check console.');
                 return;
             }
             
             // Show modal with loading state
             modal.classList.add('active');
             modalBody.innerHTML = '<div class="modal-loading">Loading user details...</div>';
-            console.log('Modal shown, fetching data...');
             
             // Fetch user details via AJAX
             fetch(`get_user_details.php?id=${userId}`)
                 .then(response => {
-                    console.log('Response status:', response.status);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return response.text();
+                    return response.json();
                 })
-                .then(text => {
-                    console.log('Response text:', text);
-                    try {
-                        const data = JSON.parse(text);
-                        console.log('Parsed data:', data);
-                        if (data.success) {
-                            displayUserDetails(data.user);
-                        } else {
-                            modalBody.innerHTML = `<div class="modal-error">${data.message || 'Failed to load user details'}</div>`;
-                        }
-                    } catch (e) {
-                        console.error('JSON parse error:', e);
-                        console.error('Response text:', text);
-                        modalBody.innerHTML = '<div class="modal-error">Invalid response from server. Check console for details.</div>';
+                .then(data => {
+                    if (data.success) {
+                        displayUserDetails(data.user);
+                    } else {
+                        modalBody.innerHTML = `<div class="modal-error">${data.message || 'Failed to load user details'}</div>`;
                     }
                 })
                 .catch(error => {
-                    console.error('Fetch error:', error);
-                    modalBody.innerHTML = `<div class="modal-error">Error: ${error.message}. Check browser console for details.</div>`;
+                    modalBody.innerHTML = `<div class="modal-error">Error loading user details. Please try again.</div>`;
                 });
         }
 
         function displayUserDetails(user) {
-            console.log('displayUserDetails called with user:', user);
             const modalBody = document.getElementById('modalBody');
             
-            if (!modalBody) {
-                console.error('modalBody not found');
-                return;
-            }
-            
-            if (!user) {
-                console.error('User data is null or undefined');
-                modalBody.innerHTML = '<div class="modal-error">User data is missing</div>';
+            if (!modalBody || !user) {
+                modalBody.innerHTML = '<div class="modal-error">Unable to display user details</div>';
                 return;
             }
             
@@ -992,15 +964,7 @@ if ($users) {
                 `;
             }
             
-            console.log('Setting modal body HTML, length:', html.length);
             modalBody.innerHTML = html;
-            console.log('Modal body updated');
-            
-            // Force a reflow to ensure visibility
-            const modal = document.getElementById('userModal');
-            if (modal) {
-                modal.style.display = 'flex';
-            }
         }
 
         function closeUserModal() {
