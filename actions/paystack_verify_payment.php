@@ -430,36 +430,10 @@ function process_premium_subscription_verification($reference) {
     $db = new db_connection();
     $db->db_connect();
 
-    // Check which reference column exists
-    $has_payment_ref = false;
-    $has_transaction_ref = false;
-    $check_cols = $db->db->query("SHOW COLUMNS FROM tl_subscription_payments");
-    if ($check_cols) {
-        while ($col = $check_cols->fetch_assoc()) {
-            if ($col['Field'] === 'payment_reference') $has_payment_ref = true;
-            if ($col['Field'] === 'transaction_reference') $has_transaction_ref = true;
-        }
-    }
-
-    $ref_column = 'payment_reference';
-    if (!$has_payment_ref && $has_transaction_ref) {
-        $ref_column = 'transaction_reference';
-    }
-
-    // Build query with available columns
-    $select_columns = "provider_id, amount";
-    if ($db->db->query("SHOW COLUMNS FROM tl_subscription_payments LIKE 'start_date'")->num_rows > 0) {
-        $select_columns .= ", start_date";
-    }
-    if ($db->db->query("SHOW COLUMNS FROM tl_subscription_payments LIKE 'end_date'")->num_rows > 0) {
-        $select_columns .= ", end_date";
-    }
-    $select_columns .= ", $ref_column";
-
     $pending_stmt = $db->db->prepare("
-        SELECT $select_columns
+        SELECT provider_id, amount, start_date, end_date, payment_reference
         FROM tl_subscription_payments
-        WHERE $ref_column = ?
+        WHERE payment_reference = ?
         AND payment_status = 'pending'
         LIMIT 1
     ");
@@ -476,9 +450,9 @@ function process_premium_subscription_verification($reference) {
             $subscription_data = [
                 'provider_id' => $row['provider_id'],
                 'amount' => floatval($row['amount']),
-                'start_date' => $row['start_date'] ?? date('Y-m-d'),
-                'end_date' => $row['end_date'] ?? date('Y-m-d', strtotime('+30 days')),
-                'reference' => $row[$ref_column]
+                'start_date' => $row['start_date'],
+                'end_date' => $row['end_date'],
+                'reference' => $row['payment_reference']
             ];
             error_log("Subscription data found in DATABASE: " . json_encode($subscription_data));
         }
@@ -598,33 +572,20 @@ function process_premium_subscription_verification($reference) {
         error_log("Premium listing created with ID: $premium_listing_id");
 
         // UPDATE the existing pending payment record to mark as completed
-        // Check if premium_listing_id column exists
-        $check_col = $conn->query("SHOW COLUMNS FROM tl_subscription_payments LIKE 'premium_listing_id'");
+        $update_payment = $conn->prepare("
+            UPDATE tl_subscription_payments
+            SET payment_status = 'paid',
+                premium_listing_id = ?,
+                payment_date = NOW()
+            WHERE payment_reference = ?
+            AND payment_status = 'pending'
+        ");
 
-        if ($check_col->num_rows > 0) {
-            // Column exists - include it in update
-            $update_payment = $conn->prepare("
-                UPDATE tl_subscription_payments
-                SET payment_status = 'completed',
-                    premium_listing_id = ?,
-                    payment_date = NOW(),
-                    updated_at = NOW()
-                WHERE payment_reference = ?
-                AND payment_status = 'pending'
-            ");
-            $update_payment->bind_param("is", $premium_listing_id, $reference);
-        } else {
-            // Column doesn't exist - update without it
-            $update_payment = $conn->prepare("
-                UPDATE tl_subscription_payments
-                SET payment_status = 'completed',
-                    payment_date = NOW(),
-                    updated_at = NOW()
-                WHERE payment_reference = ?
-                AND payment_status = 'pending'
-            ");
-            $update_payment->bind_param("s", $reference);
+        if (!$update_payment) {
+            throw new Exception("Failed to prepare update statement: " . $conn->error);
         }
+
+        $update_payment->bind_param("is", $premium_listing_id, $reference);
 
         if (!$update_payment->execute()) {
             throw new Exception("Failed to update subscription payment record: " . $update_payment->error);
