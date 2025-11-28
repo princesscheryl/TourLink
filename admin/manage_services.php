@@ -3,12 +3,25 @@
  * Provider Services Management Page
  * Allows service providers to view, filter, and manage their service listings
  */
+// Enable error reporting at the very top before any includes
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('log_errors', 1);
 
-require_once '../settings/core.php';
-require_once '../classes/service_provider_class.php';
-require_once '../classes/service_class.php';
+// Start output buffering to catch any errors
+ob_start();
+
+try {
+    require_once '../settings/core.php';
+    require_once '../classes/service_provider_class.php';
+    require_once '../classes/service_class.php';
+} catch (Exception $e) {
+    ob_clean();
+    die("Error loading required files: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+} catch (Error $e) {
+    ob_clean();
+    die("Fatal error: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+}
 
 // Verify user authentication before proceeding
 if (!isset($_SESSION['user_id'])) {
@@ -16,21 +29,36 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Validate that the logged-in user has a provider account
-// Providers must have a record in tl_service_providers table
-$provider_class = new ServiceProvider();
-$provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
+try {
+    // Validate that the logged-in user has a provider account
+    // Providers must have a record in tl_service_providers table
+    $provider_class = new ServiceProvider();
+    $provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
 
-if (!$provider) {
-    // Redirect to provider registration if account doesn't exist
-    header("Location: become_provider.php");
-    exit();
+    if (!$provider) {
+        // Redirect to provider registration if account doesn't exist
+        header("Location: become_provider.php");
+        exit();
+    }
+
+    // Retrieve all services associated with this provider
+    // Services are linked via provider_id foreign key
+    $service_class = new Service();
+    $services = $service_class->get_services_by_provider($provider['provider_id']);
+
+    // Handle query failure or empty result set
+    if ($services === false) {
+        $services = [];
+    }
+} catch (Exception $e) {
+    // Clear any output and show error
+    ob_clean();
+    die("Error loading services: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+} catch (Error $e) {
+    // Clear any output and show error
+    ob_clean();
+    die("Fatal error loading services: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
 }
-
-// Retrieve all services associated with this provider
-// Services are linked via provider_id foreign key
-$service_class = new Service();
-$services = $service_class->get_services_by_provider($provider['provider_id']);
 
 // Categorize services by approval status for dashboard statistics
 // Status values: active (approved), pending_approval (awaiting review), inactive (rejected/disabled)
@@ -923,3 +951,7 @@ $current_page = 'services';
     </script>
 </body>
 </html>
+<?php
+// End output buffering and flush
+ob_end_flush();
+?>

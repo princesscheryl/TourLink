@@ -3,32 +3,62 @@
  * Admin Bookings Management Page
  * Displays all platform bookings with statistics and filtering capabilities
  */
+// Enable error reporting at the very top before any includes
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('log_errors', 1);
 
-require_once 'includes_platform/auth_check.php';
-require_once '../settings/db_class.php';
+// Start output buffering to catch any errors
+ob_start();
 
-// Verify admin has permission to view bookings
-require_privilege('view_bookings');
+try {
+    require_once 'includes_platform/auth_check.php';
+    require_once '../settings/db_class.php';
+    
+    // Verify admin has permission to view bookings
+    require_privilege('view_bookings');
+} catch (Exception $e) {
+    ob_clean();
+    die("Error loading required files: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+} catch (Error $e) {
+    ob_clean();
+    die("Fatal error: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+}
 
-// Initialize database connection
-$db = new db_connection();
-$db->db_connect();
+try {
+    // Initialize database connection
+    $db = new db_connection();
+    if (!$db->db_connect()) {
+        throw new Exception("Database connection failed. Please contact the administrator.");
+    }
 
-// Retrieve all bookings with related user and provider information
-// Uses tourist_id to join with users table as bookings reference tourists, not general users
-$bookings = $db->db_fetch_all("
-    SELECT b.*, s.service_title as service_name, s.base_price as service_price,
-           u.first_name, u.last_name, u.email as user_email,
-           sp.business_name
-    FROM tl_bookings b
-    JOIN tl_services s ON b.service_id = s.service_id
-    JOIN tl_users u ON b.tourist_id = u.user_id
-    JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
-    ORDER BY b.booking_date DESC
-    LIMIT 100
-");
+    // Retrieve all bookings with related user and provider information
+    // Uses tourist_id to join with users table as bookings reference tourists, not general users
+    $bookings = $db->db_fetch_all("
+        SELECT b.*, s.service_title as service_name, s.base_price as service_price,
+               u.first_name, u.last_name, u.email as user_email,
+               sp.business_name
+        FROM tl_bookings b
+        JOIN tl_services s ON b.service_id = s.service_id
+        JOIN tl_users u ON b.tourist_id = u.user_id
+        JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
+        ORDER BY b.booking_date DESC
+        LIMIT 100
+    ");
+
+    // Handle query failure gracefully
+    if ($bookings === false) {
+        $bookings = [];
+    }
+} catch (Exception $e) {
+    // Clear any output and show error
+    ob_clean();
+    die("Error loading bookings: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+} catch (Error $e) {
+    // Clear any output and show error
+    ob_clean();
+    die("Fatal error loading bookings: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+}
 
 // Calculate booking statistics by status
 // Aggregates revenue and counts bookings in different states for dashboard display
@@ -292,3 +322,7 @@ if ($bookings) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<?php
+// End output buffering and flush
+ob_end_flush();
+?>
