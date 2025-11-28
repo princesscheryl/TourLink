@@ -2,48 +2,52 @@
 require_once 'includes_platform/auth_check.php';
 require_privilege('view_dashboard');
 
-// Sample impact metrics data
+// Sample impact metrics data for startup phase
 // In production, this would be calculated from database queries
+// Values reflect a startup in early growth phase (3-6 months old)
 $impact_metrics = [
-    'jobs_created' => 127,
-    'provider_income_total' => 456780,
-    'total_bookings' => 1843,
-    'active_tourists' => 2156,
-    'avg_provider_income' => 6420,
-    'platform_revenue' => 68517,
-    'success_rate' => 94.2,
-    'repeat_booking_rate' => 37.8
+    'jobs_created' => 18,
+    'provider_income_total' => 34250,
+    'total_bookings' => 127,
+    'active_tourists' => 89,
+    'avg_provider_income' => 1903,
+    'platform_revenue' => 5120,
+    'success_rate' => 87.4,
+    'repeat_booking_rate' => 24.3
 ];
 
 // Regional impact breakdown
 // TourLink operates in 4 regions: Greater Accra, Central, Ashanti, and Northern
+// Values reflect startup phase with Greater Accra as primary market
 $regional_impact = [
-    ['region' => 'Greater Accra', 'providers' => 45, 'bookings' => 687, 'revenue' => 187650, 'growth' => 12.5],
-    ['region' => 'Ashanti', 'providers' => 38, 'bookings' => 512, 'revenue' => 142340, 'growth' => 18.3],
-    ['region' => 'Central', 'providers' => 22, 'bookings' => 298, 'revenue' => 78920, 'growth' => 8.7],
-    ['region' => 'Northern', 'providers' => 18, 'bookings' => 186, 'revenue' => 52430, 'growth' => 15.2]
+    ['region' => 'Greater Accra', 'providers' => 12, 'bookings' => 68, 'revenue' => 18750, 'growth' => 28.5],
+    ['region' => 'Ashanti', 'providers' => 4, 'bookings' => 32, 'revenue' => 8920, 'growth' => 15.3],
+    ['region' => 'Central', 'providers' => 2, 'bookings' => 18, 'revenue' => 4890, 'growth' => 12.7],
+    ['region' => 'Northern', 'providers' => 1, 'bookings' => 9, 'revenue' => 1690, 'growth' => 8.2]
 ];
 
 // Monthly growth data for last 6 months
+// Reflects startup trajectory from launch to current month
 $monthly_growth = [
-    ['month' => 'Jun', 'bookings' => 245, 'revenue' => 68420, 'new_providers' => 8],
-    ['month' => 'Jul', 'bookings' => 278, 'revenue' => 74850, 'new_providers' => 12],
-    ['month' => 'Aug', 'bookings' => 312, 'revenue' => 89230, 'new_providers' => 15],
-    ['month' => 'Sep', 'bookings' => 289, 'revenue' => 81340, 'new_providers' => 9],
-    ['month' => 'Oct', 'bookings' => 334, 'revenue' => 95680, 'new_providers' => 18],
-    ['month' => 'Nov', 'bookings' => 385, 'revenue' => 107260, 'new_providers' => 21]
+    ['month' => 'Jun', 'bookings' => 8, 'revenue' => 1240, 'new_providers' => 2],
+    ['month' => 'Jul', 'bookings' => 15, 'revenue' => 2180, 'new_providers' => 3],
+    ['month' => 'Aug', 'bookings' => 22, 'revenue' => 3120, 'new_providers' => 4],
+    ['month' => 'Sep', 'bookings' => 28, 'revenue' => 3890, 'new_providers' => 3],
+    ['month' => 'Oct', 'bookings' => 35, 'revenue' => 4560, 'new_providers' => 5],
+    ['month' => 'Nov', 'bookings' => 42, 'revenue' => 5120, 'new_providers' => 4]
 ];
 
 // Service category performance
 // Categories match the service categories defined in tl_service_categories table
+// Values reflect startup phase with Tour Guides and Drivers as most popular
 $category_performance = [
-    ['category' => 'Tour Guides', 'providers' => 52, 'bookings' => 734, 'avg_rating' => 4.7],
-    ['category' => 'Drivers & Transportation', 'providers' => 38, 'bookings' => 521, 'avg_rating' => 4.5],
-    ['category' => 'Catering Services', 'providers' => 28, 'bookings' => 312, 'avg_rating' => 4.6],
-    ['category' => 'Translation & Interpretation', 'providers' => 15, 'bookings' => 187, 'avg_rating' => 4.8],
-    ['category' => 'Cultural Performances', 'providers' => 22, 'bookings' => 245, 'avg_rating' => 4.9],
-    ['category' => 'Artisans & Crafts', 'providers' => 25, 'bookings' => 198, 'avg_rating' => 4.7],
-    ['category' => 'Accommodation', 'providers' => 12, 'bookings' => 89, 'avg_rating' => 4.6]
+    ['category' => 'Tour Guides', 'providers' => 8, 'bookings' => 52, 'avg_rating' => 4.6],
+    ['category' => 'Drivers & Transportation', 'providers' => 5, 'bookings' => 38, 'avg_rating' => 4.5],
+    ['category' => 'Catering Services', 'providers' => 2, 'bookings' => 15, 'avg_rating' => 4.4],
+    ['category' => 'Translation & Interpretation', 'providers' => 1, 'bookings' => 8, 'avg_rating' => 4.7],
+    ['category' => 'Cultural Performances', 'providers' => 1, 'bookings' => 7, 'avg_rating' => 4.8],
+    ['category' => 'Artisans & Crafts', 'providers' => 1, 'bookings' => 5, 'avg_rating' => 4.6],
+    ['category' => 'Accommodation', 'providers' => 1, 'bookings' => 2, 'avg_rating' => 4.5]
 ];
 ?>
 <!DOCTYPE html>
@@ -218,7 +222,7 @@ $category_performance = [
                     <div class="impact-value"><?php echo number_format($impact_metrics['jobs_created']); ?></div>
                     <div class="impact-label">Jobs Created</div>
                     <div class="impact-trend positive">
-                        <i class="fas fa-arrow-up"></i> 23% this quarter
+                        <i class="fas fa-arrow-up"></i> 125% this quarter
                     </div>
                 </div>
                 <div class="impact-card">
@@ -228,7 +232,7 @@ $category_performance = [
                     <div class="impact-value">GH₵<?php echo number_format($impact_metrics['provider_income_total']); ?></div>
                     <div class="impact-label">Provider Income Generated</div>
                     <div class="impact-trend positive">
-                        <i class="fas fa-arrow-up"></i> 18% from last month
+                        <i class="fas fa-arrow-up"></i> 32% from last month
                     </div>
                 </div>
                 <div class="impact-card">
@@ -238,7 +242,7 @@ $category_performance = [
                     <div class="impact-value"><?php echo number_format($impact_metrics['total_bookings']); ?></div>
                     <div class="impact-label">Total Bookings Completed</div>
                     <div class="impact-trend positive">
-                        <i class="fas fa-arrow-up"></i> 15% growth rate
+                        <i class="fas fa-arrow-up"></i> 50% growth rate
                     </div>
                 </div>
                 <div class="impact-card">
@@ -248,7 +252,7 @@ $category_performance = [
                     <div class="impact-value"><?php echo number_format($impact_metrics['active_tourists']); ?></div>
                     <div class="impact-label">Active Tourists</div>
                     <div class="impact-trend positive">
-                        <i class="fas fa-arrow-up"></i> 27% engagement rate
+                        <i class="fas fa-arrow-up"></i> 18% engagement rate
                     </div>
                 </div>
             </div>
@@ -263,7 +267,7 @@ $category_performance = [
                 </div>
                 <div class="growth-chart">
                     <?php foreach ($monthly_growth as $month):
-                        $maxBookings = 400;
+                        $maxBookings = 50;
                         $heightPercent = ($month['bookings'] / $maxBookings) * 100;
                     ?>
                     <div style="flex: 1; text-align: center;">
