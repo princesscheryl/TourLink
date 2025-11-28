@@ -22,6 +22,9 @@ flush();
 echo "<hr>If you see this, PHP is working. Now testing file includes...<br>";
 flush();
 
+echo "Session BEFORE core.php - ID: " . session_id() . ", User: " . ($_SESSION['user_id'] ?? 'NOT SET') . "<br>";
+flush();
+
 try {
     require_once '../settings/core.php';
     echo "✅ core.php loaded<br>";
@@ -30,5 +33,11 @@ try {
 }
 flush();
 
-echo "<hr>Done. Check if all lines above are visible.";
+echo "Session AFTER core.php - ID: " . session_id() . ", User: " . ($_SESSION['user_id'] ?? 'NOT SET') . "<br>";
+flush();
+
+echo "<hr><h3>Final Session Data:</h3>";
+echo "<pre>" . print_r($_SESSION, true) . "</pre>";
+
+echo "<hr>Done. If session is still empty after core.php, the issue is in session_timeout.php";
 ?>

@@ -5,7 +5,12 @@
  */
 
 // Skip timeout check for payment callback pages to prevent interrupting payment verification
-$is_payment_callback = (strpos($_SERVER['REQUEST_URI'], 'paystack_callback.php') !== false);
+// Check for any paystack callback file (including test/debug versions)
+$is_payment_callback = (
+    strpos($_SERVER['REQUEST_URI'], 'paystack_callback') !== false ||
+    strpos($_SERVER['REQUEST_URI'], 'paystack_verify_payment') !== false ||
+    strpos($_SERVER['REQUEST_URI'], 'test_callback') !== false
+);
 
 // Only check timeout if user is logged in AND not in callback
 if (isset($_SESSION['user_id']) && !$is_payment_callback) {
