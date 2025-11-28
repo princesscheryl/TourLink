@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'includes_platform/auth_check.php';
 require_once '../settings/db_class.php';
 

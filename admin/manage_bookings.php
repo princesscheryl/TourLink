@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'includes_platform/auth_check.php';
 require_once '../settings/db_class.php';
 
@@ -16,7 +20,7 @@ $bookings = $db->db_fetch_all("
     JOIN tl_services s ON b.service_id = s.service_id
     JOIN tl_users u ON b.user_id = u.user_id
     JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
-    ORDER BY b.booking_date DESC
+    ORDER BY b.created_at DESC
     LIMIT 100
 ");
 
@@ -28,12 +32,13 @@ $cancelled_count = 0;
 
 if ($bookings) {
     foreach ($bookings as $b) {
-        if ($b['status'] === 'completed') {
-            $total_revenue += $b['total_amount'];
+        $status = $b['booking_status'] ?? 'unknown';
+        if ($status === 'completed') {
+            $total_revenue += $b['total_amount'] ?? 0;
             $completed_count++;
-        } elseif ($b['status'] === 'pending') {
+        } elseif ($status === 'pending') {
             $pending_count++;
-        } elseif ($b['status'] === 'cancelled') {
+        } elseif ($status === 'cancelled') {
             $cancelled_count++;
         }
     }
@@ -247,11 +252,12 @@ if ($bookings) {
                             </td>
                             <td><?php echo htmlspecialchars($booking['service_name']); ?></td>
                             <td><?php echo htmlspecialchars($booking['business_name']); ?></td>
-                            <td><?php echo date('M d, Y', strtotime($booking['booking_date'])); ?></td>
+                            <td><?php echo date('M d, Y', strtotime($booking['created_at'] ?? $booking['booking_date'])); ?></td>
                             <td class="amount">GH&#8373; <?php echo number_format($booking['total_amount'], 2); ?></td>
                             <td>
-                                <span class="badge badge-<?php echo $booking['status']; ?>">
-                                    <?php echo ucfirst($booking['status']); ?>
+                                <?php $status = $booking['booking_status'] ?? 'unknown'; ?>
+                                <span class="badge badge-<?php echo $status; ?>">
+                                    <?php echo ucfirst($status); ?>
                                 </span>
                             </td>
                         </tr>
