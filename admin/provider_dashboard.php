@@ -1,23 +1,11 @@
 <?php
 require_once '../settings/core.php';
-require_once '../classes/service_provider_class.php';
 require_once '../classes/service_class.php';
 require_once '../classes/booking_class.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login/login.php");
-    exit();
-}
+$current_page = 'dashboard';
+include '../includes/provider_sidebar.php';
 
-// Check if user is a provider
-$provider_class = new ServiceProvider();
-$provider = $provider_class->get_provider_by_user_id($_SESSION['user_id']);
-
-if (!$provider) {
-    header("Location: become_provider.php");
-    exit();
-}
 
 // Get provider's services
 $service_class = new Service();
@@ -708,74 +696,12 @@ if ($provider['verification_status'] === 'verified') $completion += 10;
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <a href="provider_dashboard.php" class="sidebar-logo">
-                <span class="sidebar-logo-text">TourLink<span class="sidebar-logo-dot"></span></span>
-                <span class="sidebar-logo-badge">Provider</span>
-            </a>
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <div class="nav-section-title">Main</div>
-                <a href="provider_dashboard.php" class="nav-item active">
-                    <i class="fa fa-th-large"></i> Dashboard
-                </a>
-                <a href="../view/provider/manage_bookings.php" class="nav-item">
-                    <i class="fa fa-calendar-check"></i> Bookings
-                    <?php if (count($pending_bookings) > 0): ?>
-                        <span class="badge"><?php echo count($pending_bookings); ?></span>
-                    <?php endif; ?>
-                </a>
-                <a href="manage_services.php" class="nav-item">
-                    <i class="fa fa-briefcase"></i> My Services
-                </a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Management</div>
-                <a href="add_service.php" class="nav-item">
-                    <i class="fa fa-plus-circle"></i> Add Service
-                </a>
-                <a href="provider_profile.php" class="nav-item">
-                    <i class="fa fa-user-cog"></i> Business Profile
-                </a>
-                <a href="premium_subscription.php" class="nav-item">
-                    <i class="fa fa-crown"></i> Premium Subscription
-                    <?php if ($has_premium): ?>
-                        <span class="badge" style="background: #d4a017;">Active</span>
-                    <?php endif; ?>
-                </a>
-            </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Other</div>
-                <a href="../index_tourlink.php" class="nav-item">
-                    <i class="fa fa-external-link-alt"></i> View Site
-                </a>
-                <a href="../view/profile_settings.php" class="nav-item">
-                    <i class="fa fa-cog"></i> Account Settings
-                </a>
-                <a href="../login/logout.php" class="nav-item">
-                    <i class="fa fa-sign-out-alt"></i> Logout
-                </a>
-            </div>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="user-card">
-                <div class="user-avatar">
-                    <?php echo strtoupper(substr($_SESSION['first_name'], 0, 1)); ?>
-                </div>
-                <div class="user-info">
-                    <div class="user-name"><?php echo htmlspecialchars($provider['business_name'] ?: $_SESSION['first_name']); ?></div>
-                    <div class="user-role"><?php echo ucfirst($provider['verification_status']); ?></div>
-                </div>
-            </div>
-        </div>
-    </aside>
+    <?php
+    // Set current page for sidebar highlighting
+    $current_page = 'dashboard';
+    // Include reusable sidebar component
+    include '../includes/provider_sidebar.php';
+    ?>
 
     <!-- Main Content -->
     <main class="main-content">
