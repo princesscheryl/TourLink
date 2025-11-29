@@ -520,14 +520,28 @@ $user_phone = $_SESSION['phone'] ?? '';
                     </div>
                     <?php endif; ?>
 
-                    <div class="price-breakdown">
+                    <!-- Discount Code Section -->
+                    <div class="discount-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+                        <label class="form-label" style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Have a discount code?</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="discountCode" placeholder="Enter code" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;" maxlength="50">
+                            <button type="button" id="applyDiscountBtn" style="padding: 10px 16px; background: #1b4332; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">Apply</button>
+                        </div>
+                        <div id="discountMessage" style="margin-top: 8px; font-size: 13px;"></div>
+                    </div>
+
+                    <div class="price-breakdown" style="margin-top: 20px;">
                         <div class="price-row">
                             <span>Subtotal:</span>
-                            <span>GH₵ <?php echo number_format($subtotal, 2); ?></span>
+                            <span id="subtotalAmount">GH₵ <?php echo number_format($subtotal, 2); ?></span>
+                        </div>
+                        <div class="price-row" id="discountRow" style="display: none; color: #28a745;">
+                            <span>Discount:</span>
+                            <span id="discountAmount">- GH₵ 0.00</span>
                         </div>
                         <div class="price-row total">
                             <span>Total:</span>
-                            <span>GH₵ <?php echo number_format($subtotal, 2); ?></span>
+                            <span id="totalAmount">GH₵ <?php echo number_format($subtotal, 2); ?></span>
                         </div>
                     </div>
                 </div>
@@ -540,7 +554,79 @@ $user_phone = $_SESSION['phone'] ?? '';
         const serviceDate = '<?php echo htmlspecialchars($service_date); ?>';
         const serviceTime = '<?php echo htmlspecialchars($service_time); ?>';
         const numberOfPeople = <?php echo $number_of_people; ?>;
-        const totalAmount = <?php echo $subtotal; ?>;
+        let totalAmount = <?php echo $subtotal; ?>;
+        let originalAmount = <?php echo $subtotal; ?>;
+        let discountAmount = 0;
+        let appliedDiscountCode = '';
+
+        // Discount code functionality
+        function showDiscountMessage(message, type) {
+            const messageEl = document.getElementById('discountMessage');
+            messageEl.textContent = message;
+            messageEl.style.color = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#6c757d';
+            messageEl.style.fontWeight = type === 'error' ? '600' : '400';
+        }
+
+        document.getElementById('applyDiscountBtn').addEventListener('click', async function() {
+            const code = document.getElementById('discountCode').value.trim().toUpperCase();
+            const applyBtn = document.getElementById('applyDiscountBtn');
+
+            if (!code) {
+                showDiscountMessage('Please enter a discount code', 'error');
+                return;
+            }
+
+            applyBtn.disabled = true;
+            applyBtn.textContent = 'Checking...';
+
+            try {
+                const response = await fetch('../actions/validate_discount_booking.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        discount_code: code,
+                        booking_amount: originalAmount,
+                        service_id: serviceId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    discountAmount = parseFloat(data.discount_amount);
+                    appliedDiscountCode = code;
+                    totalAmount = originalAmount - discountAmount;
+
+                    // Update UI
+                    document.getElementById('discountAmount').textContent = `- GH₵ ${discountAmount.toFixed(2)}`;
+                    document.getElementById('discountRow').style.display = 'flex';
+                    document.getElementById('totalAmount').textContent = `GH₵ ${totalAmount.toFixed(2)}`;
+
+                    showDiscountMessage(`Discount applied! You save GH₵ ${discountAmount.toFixed(2)}`, 'success');
+                    document.getElementById('discountCode').disabled = true;
+                    applyBtn.style.display = 'none';
+                } else {
+                    showDiscountMessage(data.message || 'Invalid discount code', 'error');
+                    applyBtn.disabled = false;
+                    applyBtn.textContent = 'Apply';
+                }
+            } catch (error) {
+                console.error('Discount validation error:', error);
+                showDiscountMessage('Error validating discount code. Please try again.', 'error');
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'Apply';
+            }
+        });
+
+        // Allow Enter key to apply discount
+        document.getElementById('discountCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('applyDiscountBtn').click();
+            }
+        });
 
         document.getElementById('bookingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -576,9 +662,12 @@ $user_phone = $_SESSION['phone'] ?? '';
                     service_date: serviceDate,
                     service_time: serviceTime,
                     number_of_people: numberOfPeople,
+                    service_duration: <?php echo $service_duration; ?>,
                     total_amount: totalAmount,
+                    original_amount: originalAmount,
+                    discount_code: appliedDiscountCode,
+                    discount_amount: discountAmount,
                     email: formData.get('email'),
-                    discount_code: '', // TODO: Add discount code field if needed
                     guest_details: guestDetails
                 };
 

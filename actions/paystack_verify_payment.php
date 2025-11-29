@@ -233,6 +233,12 @@ try {
             $payment_types .= "s";
         }
         
+        if (in_array('payment_provider', $columns)) {
+            $payment_fields[] = 'payment_provider';
+            $payment_values[] = 'Paystack';
+            $payment_types .= "s";
+        }
+        
         if (in_array('payment_status', $columns)) {
             $payment_fields[] = 'payment_status';
             $payment_values[] = 'successful';
@@ -498,6 +504,12 @@ function process_new_booking_verification($reference) {
             $payment_types .= "s";
         }
         
+        if (in_array('payment_provider', $columns)) {
+            $payment_fields[] = 'payment_provider';
+            $payment_values[] = 'Paystack';
+            $payment_types .= "s";
+        }
+        
         if (in_array('authorization_code', $columns)) {
             $payment_fields[] = 'authorization_code';
             $payment_values[] = $authorization_code;
@@ -547,11 +559,51 @@ function process_new_booking_verification($reference) {
         $payment_id = $conn->insert_id;
         error_log("Payment recorded - ID: $payment_id");
 
+        // Record discount usage if discount code was applied
+        if (!empty($booking_data['discount_code']) && isset($booking_data['discount_amount']) && $booking_data['discount_amount'] > 0) {
+            require_once '../controllers/discount_controller.php';
+            
+            // Get discount details
+            $discount = validate_discount_code_ctr($booking_data['discount_code'], $_SESSION['user_id'], $booking_data['original_amount'] ?? $booking_data['total_amount']);
+            
+            if ($discount) {
+                // Record discount usage
+                record_discount_usage_ctr(
+                    $discount['discount_id'],
+                    $_SESSION['user_id'],
+                    $booking_id,
+                    $booking_data['discount_amount']
+                );
+                
+                // Update discount code usage count
+                $update_discount = $conn->prepare("
+                    UPDATE tl_discount_codes 
+                    SET usage_count = usage_count + 1 
+                    WHERE discount_id = ?
+                ");
+                $update_discount->bind_param("i", $discount['discount_id']);
+                $update_discount->execute();
+                $update_discount->close();
+                
+                error_log("Discount code used - Code: {$booking_data['discount_code']}, Booking: $booking_id, Amount: {$booking_data['discount_amount']}");
+            }
+        }
+
         // Commit transaction
         mysqli_commit($conn);
 
         // Clear session booking data
         unset($_SESSION['pending_booking']);
+
+        // Log audit action
+        require_once '../classes/audit_log_class.php';
+        log_audit_action(
+            'booking_created',
+            'booking',
+            $booking_id,
+            "Booking created via Paystack payment. Reference: $reference",
+            $_SESSION['user_id']
+        );
 
         // Return success
         ob_end_clean(); // Clear any output buffer

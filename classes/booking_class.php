@@ -261,7 +261,33 @@ class Booking extends db_connection
         );
         $stmt->bind_param("i", $booking_id);
 
-        return $stmt->execute();
+        $result = $stmt->execute();
+        $stmt->close();
+
+        // Generate invoice when booking is completed
+        if ($result) {
+            require_once __DIR__ . '/../controllers/invoice_controller.php';
+            $invoice_id = generate_invoice_ctr($booking_id);
+            
+            if ($invoice_id) {
+                // Automatically mark invoice as sent
+                require_once __DIR__ . '/invoice_class.php';
+                $invoice = new Invoice();
+                $invoice->mark_invoice_sent($invoice_id);
+                
+                // Log audit action
+                require_once __DIR__ . '/audit_log_class.php';
+                log_audit_action(
+                    'booking_completed',
+                    'booking',
+                    $booking_id,
+                    "Booking completed. Invoice #$invoice_id generated and sent.",
+                    $_SESSION['user_id'] ?? null
+                );
+            }
+        }
+
+        return $result;
     }
 
     /**
