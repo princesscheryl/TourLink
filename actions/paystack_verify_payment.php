@@ -560,20 +560,36 @@ function process_new_booking_verification($reference) {
         error_log("Payment recorded - ID: $payment_id");
 
         // Record discount usage if discount code was applied
-        if (!empty($booking_data['discount_code']) && isset($booking_data['discount_amount']) && $booking_data['discount_amount'] > 0) {
+        error_log("Checking discount - Code: " . ($booking_data['discount_code'] ?? 'none') . ", Amount: " . ($booking_data['discount_amount'] ?? 0));
+        
+        if (!empty($booking_data['discount_code']) && isset($booking_data['discount_amount']) && floatval($booking_data['discount_amount']) > 0) {
             require_once '../controllers/discount_controller.php';
             
+            $discount_code = strtoupper(trim($booking_data['discount_code']));
+            $discount_amount = floatval($booking_data['discount_amount']);
+            $original_amount = floatval($booking_data['original_amount'] ?? $booking_data['total_amount']);
+            
+            error_log("Processing discount - Code: $discount_code, Amount: $discount_amount, Original: $original_amount");
+            
             // Get discount details
-            $discount = validate_discount_code_ctr($booking_data['discount_code'], $_SESSION['user_id'], $booking_data['original_amount'] ?? $booking_data['total_amount']);
+            $discount = validate_discount_code_ctr($discount_code, $_SESSION['user_id'], $original_amount);
             
             if ($discount) {
+                error_log("Discount found - ID: {$discount['discount_id']}, Code: {$discount['code']}");
+                
                 // Record discount usage
-                record_discount_usage_ctr(
+                $usage_result = record_discount_usage_ctr(
                     $discount['discount_id'],
                     $_SESSION['user_id'],
                     $booking_id,
-                    $booking_data['discount_amount']
+                    $discount_amount
                 );
+                
+                if ($usage_result) {
+                    error_log("Discount usage recorded successfully");
+                } else {
+                    error_log("ERROR: Failed to record discount usage");
+                }
                 
                 // Update discount code usage count
                 $update_discount = $conn->prepare("
@@ -581,12 +597,21 @@ function process_new_booking_verification($reference) {
                     SET usage_count = usage_count + 1 
                     WHERE discount_id = ?
                 ");
-                $update_discount->bind_param("i", $discount['discount_id']);
-                $update_discount->execute();
-                $update_discount->close();
+                if ($update_discount) {
+                    $update_discount->bind_param("i", $discount['discount_id']);
+                    $update_discount->execute();
+                    $update_discount->close();
+                    error_log("Discount code usage count updated");
+                } else {
+                    error_log("ERROR: Failed to prepare discount update statement: " . $conn->error);
+                }
                 
-                error_log("Discount code used - Code: {$booking_data['discount_code']}, Booking: $booking_id, Amount: {$booking_data['discount_amount']}");
+                error_log("Discount code used - Code: $discount_code, Booking: $booking_id, Amount: $discount_amount");
+            } else {
+                error_log("ERROR: Discount code validation failed for code: $discount_code");
             }
+        } else {
+            error_log("No discount code or discount amount is 0");
         }
 
         // Commit transaction

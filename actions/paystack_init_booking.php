@@ -19,16 +19,19 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Get POST data
-$input = json_decode(file_get_contents('php://input'), true);
-$service_id = isset($input['service_id']) ? intval($input['service_id']) : 0;
-$service_date = isset($input['service_date']) ? trim($input['service_date']) : '';
-$service_time = isset($input['service_time']) ? trim($input['service_time']) : '';
-$number_of_people = isset($input['number_of_people']) ? intval($input['number_of_people']) : 1;
-$total_amount = isset($input['total_amount']) ? floatval($input['total_amount']) : 0;
-$customer_email = isset($input['email']) ? trim($input['email']) : '';
-$discount_code = isset($input['discount_code']) ? trim($input['discount_code']) : '';
-$guest_details = isset($input['guest_details']) ? $input['guest_details'] : [];
+    // Get POST data
+    $input = json_decode(file_get_contents('php://input'), true);
+    $service_id = isset($input['service_id']) ? intval($input['service_id']) : 0;
+    $service_date = isset($input['service_date']) ? trim($input['service_date']) : '';
+    $service_time = isset($input['service_time']) ? trim($input['service_time']) : '';
+    $number_of_people = isset($input['number_of_people']) ? intval($input['number_of_people']) : 1;
+    $total_amount = isset($input['total_amount']) ? floatval($input['total_amount']) : 0;
+    $original_amount = isset($input['original_amount']) ? floatval($input['original_amount']) : $total_amount;
+    $discount_amount = isset($input['discount_amount']) ? floatval($input['discount_amount']) : 0;
+    $customer_email = isset($input['email']) ? trim($input['email']) : '';
+    $discount_code = isset($input['discount_code']) ? trim($input['discount_code']) : '';
+    $service_duration = isset($input['service_duration']) ? intval($input['service_duration']) : 1;
+    $guest_details = isset($input['guest_details']) ? $input['guest_details'] : [];
 
 // Validate required fields
 if (!$service_id || !$service_date || !$total_amount || !$customer_email) {
@@ -71,12 +74,17 @@ try {
         'service_date' => $service_date,
         'service_time' => $service_time,
         'number_of_people' => $number_of_people,
+        'service_duration' => $service_duration,
         'total_amount' => $total_amount,
+        'original_amount' => $original_amount,
         'discount_code' => $discount_code,
+        'discount_amount' => $discount_amount,
         'guest_details' => $guest_details,
         'reference' => $reference,
         'timestamp' => time()
     ];
+    
+    error_log("Booking data stored in session - Original: $original_amount, Discount: $discount_amount, Total: $total_amount, Code: $discount_code");
 
     // Prepare metadata for Paystack
     $metadata = [

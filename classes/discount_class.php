@@ -123,15 +123,73 @@ class Discount extends db_connection
         mysqli_begin_transaction($conn);
 
         try {
-            // Insert usage record
-            $sql = "INSERT INTO tl_discount_usage (discount_id, user_id, booking_id, discount_amount)
-                    VALUES (?, ?, ?, ?)";
+            // Get booking details to get original and final amounts
+            $booking_query = $conn->prepare("SELECT original_amount, total_amount FROM tl_bookings WHERE booking_id = ?");
+            $booking_query->bind_param("i", $booking_id);
+            $booking_query->execute();
+            $booking_result = $booking_query->get_result();
+            $booking = $booking_result->fetch_assoc();
+            $booking_query->close();
+            
+            if (!$booking) {
+                throw new Exception("Booking not found");
+            }
+            
+            $original_amount = $booking['original_amount'];
+            $final_amount = $booking['total_amount'];
+            
+            // Check table structure to use correct column names
+            $check_cols = $conn->query("SHOW COLUMNS FROM tl_discount_usage");
+            $columns = [];
+            while ($row = $check_cols->fetch_assoc()) {
+                $columns[] = $row['Field'];
+            }
+            
+            // Build INSERT based on available columns
+            $fields = ['discount_id', 'user_id', 'booking_id'];
+            $values = [$discount_id, $user_id, $booking_id];
+            $types = "iii";
+            
+            // Use discount_amount_applied if it exists, otherwise discount_amount
+            if (in_array('discount_amount_applied', $columns)) {
+                $fields[] = 'discount_amount_applied';
+                $values[] = $discount_amount;
+                $types .= "d";
+            } elseif (in_array('discount_amount', $columns)) {
+                $fields[] = 'discount_amount';
+                $values[] = $discount_amount;
+                $types .= "d";
+            }
+            
+            if (in_array('original_amount', $columns)) {
+                $fields[] = 'original_amount';
+                $values[] = $original_amount;
+                $types .= "d";
+            }
+            
+            if (in_array('final_amount', $columns)) {
+                $fields[] = 'final_amount';
+                $values[] = $final_amount;
+                $types .= "d";
+            }
+            
+            $fields_str = implode(', ', $fields);
+            $placeholders = implode(', ', array_fill(0, count($fields), '?'));
+            
+            $sql = "INSERT INTO tl_discount_usage ($fields_str) VALUES ($placeholders)";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("iiid", $discount_id, $user_id, $booking_id, $discount_amount);
+            
+            if (!$stmt) {
+                throw new Exception("Failed to prepare statement: " . $conn->error);
+            }
+            
+            $stmt->bind_param($types, ...$values);
 
             if (!$stmt->execute()) {
-                throw new Exception("Failed to record discount usage");
+                throw new Exception("Failed to record discount usage: " . $stmt->error);
             }
+            
+            $stmt->close();
 
             // Increment usage count
             $update_sql = "UPDATE tl_discount_codes SET usage_count = usage_count + 1
