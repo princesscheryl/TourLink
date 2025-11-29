@@ -157,6 +157,20 @@ if (!isset($current_page)) {
             <a href="<?php echo $base_path; ?>admin/manage_services.php" class="nav-item <?php echo $current_page === 'services' ? 'active' : ''; ?>">
                 <i class="fa fa-briefcase"></i> My Services
             </a>
+            <a href="<?php echo $base_path; ?>view/provider/manage_reviews.php" class="nav-item <?php echo $current_page === 'reviews' ? 'active' : ''; ?>">
+                <i class="fa fa-comments"></i> Reviews
+                <?php 
+                // Get unanswered reviews count
+                if (!isset($unanswered_reviews_count)) {
+                    require_once __DIR__ . '/../controllers/review_controller.php';
+                    $all_reviews = get_provider_reviews_ctr($provider['provider_id']) ?: [];
+                    $unanswered_reviews_count = count(array_filter($all_reviews, fn($r) => empty($r['response_from_provider'])));
+                }
+                if ($unanswered_reviews_count > 0): 
+                ?>
+                    <span class="badge"><?php echo $unanswered_reviews_count; ?></span>
+                <?php endif; ?>
+            </a>
         </div>
 
         <div class="nav-section">

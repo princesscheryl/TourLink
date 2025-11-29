@@ -276,5 +276,73 @@ class Review extends db_connection
 
         return $row['count'];
     }
+
+    /**
+     * Get all reviews for a provider (across all their services)
+     * @param int $provider_id
+     * @param int $limit Optional limit
+     * @param int $offset Optional offset for pagination
+     * @return array Array of reviews
+     */
+    public function get_provider_reviews($provider_id, $limit = null, $offset = 0)
+    {
+        $sql = "SELECT r.*,
+                       u.first_name as tourist_first_name,
+                       u.last_name as tourist_last_name,
+                       s.service_title,
+                       s.service_id,
+                       b.booking_reference,
+                       b.service_date
+                FROM tl_reviews r
+                INNER JOIN tl_users u ON r.tourist_id = u.user_id
+                INNER JOIN tl_services s ON r.service_id = s.service_id
+                LEFT JOIN tl_bookings b ON r.booking_id = b.booking_id
+                WHERE r.provider_id = ?
+                ORDER BY r.review_date DESC";
+
+        if ($limit) {
+            $sql .= " LIMIT ? OFFSET ?";
+        }
+
+        $stmt = $this->db->prepare($sql);
+
+        if ($limit) {
+            $stmt->bind_param("iii", $provider_id, $limit, $offset);
+        } else {
+            $stmt->bind_param("i", $provider_id);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
+     * Get review statistics for a provider
+     * @param int $provider_id
+     * @return array Statistics including average rating and count
+     */
+    public function get_provider_review_stats($provider_id)
+    {
+        $sql = "SELECT
+                    COUNT(*) as total_reviews,
+                    AVG(rating) as average_rating,
+                    SUM(CASE WHEN response_from_provider IS NULL OR response_from_provider = '' THEN 1 ELSE 0 END) as unanswered_reviews,
+                    SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) as five_star,
+                    SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) as four_star,
+                    SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) as three_star,
+                    SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) as two_star,
+                    SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) as one_star
+                FROM tl_reviews
+                WHERE provider_id = ?";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $provider_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result->fetch_assoc();
+    }
 }
 ?>

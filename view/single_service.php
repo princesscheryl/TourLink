@@ -1306,10 +1306,7 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                             <?php elseif ($is_own_service): ?>
                                 <!-- Provider can respond -->
                                 <div class="response-form">
-                                    <form action="../actions/respond_to_review_action.php" method="POST">
-                                        <input type="hidden" name="review_id" value="<?php echo $review['review_id']; ?>">
-                                        <input type="hidden" name="service_id" value="<?php echo $service_id; ?>">
-
+                                    <form class="reply-form" data-review-id="<?php echo $review['review_id']; ?>" data-service-id="<?php echo $service_id; ?>">
                                         <label class="form-label"><strong>Respond to this review</strong></label>
                                         <textarea class="form-control mb-2"
                                                   name="provider_response"
@@ -1765,6 +1762,73 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                     buttonSidebar.attr('aria-label', 'Add to favorites');
                 }
             }
+        });
+
+        // Handle review reply form submission
+        $('.reply-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const form = $(this);
+            const reviewId = form.data('review-id');
+            const serviceId = form.data('service-id');
+            const responseText = form.find('textarea[name="provider_response"]').val().trim();
+            
+            if (!responseText) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a response',
+                    confirmButtonColor: '#2d6a4f'
+                });
+                return;
+            }
+
+            // Disable form
+            const submitBtn = form.find('button[type="submit"]');
+            const originalText = submitBtn.html();
+            submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Posting...');
+
+            $.ajax({
+                url: '../actions/respond_to_review_action.php',
+                method: 'POST',
+                data: {
+                    review_id: reviewId,
+                    service_id: serviceId,
+                    provider_response: responseText
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message || 'Your response has been posted successfully',
+                            confirmButtonColor: '#2d6a4f',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message || 'Failed to post response. Please try again.',
+                            confirmButtonColor: '#2d6a4f'
+                        });
+                        submitBtn.prop('disabled', false).html(originalText);
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred. Please try again.',
+                        confirmButtonColor: '#2d6a4f'
+                    });
+                    submitBtn.prop('disabled', false).html(originalText);
+                }
+            });
         });
     </script>
 </body>

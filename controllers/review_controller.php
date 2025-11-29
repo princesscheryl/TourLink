@@ -115,4 +115,28 @@ function get_review_count_ctr($service_id)
     $review = new Review();
     return $review->get_review_count($service_id);
 }
+
+/**
+ * Get all reviews for a provider
+ * @param int $provider_id
+ * @param int $limit Optional limit
+ * @param int $offset Optional offset
+ * @return array
+ */
+function get_provider_reviews_ctr($provider_id, $limit = null, $offset = 0)
+{
+    $review = new Review();
+    return $review->get_provider_reviews($provider_id, $limit, $offset);
+}
+
+/**
+ * Get review statistics for a provider
+ * @param int $provider_id
+ * @return array
+ */
+function get_provider_review_stats_ctr($provider_id)
+{
+    $review = new Review();
+    return $review->get_provider_review_stats($provider_id);
+}
 ?>

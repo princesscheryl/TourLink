@@ -55,9 +55,29 @@ if ($review['provider_id'] != $provider['provider_id']) {
 
 // Add provider response
 if (add_provider_response_ctr($review_id, $provider_response)) {
+    // Check if this is an AJAX request
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Your response has been posted successfully'
+        ]);
+        exit();
+    }
+    
     $_SESSION['success'] = "Your response has been posted successfully";
     header("Location: ../view/single_service.php?id=$service_id#reviews");
 } else {
+    // Check if this is an AJAX request
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to post response. Please try again.'
+        ]);
+        exit();
+    }
+    
     $_SESSION['error'] = "Failed to post response. Please try again.";
     header("Location: ../view/single_service.php?id=$service_id");
 }
