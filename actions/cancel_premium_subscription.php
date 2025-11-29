@@ -31,6 +31,7 @@ register_shutdown_function(function() {
 
 session_start();
 require_once '../settings/core.php';
+require_once '../settings/db_class.php';
 
 $response = ['success' => false, 'message' => ''];
 
