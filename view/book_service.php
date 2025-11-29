@@ -526,6 +526,7 @@ $user_phone = $_SESSION['phone'] ?? '';
                         <div style="display: flex; gap: 8px;">
                             <input type="text" id="discountCode" placeholder="Enter code" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;" maxlength="50">
                             <button type="button" id="applyDiscountBtn" style="padding: 10px 16px; background: #1b4332; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">Apply</button>
+                            <button type="button" id="removeDiscountBtn" style="display: none; padding: 10px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">Remove</button>
                         </div>
                         <div id="discountMessage" style="margin-top: 8px; font-size: 13px;"></div>
                     </div>
@@ -607,6 +608,7 @@ $user_phone = $_SESSION['phone'] ?? '';
                     showDiscountMessage(`Discount applied! You save GH₵ ${discountAmount.toFixed(2)}`, 'success');
                     document.getElementById('discountCode').disabled = true;
                     applyBtn.style.display = 'none';
+                    document.getElementById('removeDiscountBtn').style.display = 'block';
                 } else {
                     showDiscountMessage(data.message || 'Invalid discount code', 'error');
                     applyBtn.disabled = false;
@@ -620,9 +622,26 @@ $user_phone = $_SESSION['phone'] ?? '';
             }
         });
 
+        // Remove discount code
+        document.getElementById('removeDiscountBtn').addEventListener('click', function() {
+            discountAmount = 0;
+            appliedDiscountCode = '';
+            totalAmount = originalAmount;
+
+            // Reset UI
+            document.getElementById('discountAmount').textContent = '- GH₵ 0.00';
+            document.getElementById('discountRow').style.display = 'none';
+            document.getElementById('totalAmount').textContent = `GH₵ ${totalAmount.toFixed(2)}`;
+            document.getElementById('discountCode').value = '';
+            document.getElementById('discountCode').disabled = false;
+            document.getElementById('applyDiscountBtn').style.display = 'block';
+            document.getElementById('removeDiscountBtn').style.display = 'none';
+            showDiscountMessage('', '');
+        });
+
         // Allow Enter key to apply discount
         document.getElementById('discountCode').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !this.disabled) {
                 e.preventDefault();
                 document.getElementById('applyDiscountBtn').click();
             }

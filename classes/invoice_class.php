@@ -195,11 +195,19 @@ class Invoice extends db_connection
      * Mark invoice as sent
      * 
      * @param int $invoice_id
+     * @param bool $send_email Whether to send email to customer (default: false, not implemented yet)
      * @return bool
      */
-    public function mark_invoice_sent($invoice_id)
+    public function mark_invoice_sent($invoice_id, $send_email = false)
     {
-        return $this->update_invoice_status($invoice_id, 'sent');
+        $result = $this->update_invoice_status($invoice_id, 'sent');
+        
+        // TODO: Implement email sending functionality
+        // if ($result && $send_email) {
+        //     $this->send_invoice_email($invoice_id);
+        // }
+        
+        return $result;
     }
 
     /**
