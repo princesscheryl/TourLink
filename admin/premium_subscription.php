@@ -28,6 +28,12 @@ $check_active->bind_param("i", $provider_id);
 $check_active->execute();
 $active_subscription = $check_active->get_result()->fetch_assoc();
 
+// Determine if subscription is cancelled (auto_renew = 0)
+$is_cancelled = false;
+if ($active_subscription && isset($active_subscription['auto_renew'])) {
+    $is_cancelled = ($active_subscription['auto_renew'] == 0 || $active_subscription['auto_renew'] === '0');
+}
+
 // Get provider's services
 $services = get_services_by_provider_ctr($provider_id);
 if (!$services) {
@@ -472,7 +478,7 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
             </button>
         </div>
 
-        <?php if ($active_subscription): ?>
+        <?php if ($active_subscription && !$is_cancelled): ?>
             <!-- Active Subscription View -->
             <div class="premium-grid">
                 <div class="premium-card">
@@ -537,6 +543,64 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
                             Cancel Subscription
                         </button>
                     <?php endif; ?>
+                </div>
+            </div>
+        <?php elseif ($active_subscription && $is_cancelled): ?>
+            <!-- Cancelled Subscription View (Still Active Until End Date) -->
+            <div class="premium-grid">
+                <div class="premium-card">
+                    <div class="status-inactive">
+                        <h3><i class="fas fa-info-circle"></i> Subscription Cancelled</h3>
+                        <p>Your premium benefits will continue until <?php echo date('M j, Y', strtotime($active_subscription['end_date'])); ?></p>
+                    </div>
+
+                    <h3 class="section-title">Subscription Benefits</h3>
+                    <ul class="benefits-list">
+                        <li><i class="fas fa-star"></i> Featured on homepage carousel</li>
+                        <li><i class="fas fa-search"></i> Priority in all search results</li>
+                        <li><i class="fas fa-badge-check"></i> Premium badge on all your services</li>
+                        <li><i class="fas fa-chart-line"></i> 3x more visibility</li>
+                        <li><i class="fas fa-trophy"></i> Appear above regular listings</li>
+                    </ul>
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value"><?php echo isset($active_subscription['views_count']) ? number_format($active_subscription['views_count']) : 'N/A'; ?></div>
+                            <div class="stat-label">Premium Views</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value"><?php echo isset($active_subscription['bookings_count']) ? number_format($active_subscription['bookings_count']) : 'N/A'; ?></div>
+                            <div class="stat-label">Premium Bookings</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-card">
+                    <h3 class="section-title">Subscription Details</h3>
+                    <div class="status-detail">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value" style="color: #842029;">Cancelled</span>
+                    </div>
+                    <div class="status-detail">
+                        <span class="status-label">Start Date:</span>
+                        <span class="status-value"><?php echo date('M j, Y', strtotime($active_subscription['start_date'])); ?></span>
+                    </div>
+                    <div class="status-detail">
+                        <span class="status-label">Ends On:</span>
+                        <span class="status-value"><?php echo date('M j, Y', strtotime($active_subscription['end_date'])); ?></span>
+                    </div>
+                    <div class="status-detail">
+                        <span class="status-label">Monthly Fee:</span>
+                        <span class="status-value">GH₵ 150.00</span>
+                    </div>
+                    <div class="status-detail">
+                        <span class="status-label">Auto-Renew:</span>
+                        <span class="status-value" style="color: #842029;">No (Cancelled)</span>
+                    </div>
+
+                    <button class="btn-subscribe" onclick="subscribePremium()" style="width: 100%; margin-top: 20px;">
+                        <i class="fas fa-sync-alt"></i> Re-subscribe Now
+                    </button>
                 </div>
             </div>
         <?php else: ?>
@@ -605,13 +669,24 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach($history as $record): ?>
+                    <?php foreach($history as $record): 
+                        // Determine status badge - check if cancelled (auto_renew = 0) but still active
+                        $status = $record['status'];
+                        $badge_class = 'badge-' . $status;
+                        $status_text = ucfirst($status);
+                        
+                        // If active but auto_renew is 0, show as cancelled
+                        if ($status === 'active' && isset($record['auto_renew']) && ($record['auto_renew'] == 0 || $record['auto_renew'] === '0')) {
+                            $badge_class = 'badge-cancelled';
+                            $status_text = 'Cancelled';
+                        }
+                    ?>
                     <tr>
                         <td><?php echo date('M j', strtotime($record['start_date'])) . ' - ' . date('M j, Y', strtotime($record['end_date'])); ?></td>
                         <td>GH₵ <?php echo number_format($record['amount_paid'], 2); ?></td>
                         <td>
-                            <span class="status-badge badge-<?php echo $record['status']; ?>">
-                                <?php echo ucfirst($record['status']); ?>
+                            <span class="status-badge <?php echo $badge_class; ?>">
+                                <?php echo $status_text; ?>
                             </span>
                         </td>
                         <td><?php echo $record['payment_date'] ? date('M j, Y', strtotime($record['payment_date'])) : '-'; ?></td>
