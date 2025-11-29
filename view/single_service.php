@@ -1483,6 +1483,7 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/review_reply.js"></script>
     <script src="../js/favorites.js"></script>
     <script>
         // Service data for pricing calculation
@@ -1764,72 +1765,6 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
             }
         });
 
-        // Handle review reply form submission
-        $('.reply-form').on('submit', function(e) {
-            e.preventDefault();
-            
-            const form = $(this);
-            const reviewId = form.data('review-id');
-            const serviceId = form.data('service-id');
-            const responseText = form.find('textarea[name="provider_response"]').val().trim();
-            
-            if (!responseText) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Please enter a response',
-                    confirmButtonColor: '#2d6a4f'
-                });
-                return;
-            }
-
-            // Disable form
-            const submitBtn = form.find('button[type="submit"]');
-            const originalText = submitBtn.html();
-            submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Posting...');
-
-            $.ajax({
-                url: '../actions/respond_to_review_action.php',
-                method: 'POST',
-                data: {
-                    review_id: reviewId,
-                    service_id: serviceId,
-                    provider_response: responseText
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message || 'Your response has been posted successfully',
-                            confirmButtonColor: '#2d6a4f',
-                            timer: 2000,
-                            showConfirmButton: false
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: response.message || 'Failed to post response. Please try again.',
-                            confirmButtonColor: '#2d6a4f'
-                        });
-                        submitBtn.prop('disabled', false).html(originalText);
-                    }
-                },
-                error: function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred. Please try again.',
-                        confirmButtonColor: '#2d6a4f'
-                    });
-                    submitBtn.prop('disabled', false).html(originalText);
-                }
-            });
-        });
     </script>
 </body>
 </html>
