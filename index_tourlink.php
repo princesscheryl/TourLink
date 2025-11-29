@@ -1637,9 +1637,21 @@ $categories = get_all_service_categories_ctr();
     </div>
 
     <!-- Main Navigation -->
+    <?php 
+    // Include Adinkra symbols for decorative use
+    if (file_exists('includes/adinkra_symbols.php')) {
+        include 'includes/adinkra_symbols.php';
+    }
+    ?>
     <nav class="main-nav" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
-            <a href="index_tourlink.php" class="logo" aria-label="TourLink Home">TourLink<span class="logo-dot">.</span></a>
+            <a href="index_tourlink.php" class="logo" aria-label="TourLink Home">
+                <?php if (function_exists('get_adinkra_symbol')): ?>
+                    <span class="logo-adinkra"><?php echo get_adinkra_symbol('sankofa', '20px', '#d4a017'); ?></span>
+                <?php endif; ?>
+                TourLink<span class="logo-dot">.</span>
+                <span class="cultural-greeting">Akwaaba</span>
+            </a>
             <ul class="nav-menu" id="navMenu" role="menubar">
                 <li><a href="index_tourlink.php" data-i18n="nav.home">Home</a></li>
                 <li><a href="view/all_services.php" data-i18n="nav.destinations">Browse Services</a></li>
@@ -1732,10 +1744,27 @@ $categories = get_all_service_categories_ctr();
 
     <!-- Hero Section -->
     <section class="hero" id="main-content" role="main">
+        <?php if (function_exists('get_adinkra_symbol')): ?>
+        <div style="position: absolute; top: 20px; right: 20px; opacity: 0.3; z-index: 1;">
+            <?php echo get_adinkra_symbol('gye_nyame', '60px', '#d4a017'); ?>
+        </div>
+        <?php endif; ?>
         <div class="hero-content">
             <div class="hero-text">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <?php if (function_exists('get_adinkra_symbol')): ?>
+                        <?php echo get_adinkra_symbol('sankofa', '32px', '#d4a017'); ?>
+                    <?php endif; ?>
+                    <span style="color: #d4a017; font-weight: 600; font-size: 18px; font-style: italic;">Akwaaba!</span>
+                    <?php if (function_exists('get_adinkra_symbol')): ?>
+                        <?php echo get_adinkra_symbol('akoma', '32px', '#d4a017'); ?>
+                    <?php endif; ?>
+                </div>
                 <h1 data-i18n="hero.title">Discover Your Next Adventure with TourLink!</h1>
                 <p data-i18n="hero.subtitle">Discover tours tailored to your dream destinations — from cultural escapes to adventure getaways. Book in minutes, travel without limits.</p>
+                <p style="color: rgba(255,255,255,0.9); font-size: 15px; margin-top: 12px; font-style: italic;">
+                    <em>Experience the beauty of Ghana — Yɛbɛhyia bio!</em>
+                </p>
                 <div class="hero-buttons">
                     <a href="view/all_services.php" class="btn-choose" data-i18n="hero.cta_primary">Choose a Destinations</a>
                     <a href="view/become_provider.php" class="btn-become" data-i18n="hero.cta_secondary">Become a Provider</a>

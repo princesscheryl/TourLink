@@ -43,6 +43,22 @@
     font-size: 2rem;
 }
 
+.logo-adinkra {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+    opacity: 0.9;
+}
+
+.cultural-greeting {
+    font-size: 0.7rem;
+    color: #d4a017;
+    font-weight: 600;
+    margin-left: 8px;
+    font-style: italic;
+    opacity: 0.9;
+}
+
 .nav-menu {
     list-style: none;
     display: flex;

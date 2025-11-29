@@ -60,11 +60,30 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
             </div>
         </div>
     </div>
+    <!-- Kente Pattern Decoration -->
+    <div class="kente-pattern-top"></div>
+    
     <div class="footer-bottom">
         <div class="footer-bottom-content">
             <div class="footer-copyright">
-                <p>&copy; 2025 <span data-i18n="app_name">TourLink</span>. <span data-i18n="footer.copyright">All rights reserved.</span></p>
-                <p class="footer-tagline">Proudly supporting Ghana's tourism industry and local communities</p>
+                <?php 
+                // Include Adinkra symbols
+                if (file_exists(__DIR__ . '/adinkra_symbols.php')) {
+                    include __DIR__ . '/adinkra_symbols.php';
+                }
+                ?>
+                <p>
+                    <?php if (function_exists('get_adinkra_symbol')): ?>
+                        <span class="footer-adinkra"><?php echo get_adinkra_symbol('akoma', '16px', '#d4a017'); ?></span>
+                    <?php endif; ?>
+                    &copy; 2025 <span data-i18n="app_name">TourLink</span>. <span data-i18n="footer.copyright">All rights reserved.</span>
+                    <?php if (function_exists('get_adinkra_symbol')): ?>
+                        <span class="footer-adinkra"><?php echo get_adinkra_symbol('gye_nyame', '16px', '#d4a017'); ?></span>
+                    <?php endif; ?>
+                </p>
+                <p class="footer-tagline">
+                    <span class="cultural-phrase">Medaase</span> - Proudly supporting Ghana's tourism industry and local communities
+                </p>
             </div>
             <div class="footer-partners">
                 <span class="partner-label">In Partnership With</span>
@@ -203,6 +222,67 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
         font-size: 12px;
         color: rgba(255,255,255,0.5);
         margin-top: 8px;
+    }
+
+    .footer-adinkra {
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0 4px;
+        opacity: 0.8;
+    }
+
+    /* Kente Pattern CSS */
+    .kente-pattern-top {
+        height: 8px;
+        background: linear-gradient(
+            90deg,
+            #000000 0%,
+            #000000 12.5%,
+            #FF0000 12.5%,
+            #FF0000 25%,
+            #FFD700 25%,
+            #FFD700 37.5%,
+            #000000 37.5%,
+            #000000 50%,
+            #FF0000 50%,
+            #FF0000 62.5%,
+            #FFD700 62.5%,
+            #FFD700 75%,
+            #000000 75%,
+            #000000 87.5%,
+            #FF0000 87.5%,
+            #FF0000 100%
+        );
+        background-size: 40px 8px;
+        position: relative;
+        margin-bottom: 0;
+    }
+
+    .kente-pattern-top::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: repeating-linear-gradient(
+            90deg,
+            #000000 0px,
+            #000000 5px,
+            #FFD700 5px,
+            #FFD700 10px,
+            #000000 10px,
+            #000000 15px,
+            #FF0000 15px,
+            #FF0000 20px
+        );
+        opacity: 0.6;
+    }
+
+    .cultural-phrase {
+        color: #d4a017;
+        font-weight: 600;
+        font-style: italic;
     }
 
     @media (max-width: 768px) {
