@@ -26,13 +26,7 @@ if (file_exists(__DIR__ . '/adinkra_symbols.php')) {
 ?>
 <nav class="main-nav" role="navigation" aria-label="Main navigation">
     <div class="nav-container">
-        <a href="<?php echo $base_path; ?>index_tourlink.php" class="logo" aria-label="TourLink Home">
-            <?php if (function_exists('get_adinkra_symbol')): ?>
-                <span class="logo-adinkra"><?php echo get_adinkra_symbol('sankofa', '20px', '#d4a017'); ?></span>
-            <?php endif; ?>
-            TourLink<span class="logo-dot">.</span>
-            <span class="cultural-greeting">Akwaaba</span>
-        </a>
+        <a href="<?php echo $base_path; ?>index_tourlink.php" class="logo" aria-label="TourLink Home">TourLink<span class="logo-dot">.</span></a>
         <ul class="nav-menu" id="navMenu" role="menubar">
             <li><a href="<?php echo $base_path; ?>index_tourlink.php" data-i18n="nav.home">Home</a></li>
             <li><a href="<?php echo $base_path; ?>view/all_services.php" data-i18n="nav.destinations">Browse Services</a></li>

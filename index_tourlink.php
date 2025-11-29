@@ -437,6 +437,27 @@ $categories = get_all_service_categories_ctr();
             color: white;
             line-height: 1.1;
             margin-bottom: 24px;
+            min-height: 1.1em; /* Prevent layout shift during rotation */
+        }
+
+        /* Rotating text styles */
+        .rotating-text-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .rotating-text {
+            display: inline-block;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .rotating-text.active {
+            opacity: 1;
+            position: relative;
         }
 
         .hero-text p {
@@ -1154,6 +1175,7 @@ $categories = get_all_service_categories_ctr();
 
             .hero-text h1 {
                 font-size: 1.75rem;
+                min-height: 2.1em; /* Prevent layout shift on small mobile */
             }
 
             .hero-text p {
@@ -1645,13 +1667,7 @@ $categories = get_all_service_categories_ctr();
     ?>
     <nav class="main-nav" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
-            <a href="index_tourlink.php" class="logo" aria-label="TourLink Home">
-                <?php if (function_exists('get_adinkra_symbol')): ?>
-                    <span class="logo-adinkra"><?php echo get_adinkra_symbol('sankofa', '20px', '#d4a017'); ?></span>
-                <?php endif; ?>
-                TourLink<span class="logo-dot">.</span>
-                <span class="cultural-greeting">Akwaaba</span>
-            </a>
+            <a href="index_tourlink.php" class="logo" aria-label="TourLink Home">TourLink<span class="logo-dot">.</span></a>
             <ul class="nav-menu" id="navMenu" role="menubar">
                 <li><a href="index_tourlink.php" data-i18n="nav.home">Home</a></li>
                 <li><a href="view/all_services.php" data-i18n="nav.destinations">Browse Services</a></li>
@@ -1751,16 +1767,12 @@ $categories = get_all_service_categories_ctr();
         <?php endif; ?>
         <div class="hero-content">
             <div class="hero-text">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                    <?php if (function_exists('get_adinkra_symbol')): ?>
-                        <?php echo get_adinkra_symbol('sankofa', '32px', '#d4a017'); ?>
-                    <?php endif; ?>
-                    <span style="color: #d4a017; font-weight: 600; font-size: 18px; font-style: italic;">Akwaaba!</span>
-                    <?php if (function_exists('get_adinkra_symbol')): ?>
-                        <?php echo get_adinkra_symbol('akoma', '32px', '#d4a017'); ?>
-                    <?php endif; ?>
-                </div>
-                <h1 data-i18n="hero.title">Discover Your Next Adventure with TourLink!</h1>
+                <h1 class="rotating-text-container">
+                    <span class="rotating-text active" data-text="0">Discover Ghana's Hidden Roots</span>
+                    <span class="rotating-text" data-text="1">Taste, Feel, and Explore Ghana</span>
+                    <span class="rotating-text" data-text="2">Chale, Let's Go Explore</span>
+                    <span class="rotating-text" data-text="3">Akwaaba—Welcome Home</span>
+                </h1>
                 <p data-i18n="hero.subtitle">Discover tours tailored to your dream destinations — from cultural escapes to adventure getaways. Book in minutes, travel without limits.</p>
                 <p style="color: rgba(255,255,255,0.9); font-size: 15px; margin-top: 12px; font-style: italic;">
                     <em>Experience the beauty of Ghana — Yɛbɛhyia bio!</em>
@@ -2426,6 +2438,29 @@ $categories = get_all_service_categories_ctr();
                 navMenu.classList.remove('active');
             });
         });
+
+        // Rotating text functionality for hero section
+        (function() {
+            const rotatingTexts = document.querySelectorAll('.rotating-text');
+            if (rotatingTexts.length === 0) return;
+
+            let currentIndex = 0;
+            const totalTexts = rotatingTexts.length;
+
+            function rotateText() {
+                // Remove active class from current text
+                rotatingTexts[currentIndex].classList.remove('active');
+                
+                // Move to next text
+                currentIndex = (currentIndex + 1) % totalTexts;
+                
+                // Add active class to new text
+                rotatingTexts[currentIndex].classList.add('active');
+            }
+
+            // Start rotation after 6 seconds, then repeat every 6 seconds
+            setInterval(rotateText, 6000);
+        })();
 
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {

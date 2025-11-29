@@ -7,6 +7,8 @@
  * Then use: echo get_adinkra_symbol('sankofa', '24px');
  */
 
+// Prevent redeclaration if already included
+if (!function_exists('get_adinkra_symbol')) {
 /**
  * Get Adinkra symbol SVG
  * @param string $symbol_name - Name of the symbol (sankofa, gye_nyame, akoma, etc.)
@@ -52,5 +54,7 @@ function get_random_adinkra($size = '24px', $color = '#d4a017') {
     $random = $symbols[array_rand($symbols)];
     return get_adinkra_symbol($random, $size, $color);
 }
+
+} // End function_exists check
 ?>
 
