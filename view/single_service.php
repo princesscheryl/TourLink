@@ -1345,7 +1345,7 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                 </div>
                 <div class="modal-body">
                     <form id="bookingForm">
-                        <input type="hidden" name="service_id" value="<?php echo $service_id; ?>">
+                        <input type="hidden" id="service_id" name="service_id" value="<?php echo $service_id; ?>">
 
                         <!-- Service Header -->
                         <div class="service-header">
@@ -1422,7 +1422,7 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                             </select>
                         </div>
                         <?php else: ?>
-                        <input type="hidden" name="service_duration" value="1">
+                        <input type="hidden" id="service_duration" name="service_duration" value="1">
                         <?php endif; ?>
 
                         <!-- Number of Guests -->
@@ -1583,12 +1583,18 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                 return;
             }
 
-            const serviceDate = document.getElementById('service_date') ? document.getElementById('service_date').value : '';
-            const serviceTime = document.getElementById('service_time') ? document.getElementById('service_time').value : '';
-            const serviceId = document.getElementById('service_id') ? document.getElementById('service_id').value : '';
-            const numberOfPeople = document.getElementById('number_of_people') ? document.getElementById('number_of_people').value : '1';
-            const serviceDurationEl = document.getElementById('service_duration');
-            const serviceDuration = serviceDurationEl ? serviceDurationEl.value : '1';
+            // Get form values - use form.querySelector as fallback if getElementById fails
+            const serviceIdInput = document.getElementById('service_id') || form.querySelector('[name="service_id"]');
+            const serviceDateInput = document.getElementById('service_date') || form.querySelector('[name="service_date"]');
+            const serviceTimeInput = document.getElementById('service_time') || form.querySelector('[name="service_time"]');
+            const numberOfPeopleInput = document.getElementById('number_of_people') || form.querySelector('[name="number_of_people"]');
+            const serviceDurationInput = document.getElementById('service_duration') || form.querySelector('[name="service_duration"]');
+
+            const serviceDate = serviceDateInput ? serviceDateInput.value : '';
+            const serviceTime = serviceTimeInput ? serviceTimeInput.value : '';
+            const serviceId = serviceIdInput ? serviceIdInput.value : '';
+            const numberOfPeople = numberOfPeopleInput ? numberOfPeopleInput.value : '1';
+            const serviceDuration = serviceDurationInput ? serviceDurationInput.value : '1';
 
             // Validate form
             if (!serviceDate) {

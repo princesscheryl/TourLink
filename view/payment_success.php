@@ -266,7 +266,7 @@ if ($payment_type === 'premium') {
                     Premium Subscription Activated!
                 </h1>
                 <p class="subtitle">
-                    <strong style="color: #d4a017;">Medaase!</strong> Your services are now featured. Enjoy increased visibility and more bookings!
+                    Your services are now featured. Enjoy increased visibility and more bookings!
                 </p>
             <?php else: ?>
                 <h1>
