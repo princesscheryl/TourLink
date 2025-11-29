@@ -4,6 +4,12 @@
  * Handles booking status updates (approve, reject, complete, cancel)
  */
 
+// Enable error reporting and output buffering
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ob_start();
+
 session_start();
 header('Content-Type: application/json');
 
@@ -114,12 +120,24 @@ switch ($status) {
             $response['message'] = 'Only confirmed or in-progress bookings can be completed';
             break;
         }
-        if (complete_booking_ctr($booking_id)) {
+        
+        try {
+            if (complete_booking_ctr($booking_id)) {
+                $response['status'] = 'success';
+                $response['message'] = 'Booking marked as completed';
+                $response['new_status'] = 'completed';
+            } else {
+                $response['message'] = 'Failed to complete booking';
+            }
+        } catch (Exception $e) {
+            error_log("Error completing booking: " . $e->getMessage());
+            // Still mark as success if booking was updated, even if invoice generation failed
             $response['status'] = 'success';
-            $response['message'] = 'Booking marked as completed';
+            $response['message'] = 'Booking marked as completed' . (strpos($e->getMessage(), 'invoice') !== false ? ' (Invoice generation skipped)' : '');
             $response['new_status'] = 'completed';
-        } else {
-            $response['message'] = 'Failed to complete booking';
+        } catch (Error $e) {
+            error_log("Fatal error completing booking: " . $e->getMessage());
+            $response['message'] = 'An error occurred: ' . $e->getMessage();
         }
         break;
 
@@ -166,6 +184,8 @@ switch ($status) {
         $response['message'] = 'Invalid status';
 }
 
+// Clean output buffer and send response
+ob_end_clean();
 echo json_encode($response);
 exit;
 ?>

@@ -30,17 +30,32 @@ class Invoice extends db_connection
         // Get booking details
         $booking = $this->get_booking_details($booking_id);
         if (!$booking) {
+            error_log("Invoice generation failed: Booking $booking_id not found");
+            return false;
+        }
+
+        // Check if required fields exist
+        if (!isset($booking['original_amount']) && !isset($booking['total_amount'])) {
+            error_log("Invoice generation failed: Booking $booking_id missing amount fields");
             return false;
         }
 
         // Generate invoice number
         $invoice_number = $this->generate_invoice_number();
 
-        // Calculate invoice amounts
-        $subtotal = $booking['original_amount'];
-        $discount_amount = $booking['discount_amount'] ?? 0;
+        // Calculate invoice amounts - use original_amount if available, otherwise total_amount
+        $subtotal = isset($booking['original_amount']) && $booking['original_amount'] > 0 
+            ? floatval($booking['original_amount']) 
+            : floatval($booking['total_amount']);
+        $discount_amount = isset($booking['discount_amount']) ? floatval($booking['discount_amount']) : 0;
         $tax_amount = 0; // Can be configured later
-        $total_amount = $subtotal - $discount_amount + $tax_amount;
+        $total_amount = isset($booking['total_amount']) ? floatval($booking['total_amount']) : ($subtotal - $discount_amount + $tax_amount);
+        
+        // Ensure amounts are valid
+        if ($subtotal <= 0 || $total_amount <= 0) {
+            error_log("Invoice generation failed: Invalid amounts for booking $booking_id - Subtotal: $subtotal, Total: $total_amount");
+            return false;
+        }
 
         // Calculate due date (30 days from invoice date)
         $due_date = date('Y-m-d', strtotime('+30 days'));
@@ -56,7 +71,7 @@ class Invoice extends db_connection
         }
 
         $stmt->bind_param(
-            "isddddss",
+            "isdddds",
             $booking_id,
             $invoice_number,
             $subtotal,
@@ -70,21 +85,28 @@ class Invoice extends db_connection
             $invoice_id = $stmt->insert_id;
             $stmt->close();
             
-            // Log audit action
-            require_once __DIR__ . '/audit_log_class.php';
-            log_audit_action(
-                'invoice_generated',
-                'invoice',
-                $invoice_id,
-                "Invoice generated for booking #{$booking_id}. Invoice number: $invoice_number",
-                null
-            );
+            error_log("Invoice generated successfully - Invoice ID: $invoice_id, Booking ID: $booking_id, Number: $invoice_number");
+            
+            // Log audit action (don't fail if audit log fails)
+            try {
+                require_once __DIR__ . '/audit_log_class.php';
+                log_audit_action(
+                    'invoice_generated',
+                    'invoice',
+                    $invoice_id,
+                    "Invoice generated for booking #{$booking_id}. Invoice number: $invoice_number",
+                    null
+                );
+            } catch (Exception $e) {
+                error_log("Warning: Failed to log audit action for invoice: " . $e->getMessage());
+            }
             
             return $invoice_id;
+        } else {
+            error_log("Invoice generation failed: " . $stmt->error);
+            $stmt->close();
+            return false;
         }
-
-        $stmt->close();
-        return false;
     }
 
     /**

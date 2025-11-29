@@ -266,14 +266,26 @@ class Booking extends db_connection
 
         // Generate invoice when booking is completed
         if ($result) {
-            require_once __DIR__ . '/../controllers/invoice_controller.php';
-            $invoice_id = generate_invoice_ctr($booking_id);
-            
-            if ($invoice_id) {
-                // Automatically mark invoice as sent
-                require_once __DIR__ . '/invoice_class.php';
-                $invoice = new Invoice();
-                $invoice->mark_invoice_sent($invoice_id);
+            try {
+                // Check if invoices table exists
+                $check_table = $this->db->query("SHOW TABLES LIKE 'tl_invoices'");
+                if ($check_table && $check_table->num_rows > 0) {
+                    require_once __DIR__ . '/../controllers/invoice_controller.php';
+                    $invoice_id = generate_invoice_ctr($booking_id);
+                    
+                    if ($invoice_id) {
+                        // Automatically mark invoice as sent
+                        require_once __DIR__ . '/invoice_class.php';
+                        $invoice = new Invoice();
+                        $invoice->mark_invoice_sent($invoice_id);
+                        
+                        error_log("Invoice generated for booking $booking_id - Invoice ID: $invoice_id");
+                    } else {
+                        error_log("Warning: Failed to generate invoice for booking $booking_id");
+                    }
+                } else {
+                    error_log("Info: tl_invoices table does not exist. Invoice generation skipped for booking $booking_id");
+                }
                 
                 // Log audit action
                 require_once __DIR__ . '/audit_log_class.php';
@@ -281,9 +293,15 @@ class Booking extends db_connection
                     'booking_completed',
                     'booking',
                     $booking_id,
-                    "Booking completed. Invoice #$invoice_id generated and sent.",
+                    "Booking completed by provider.",
                     $_SESSION['user_id'] ?? null
                 );
+            } catch (Exception $e) {
+                error_log("Error generating invoice for booking $booking_id: " . $e->getMessage());
+                // Don't fail the booking completion if invoice generation fails
+            } catch (Error $e) {
+                error_log("Fatal error generating invoice for booking $booking_id: " . $e->getMessage());
+                // Don't fail the booking completion if invoice generation fails
             }
         }
 
