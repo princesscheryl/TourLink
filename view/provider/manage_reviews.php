@@ -38,6 +38,9 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $unanswered = array_filter($reviews, fn($r) => empty($r['response_from_provider']));
 $answered = array_filter($reviews, fn($r) => !empty($r['response_from_provider']));
 
+// Set unanswered reviews count for sidebar badge (before including sidebar)
+$unanswered_reviews_count = count($unanswered);
+
 // Apply filter
 $filtered_reviews = $reviews;
 switch ($filter) {
