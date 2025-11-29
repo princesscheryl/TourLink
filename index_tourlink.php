@@ -617,11 +617,12 @@ $categories = get_all_service_categories_ctr();
             color: #1a1a1a;
         }
 
-        /* Popular Destinations */
-        .destinations-section {
+        /* Featured Experiences Section */
+        .featured-experiences-section {
             padding: 100px 40px;
             max-width: 1400px;
             margin: 0 auto;
+            background: #f8f9fa;
         }
 
         .section-header {
@@ -633,6 +634,7 @@ $categories = get_all_service_categories_ctr();
             font-size: 48px;
             font-weight: 800;
             margin-bottom: 16px;
+            color: #1a1a1a;
         }
 
         .section-header p {
@@ -640,112 +642,193 @@ $categories = get_all_service_categories_ctr();
             color: #666;
         }
 
-        .destinations-tabs {
+        /* Featured Experiences Slider */
+        .featured-slider-container {
+            position: relative;
             display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 50px;
+            align-items: center;
+            gap: 20px;
         }
 
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 12px 24px;
-            font-weight: 600;
-            font-size: 16px;
-            color: #666;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .tab-btn.active,
-        .tab-btn:hover {
-            color: #2d6a4f;
-            border-bottom-color: #2d6a4f;
-        }
-
-        .destinations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 32px;
-        }
-
-        .destination-card {
-            border-radius: 20px;
+        .featured-slider-wrapper {
+            flex: 1;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            transition: all 0.4s;
             position: relative;
         }
 
-        .destination-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-        }
-
-        .destination-image {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-        }
-
-        .price-badge {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: #2d6a4f;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .destination-content {
-            padding: 28px;
-        }
-
-        .rating {
+        .featured-slider {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 24px;
+            transition: transform 0.5s ease-in-out;
         }
 
-        .rating i {
-            color: #ffd700;
-            font-size: 14px;
+        .featured-card {
+            min-width: 350px;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .destination-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 12px;
+        .featured-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
 
-        .destination-features {
+        .featured-card-image {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .featured-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .featured-card:hover .featured-card-image img {
+            transform: scale(1.05);
+        }
+
+        .verified-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #0f5132;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
         }
 
-        .btn-view-packages {
-            display: inline-flex;
+        .featured-card-content {
+            padding: 24px;
+        }
+
+        .featured-category {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .featured-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+            line-height: 1.3;
+        }
+
+        .featured-rating {
+            display: flex;
             align-items: center;
             gap: 8px;
-            color: #2d6a4f;
-            text-decoration: none;
-            font-weight: 600;
-            transition: gap 0.3s;
+            margin-bottom: 12px;
         }
 
-        .btn-view-packages:hover {
-            gap: 12px;
+        .featured-rating .stars {
+            color: #ffc107;
+            font-size: 14px;
         }
+
+        .featured-rating .rating-value {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 14px;
+        }
+
+        .featured-rating .booking-count {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .featured-provider {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .featured-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .featured-price {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1b4332;
+        }
+
+        .price-unit {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .btn-featured {
+            padding: 10px 20px;
+            background: #1b4332;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-featured:hover {
+            background: #2d6a4f;
+        }
+
+        .slider-arrow {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 2px solid #1b4332;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1b4332;
+            font-size: 18px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .slider-arrow:hover,
+        .slider-arrow:focus {
+            background: #1b4332;
+            color: white;
+            transform: scale(1.1);
+            outline: none;
+        }
+
+        .slider-arrow:active {
+            transform: scale(0.95);
+        }
+
 
         /* Why Choose Section */
         .why-choose {
@@ -1101,10 +1184,6 @@ $categories = get_all_service_categories_ctr();
             }
 
             /* Grids */
-            .destinations-grid {
-                grid-template-columns: 1fr;
-            }
-
             .testimonials-grid {
                 grid-template-columns: 1fr;
             }
@@ -1113,13 +1192,7 @@ $categories = get_all_service_categories_ctr();
                 grid-template-columns: 1fr;
             }
 
-            .destinations-tabs {
-                flex-wrap: wrap;
-                gap: 15px;
-            }
-
             /* Cards */
-            .destination-card,
             .service-card {
                 margin: 0;
             }
@@ -1182,11 +1255,32 @@ $categories = get_all_service_categories_ctr();
                 font-size: 0.9rem;
             }
 
+            .featured-experiences-section {
+                padding: 40px 15px;
+            }
+
+            .section-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .featured-card {
+                min-width: 100%;
+            }
+
+            .featured-slider-container {
+                gap: 10px;
+            }
+
+            .slider-arrow {
+                width: 36px;
+                height: 36px;
+                font-size: 12px;
+            }
+
             .search-section h2 {
                 font-size: 1.5rem;
             }
 
-            .destinations-section h2,
             .services-section h2 {
                 font-size: 1.75rem;
             }
@@ -1771,11 +1865,11 @@ $categories = get_all_service_categories_ctr();
                     <span class="rotating-text active" data-text="0">Discover Ghana's Hidden Roots</span>
                     <span class="rotating-text" data-text="1">Taste, Feel, and Explore Ghana</span>
                     <span class="rotating-text" data-text="2">Chale, Let's Go Explore</span>
-                    <span class="rotating-text" data-text="3">Akwaaba—Welcome Home</span>
+                    <span class="rotating-text" data-text="3">Akwaaba, Welcome Home</span>
                 </h1>
-                <p data-i18n="hero.subtitle">Discover tours tailored to your dream destinations — from cultural escapes to adventure getaways. Book in minutes, travel without limits.</p>
+                <p data-i18n="hero.subtitle">Discover tours tailored to your dream destinations, from cultural escapes to adventure getaways. Book in minutes, travel without limits.</p>
                 <p style="color: rgba(255,255,255,0.9); font-size: 15px; margin-top: 12px; font-style: italic;">
-                    <em>Experience the beauty of Ghana — Yɛbɛhyia bio!</em>
+                    <em>Experience the beauty of Ghana — Yɛbɛhyia biom!</em>
                 </p>
                 <div class="hero-buttons">
                     <a href="view/all_services.php" class="btn-choose" data-i18n="hero.cta_primary">Choose a Destinations</a>
@@ -1788,129 +1882,6 @@ $categories = get_all_service_categories_ctr();
         </div>
     </section>
 
-    <!-- Premium Services Carousel -->
-    <?php if (!empty($premium_services)): ?>
-    <section class="premium-carousel-section" style="padding: 80px 0; background: #f8f9fa;">
-        <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 40px;">
-            <div class="section-header" style="text-align: center; margin-bottom: 50px;">
-                <span style="color: #d4a017; font-weight: 600; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">
-                    <i class="fas fa-crown"></i> Featured Services
-                </span>
-                <h2 style="font-size: 36px; font-weight: 700; margin-top: 10px;">Premium Experiences</h2>
-                <p style="color: #666; font-size: 16px; max-width: 600px; margin: 10px auto 0;">
-                    Discover our top-rated and verified service providers
-                </p>
-            </div>
-
-            <div class="premium-carousel-container" style="position: relative;">
-                <div class="premium-carousel" id="premiumCarousel" style="display: flex; gap: 24px; overflow: hidden;">
-                    <?php foreach($premium_services as $index => $service):
-                        $images = json_decode($service['service_images'], true);
-                        $first_image = $images[0] ?? 'default.jpg';
-                        $rating = round($service['average_rating'] ?? 0, 1);
-                        $is_verified = $service['verification_status'] === 'verified';
-                    ?>
-                    <div class="premium-card" style="min-width: 350px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s;">
-                        <div style="position: relative;">
-                            <img src="uploads/services/<?php echo htmlspecialchars($first_image); ?>"
-                                 alt="<?php echo htmlspecialchars($service['service_title']); ?>"
-                                 style="width: 100%; height: 250px; object-fit: cover;">
-                            <div style="position: absolute; top: 12px; right: 12px; background: #d4a017; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
-                                <i class="fas fa-crown"></i> Premium
-                            </div>
-                            <?php if ($is_verified): ?>
-                            <div style="position: absolute; top: 12px; left: 12px; background: #0f5132; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
-                                <i class="fas fa-check-circle"></i> Verified
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                        <div style="padding: 20px;">
-                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                <span style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    <?php echo htmlspecialchars($service['category_name']); ?>
-                                </span>
-                            </div>
-                            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; line-height: 1.3;">
-                                <?php echo htmlspecialchars($service['service_title']); ?>
-                            </h3>
-                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
-                                <span style="color: #ffc107; font-size: 14px;">
-                                    <?php for($i = 0; $i < 5; $i++): ?>
-                                        <?php if ($i < floor($rating)): ?>
-                                            <i class="fas fa-star"></i>
-                                        <?php elseif ($i < ceil($rating)): ?>
-                                            <i class="fas fa-star-half-alt"></i>
-                                        <?php else: ?>
-                                            <i class="far fa-star"></i>
-                                        <?php endif; ?>
-                                    <?php endfor; ?>
-                                </span>
-                                <span style="font-size: 14px; color: #666;"><?php echo $rating; ?></span>
-                                <span style="font-size: 14px; color: #999;">(<?php echo $service['total_bookings']; ?> bookings)</span>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e9ecef;">
-                                <div>
-                                    <div style="font-size: 24px; font-weight: 700; color: #1b4332;">
-                                        GH₵ <?php echo number_format($service['base_price'], 0); ?>
-                                    </div>
-                                    <div style="font-size: 12px; color: #999;">
-                                        per <?php echo $service['pricing_unit'] === 'per_person' ? 'person' : ($service['pricing_unit'] === 'per_hour' ? 'hour' : 'day'); ?>
-                                    </div>
-                                </div>
-                                <a href="view/single_service.php?service_id=<?php echo $service['service_id']; ?>"
-                                   style="padding: 10px 20px; background: #1b4332; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
-                                    View Details
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <!-- Carousel Controls -->
-                <button onclick="scrollCarousel(-1)" style="position: absolute; left: -20px; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; background: white; border: 2px solid #1b4332; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
-                    <i class="fas fa-chevron-left" style="color: #1b4332;"></i>
-                </button>
-                <button onclick="scrollCarousel(1)" style="position: absolute; right: -20px; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; background: white; border: 2px solid #1b4332; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
-                    <i class="fas fa-chevron-right" style="color: #1b4332;"></i>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <script>
-    let currentScroll = 0;
-    const carousel = document.getElementById('premiumCarousel');
-    const cardWidth = 374; // 350px + 24px gap
-
-    function scrollCarousel(direction) {
-        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-        currentScroll += direction * cardWidth;
-
-        if (currentScroll < 0) currentScroll = 0;
-        if (currentScroll > maxScroll) currentScroll = maxScroll;
-
-        carousel.style.transform = `translateX(-${currentScroll}px)`;
-        carousel.style.transition = 'transform 0.5s ease';
-    }
-
-    // Auto-scroll every 5 seconds
-    setInterval(() => {
-        scrollCarousel(1);
-        // Reset to start when reaching the end
-        if (currentScroll >= carousel.scrollWidth - carousel.clientWidth) {
-            setTimeout(() => {
-                carousel.style.transition = 'none';
-                currentScroll = 0;
-                carousel.style.transform = `translateX(0)`;
-                setTimeout(() => {
-                    carousel.style.transition = 'transform 0.5s ease';
-                }, 50);
-            }, 500);
-        }
-    }, 5000);
-    </script>
-    <?php endif; ?>
 
     <!-- Search Bar -->
     <section class="search-section">
@@ -1971,105 +1942,82 @@ $categories = get_all_service_categories_ctr();
         </div>
     </div>
 
-    <!-- Popular Destinations -->
-    <section class="destinations-section">
+    <!-- Featured Experiences -->
+    <?php if (!empty($premium_services)): ?>
+    <section class="featured-experiences-section">
         <div class="section-header">
-            <h2 data-i18n="destinations.title">Popular Destinations</h2>
-            <p data-i18n="destinations.subtitle">Explore our most sought-after travel locations around Ghana</p>
+            <h2>Featured Experiences</h2>
+            <p>Handpicked experiences from trusted local hosts across Ghana.</p>
         </div>
 
-        <div class="destinations-tabs">
-            <button class="tab-btn active" data-i18n="destinations.beach">Beach</button>
-            <button class="tab-btn" data-i18n="destinations.mountain">Mountain</button>
-            <button class="tab-btn" data-i18n="destinations.cultural">Cultural</button>
-            <button class="tab-btn" data-i18n="destinations.adventure">Adventure</button>
-            <button class="tab-btn" data-i18n="destinations.historical">Historical</button>
-        </div>
-
-        <div class="destinations-grid">
-            <?php
-            $destinations = [
-                [
-                    'title' => 'Cape Coast Castle',
-                    'location' => 'Central Region',
-                    'price' => 150,
-                    'rating' => 4.9,
-                    'reviews' => 234,
-                    'image' => 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600',
-                    'features' => 'UNESCO Heritage Site, Museum, Ocean Views'
-                ],
-                [
-                    'title' => 'Kakum National Park',
-                    'location' => 'Central Region',
-                    'price' => 200,
-                    'rating' => 4.8,
-                    'reviews' => 189,
-                    'image' => 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600',
-                    'features' => 'Canopy Walk, Rainforest, Wildlife'
-                ],
-                [
-                    'title' => 'Mole National Park',
-                    'location' => 'Northern Region',
-                    'price' => 350,
-                    'rating' => 4.7,
-                    'reviews' => 156,
-                    'image' => 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600',
-                    'features' => 'Safari, Elephants, Antelopes'
-                ],
-                [
-                    'title' => 'Lake Volta Cruise',
-                    'location' => 'Volta Region',
-                    'price' => 180,
-                    'rating' => 4.6,
-                    'reviews' => 198,
-                    'image' => 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600',
-                    'features' => 'Boat Cruise, Sunset Views, Island Hopping'
-                ],
-                [
-                    'title' => 'Wli Waterfalls',
-                    'location' => 'Volta Region',
-                    'price' => 120,
-                    'rating' => 4.8,
-                    'reviews' => 267,
-                    'image' => 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=600',
-                    'features' => 'Hiking, Swimming, Nature Trails'
-                ],
-                [
-                    'title' => 'Elmina Castle',
-                    'location' => 'Central Region',
-                    'price' => 140,
-                    'rating' => 4.9,
-                    'reviews' => 312,
-                    'image' => 'https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?w=600',
-                    'features' => 'Historical Tour, Guided Tours, Museum'
-                ]
-            ];
-
-            foreach ($destinations as $dest):
-            ?>
-            <div class="destination-card">
-                <img src="<?php echo $dest['image']; ?>" alt="<?php echo $dest['title']; ?>" class="destination-image">
-                <div class="price-badge">From: GH₵<?php echo $dest['price']; ?> / person</div>
-                <div class="destination-content">
-                    <div class="rating">
-                        <?php for($i = 0; $i < 5; $i++): ?>
-                        <i class="fas fa-star"></i>
-                        <?php endfor; ?>
-                        <span><?php echo $dest['rating']; ?> (<?php echo $dest['reviews']; ?> reviews)</span>
+        <div class="featured-slider-container">
+            <button class="slider-arrow slider-arrow-left" aria-label="Previous experiences" onclick="slideFeaturedExperiences(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <div class="featured-slider-wrapper">
+                <div class="featured-slider" id="featuredSlider">
+                    <?php foreach($premium_services as $service):
+                        $images = json_decode($service['service_images'], true);
+                        $first_image = $images[0] ?? 'default.jpg';
+                        $rating = round($service['average_rating'] ?? 0, 1);
+                        $is_verified = $service['verification_status'] === 'verified';
+                    ?>
+                    <div class="featured-card">
+                        <div class="featured-card-image">
+                            <img src="uploads/services/<?php echo htmlspecialchars($first_image); ?>"
+                                 alt="<?php echo htmlspecialchars($service['service_title']); ?>">
+                            <?php if ($is_verified): ?>
+                            <div class="verified-badge">
+                                <i class="fas fa-check-circle"></i> Verified
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="featured-card-content">
+                            <div class="featured-category">
+                                <?php echo htmlspecialchars($service['category_name']); ?>
+                            </div>
+                            <h3 class="featured-title"><?php echo htmlspecialchars($service['service_title']); ?></h3>
+                            <div class="featured-rating">
+                                <span class="stars">
+                                    <?php for($i = 0; $i < 5; $i++): ?>
+                                        <?php if ($i < floor($rating)): ?>
+                                            <i class="fas fa-star"></i>
+                                        <?php elseif ($i < ceil($rating)): ?>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        <?php else: ?>
+                                            <i class="far fa-star"></i>
+                                        <?php endif; ?>
+                                    <?php endfor; ?>
+                                </span>
+                                <span class="rating-value"><?php echo $rating; ?></span>
+                                <span class="booking-count">(<?php echo $service['total_bookings']; ?> bookings)</span>
+                            </div>
+                            <div class="featured-provider">
+                                <i class="fas fa-user"></i>
+                                <?php echo htmlspecialchars($service['business_name']); ?>
+                            </div>
+                            <div class="featured-footer">
+                                <div class="featured-price">
+                                    <span class="price-amount">GH₵ <?php echo number_format($service['base_price'], 0); ?></span>
+                                    <span class="price-unit">per <?php echo $service['pricing_unit'] === 'per_person' ? 'person' : ($service['pricing_unit'] === 'per_hour' ? 'hour' : 'day'); ?></span>
+                                </div>
+                                <a href="view/single_service.php?service_id=<?php echo $service['service_id']; ?>" class="btn-featured">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="destination-title"><?php echo $dest['title']; ?></h3>
-                    <div class="destination-features">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <?php echo $dest['features']; ?>
-                    </div>
-                    <a href="view/all_services.php" class="btn-view-packages">
-                        View Packages <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
-            <?php endforeach; ?>
+            
+            <button class="slider-arrow slider-arrow-right" aria-label="Next experiences" onclick="slideFeaturedExperiences(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- Why Choose TourLink -->
     <section class="why-choose">
@@ -2492,6 +2440,41 @@ $categories = get_all_service_categories_ctr();
                     document.querySelector(href).scrollIntoView({
                         behavior: 'smooth'
                     });
+                }
+            });
+        });
+
+        // Featured Experiences Slider
+        let featuredSliderPosition = 0;
+        const featuredSlider = document.getElementById('featuredSlider');
+        
+        function slideFeaturedExperiences(direction) {
+            if (!featuredSlider) return;
+            
+            const cardWidth = 374; // 350px card + 24px gap
+            const containerWidth = featuredSlider.parentElement.offsetWidth;
+            const maxScroll = featuredSlider.scrollWidth - containerWidth;
+            
+            featuredSliderPosition += direction * cardWidth;
+            
+            // Clamp position
+            if (featuredSliderPosition < 0) {
+                featuredSliderPosition = 0;
+            }
+            if (featuredSliderPosition > maxScroll) {
+                featuredSliderPosition = maxScroll;
+            }
+            
+            featuredSlider.style.transform = `translateX(-${featuredSliderPosition}px)`;
+        }
+
+        // Keyboard navigation for slider arrows
+        document.querySelectorAll('.slider-arrow').forEach(arrow => {
+            arrow.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const direction = this.classList.contains('slider-arrow-left') ? -1 : 1;
+                    slideFeaturedExperiences(direction);
                 }
             });
         });
