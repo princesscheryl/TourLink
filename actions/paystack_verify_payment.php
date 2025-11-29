@@ -431,7 +431,7 @@ function process_premium_subscription_verification($reference) {
     $db->db_connect();
 
     $pending_stmt = $db->db->prepare("
-        SELECT provider_id, amount, start_date, end_date, payment_reference
+        SELECT subscription_payment_id, provider_id, amount, start_date, end_date, payment_reference
         FROM tl_subscription_payments
         WHERE payment_reference = ?
         AND payment_status = 'pending'
@@ -448,6 +448,7 @@ function process_premium_subscription_verification($reference) {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $subscription_data = [
+                'subscription_payment_id' => $row['subscription_payment_id'],
                 'provider_id' => $row['provider_id'],
                 'amount' => floatval($row['amount']),
                 'start_date' => $row['start_date'],
@@ -546,22 +547,65 @@ function process_premium_subscription_verification($reference) {
         $end_date = $subscription_data['end_date'];
         $next_billing_date = $end_date;
         $subscription_amount = $subscription_data['amount']; // 150.00
+        $subscription_payment_id = $subscription_data['subscription_payment_id'];
 
         error_log("Inserting premium listing for provider $provider_id");
 
-        // Create premium listing record (using only base columns)
-        $insert_listing = $conn->prepare("
-            INSERT INTO tl_premium_listings
-            (provider_id, start_date, end_date, amount_paid, status, auto_renew, payment_reference)
-            VALUES (?, ?, ?, ?, 'active', 1, ?)
-        ");
+        // Check if subscription_id column exists
+        $check_subscription_id_col = $conn->query("SHOW COLUMNS FROM tl_premium_listings LIKE 'subscription_id'");
+        $has_subscription_id = $check_subscription_id_col && $check_subscription_id_col->num_rows > 0;
+        
+        // Check if next_billing_date column exists
+        $check_next_billing_col = $conn->query("SHOW COLUMNS FROM tl_premium_listings LIKE 'next_billing_date'");
+        $has_next_billing = $check_next_billing_col && $check_next_billing_col->num_rows > 0;
+        
+        // Check if is_subscription column exists
+        $check_is_subscription_col = $conn->query("SHOW COLUMNS FROM tl_premium_listings LIKE 'is_subscription'");
+        $has_is_subscription = $check_is_subscription_col && $check_is_subscription_col->num_rows > 0;
+
+        // Build INSERT statement dynamically based on available columns
+        $insert_columns = ['provider_id', 'start_date', 'end_date', 'amount_paid', 'status', 'auto_renew', 'payment_reference'];
+        $insert_values = ['?', '?', '?', '?', "'active'", '1', '?'];
+        $bind_types = "issds";
+        
+        if ($has_subscription_id) {
+            $insert_columns[] = 'subscription_id';
+            $insert_values[] = '?';
+            $bind_types .= 'i';
+        }
+        
+        if ($has_next_billing) {
+            $insert_columns[] = 'next_billing_date';
+            $insert_values[] = '?';
+            $bind_types .= 's';
+        }
+        
+        if ($has_is_subscription) {
+            $insert_columns[] = 'is_subscription';
+            $insert_values[] = '1';
+        }
+
+        $insert_sql = "INSERT INTO tl_premium_listings (" . implode(', ', $insert_columns) . ") VALUES (" . implode(', ', $insert_values) . ")";
+        
+        $insert_listing = $conn->prepare($insert_sql);
 
         if (!$insert_listing) {
             error_log("Prepare failed: " . $conn->error);
             throw new Exception("Failed to prepare premium listing insert: " . $conn->error);
         }
 
-        $insert_listing->bind_param("issds", $provider_id, $start_date, $end_date, $subscription_amount, $reference);
+        // Bind parameters - build array with references for call_user_func_array
+        $bind_params = [&$provider_id, &$start_date, &$end_date, &$subscription_amount, &$reference];
+        if ($has_subscription_id) {
+            $bind_params[] = &$subscription_payment_id;
+        }
+        if ($has_next_billing) {
+            $bind_params[] = &$next_billing_date;
+        }
+        
+        // Use call_user_func_array for dynamic parameter binding
+        $bind_args = array_merge([$bind_types], $bind_params);
+        call_user_func_array([$insert_listing, 'bind_param'], $bind_args);
 
         if (!$insert_listing->execute()) {
             error_log("Execute failed: " . $insert_listing->error);

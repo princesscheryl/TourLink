@@ -294,16 +294,42 @@ class Service extends db_connection
      */
     public function get_premium_services($limit = 6)
     {
+        // Check which premium column exists
+        $check_premium_col = $this->db->query("SHOW COLUMNS FROM tl_services LIKE 'is_premium'");
+        $has_is_premium = $check_premium_col && $check_premium_col->num_rows > 0;
+        
+        $check_premium_listing_col = $this->db->query("SHOW COLUMNS FROM tl_services LIKE 'is_premium_listing'");
+        $has_is_premium_listing = $check_premium_listing_col && $check_premium_listing_col->num_rows > 0;
+        
+        // Build WHERE clause based on available columns
+        $premium_condition = "";
+        if ($has_is_premium) {
+            $premium_condition = "s.is_premium = 1";
+        } elseif ($has_is_premium_listing) {
+            $premium_condition = "s.is_premium_listing = 1";
+        } else {
+            // No premium column exists, return empty array
+            return [];
+        }
+        
         $sql = "SELECT s.*,
                        sc.category_name,
                        sp.business_name as provider_name,
-                       sp.average_rating as provider_rating
+                       sp.average_rating as provider_rating,
+                       sp.verification_status,
+                       AVG(r.rating) as average_rating,
+                       COUNT(DISTINCT b.booking_id) as total_bookings
                 FROM tl_services s
                 INNER JOIN tl_service_categories sc ON s.category_id = sc.category_id
                 INNER JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
-                WHERE s.is_premium_listing = 1
+                INNER JOIN tl_users u ON sp.user_id = u.user_id
+                LEFT JOIN tl_reviews r ON s.service_id = r.service_id
+                LEFT JOIN tl_bookings b ON s.service_id = b.service_id
+                WHERE $premium_condition
                 AND s.service_status = 'active'
-                AND s.availability_status = 'available'
+                AND sp.verification_status = 'verified'
+                AND u.account_status = 'active'
+                GROUP BY s.service_id
                 ORDER BY s.date_created DESC
                 LIMIT ?";
 
