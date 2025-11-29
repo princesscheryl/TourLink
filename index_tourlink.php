@@ -9,55 +9,56 @@ require_once 'controllers/service_controller.php';
 require_once 'controllers/service_category_controller.php';
 require_once 'classes/festival_class.php';
 
-// Get premium services for carousel (backward compatible)
+// Get premium services for Featured Experiences section
 $db_temp = new db_connection();
 $db_temp->db_connect();
 
-// Check if is_premium column exists
-$check_col = $db_temp->db->query("SHOW COLUMNS FROM tl_services LIKE 'is_premium'");
-if ($check_col && $check_col->num_rows > 0) {
-    // Column exists - query premium services
-    $premium_query = $db_temp->db->query("
-        SELECT s.*, sp.business_name, sp.verification_status, sc.category_name,
-               AVG(r.rating) as average_rating,
-               COUNT(DISTINCT b.booking_id) as total_bookings
-        FROM tl_services s
-        JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
-        JOIN tl_service_categories sc ON s.category_id = sc.category_id
-        JOIN tl_users u ON sp.user_id = u.user_id
-        LEFT JOIN tl_reviews r ON s.service_id = r.service_id
-        LEFT JOIN tl_bookings b ON s.service_id = b.service_id
-        WHERE s.is_premium = 1
-        AND s.service_status = 'active'
-        AND sp.verification_status = 'verified'
-        AND u.account_status = 'active'
-        GROUP BY s.service_id
-        ORDER BY s.date_created DESC
-        LIMIT 8
-    ");
-    $premium_services = $premium_query ? $premium_query->fetch_all(MYSQLI_ASSOC) : [];
+// Check which premium column exists
+$check_is_premium = $db_temp->db->query("SHOW COLUMNS FROM tl_services LIKE 'is_premium'");
+$has_is_premium = $check_is_premium && $check_is_premium->num_rows > 0;
+
+$check_is_premium_listing = $db_temp->db->query("SHOW COLUMNS FROM tl_services LIKE 'is_premium_listing'");
+$has_is_premium_listing = $check_is_premium_listing && $check_is_premium_listing->num_rows > 0;
+
+// Build WHERE clause based on available columns
+$premium_condition = "";
+if ($has_is_premium) {
+    $premium_condition = "s.is_premium = 1";
+} elseif ($has_is_premium_listing) {
+    $premium_condition = "s.is_premium_listing = 1";
 } else {
-    // Column doesn't exist - use is_premium_listing instead
-    $premium_query = $db_temp->db->query("
-        SELECT s.*, sp.business_name, sp.verification_status, sc.category_name,
-               AVG(r.rating) as average_rating,
-               COUNT(DISTINCT b.booking_id) as total_bookings
-        FROM tl_services s
-        JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
-        JOIN tl_service_categories sc ON s.category_id = sc.category_id
-        JOIN tl_users u ON sp.user_id = u.user_id
-        LEFT JOIN tl_reviews r ON s.service_id = r.service_id
-        LEFT JOIN tl_bookings b ON s.service_id = b.service_id
-        WHERE s.is_premium_listing = 1
-        AND s.service_status = 'active'
-        AND sp.verification_status = 'verified'
-        AND u.account_status = 'active'
-        GROUP BY s.service_id
-        ORDER BY s.date_created DESC
-        LIMIT 8
-    ");
-    $premium_services = $premium_query ? $premium_query->fetch_all(MYSQLI_ASSOC) : [];
+    // No premium column exists - check via premium_listings table
+    $premium_condition = "EXISTS (
+        SELECT 1 FROM tl_premium_listings pl
+        WHERE pl.provider_id = s.provider_id
+        AND pl.status = 'active'
+        AND pl.end_date >= CURDATE()
+    )";
 }
+
+// Query premium services
+$premium_query = $db_temp->db->query("
+    SELECT s.*, sp.business_name, sp.verification_status, sc.category_name,
+           AVG(r.rating) as average_rating,
+           COUNT(DISTINCT b.booking_id) as total_bookings
+    FROM tl_services s
+    JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
+    JOIN tl_service_categories sc ON s.category_id = sc.category_id
+    JOIN tl_users u ON sp.user_id = u.user_id
+    LEFT JOIN tl_reviews r ON s.service_id = r.service_id
+    LEFT JOIN tl_bookings b ON s.service_id = b.service_id
+    WHERE $premium_condition
+    AND s.service_status = 'active'
+    AND sp.verification_status = 'verified'
+    AND u.account_status = 'active'
+    GROUP BY s.service_id
+    ORDER BY s.date_created DESC
+    LIMIT 8
+");
+$premium_services = $premium_query ? $premium_query->fetch_all(MYSQLI_ASSOC) : [];
+
+// Debug: Log premium services count for troubleshooting
+error_log("Featured Experiences: Found " . count($premium_services) . " premium services");
 
 // Get featured services (fallback to all if no premium)
 $featured_services = get_premium_services_ctr(6);

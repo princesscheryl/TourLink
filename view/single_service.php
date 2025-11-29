@@ -1572,11 +1572,23 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
 
         function submitBooking() {
             const form = document.getElementById('bookingForm');
-            const serviceDate = document.getElementById('service_date').value;
-            const serviceTime = document.getElementById('service_time').value;
-            const serviceId = document.getElementById('service_id').value;
-            const numberOfPeople = document.getElementById('number_of_people').value;
-            const serviceDuration = document.getElementById('service_duration').value || 1;
+            if (!form) {
+                console.error('Booking form not found');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Booking form not found. Please refresh the page and try again.',
+                    confirmButtonColor: '#2d6a4f'
+                });
+                return;
+            }
+
+            const serviceDate = document.getElementById('service_date') ? document.getElementById('service_date').value : '';
+            const serviceTime = document.getElementById('service_time') ? document.getElementById('service_time').value : '';
+            const serviceId = document.getElementById('service_id') ? document.getElementById('service_id').value : '';
+            const numberOfPeople = document.getElementById('number_of_people') ? document.getElementById('number_of_people').value : '1';
+            const serviceDurationEl = document.getElementById('service_duration');
+            const serviceDuration = serviceDurationEl ? serviceDurationEl.value : '1';
 
             // Validate form
             if (!serviceDate) {
@@ -1594,6 +1606,16 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                     icon: 'warning',
                     title: 'Time Required',
                     text: 'Please select a preferred time.',
+                    confirmButtonColor: '#2d6a4f'
+                });
+                return;
+            }
+
+            if (!serviceId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Service ID is missing. Please refresh the page and try again.',
                     confirmButtonColor: '#2d6a4f'
                 });
                 return;

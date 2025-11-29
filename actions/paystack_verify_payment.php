@@ -641,16 +641,39 @@ function process_premium_subscription_verification($reference) {
             error_log("Successfully updated payment record for reference $reference");
         }
 
-        // Mark all provider's services as premium (if column exists)
+        // Mark all provider's services as premium (update both columns if they exist)
         $check_premium_col = $conn->query("SHOW COLUMNS FROM tl_services LIKE 'is_premium'");
-        if ($check_premium_col->num_rows > 0) {
-            $update_services = $conn->prepare("
-                UPDATE tl_services
-                SET is_premium = 1
-                WHERE provider_id = ?
-            ");
+        $has_is_premium = $check_premium_col && $check_premium_col->num_rows > 0;
+        
+        $check_premium_listing_col = $conn->query("SHOW COLUMNS FROM tl_services LIKE 'is_premium_listing'");
+        $has_is_premium_listing = $check_premium_listing_col && $check_premium_listing_col->num_rows > 0;
+        
+        if ($has_is_premium || $has_is_premium_listing) {
+            // Build UPDATE statement with available columns
+            $update_columns = [];
+            if ($has_is_premium) {
+                $update_columns[] = "is_premium = 1";
+            }
+            if ($has_is_premium_listing) {
+                $update_columns[] = "is_premium_listing = 1";
+            }
+            
+            $update_sql = "UPDATE tl_services SET " . implode(", ", $update_columns) . " WHERE provider_id = ? AND service_status = 'active'";
+            $update_services = $conn->prepare($update_sql);
             $update_services->bind_param("i", $provider_id);
             $update_services->execute();
+            $updated_count = $update_services->affected_rows;
+            error_log("Updated $updated_count services to premium for provider $provider_id");
+            
+            // Also check if provider has any services
+            $check_services = $conn->prepare("SELECT COUNT(*) as service_count FROM tl_services WHERE provider_id = ? AND service_status = 'active'");
+            $check_services->bind_param("i", $provider_id);
+            $check_services->execute();
+            $service_result = $check_services->get_result();
+            $service_count = $service_result->fetch_assoc()['service_count'];
+            error_log("Provider $provider_id has $service_count active services");
+        } else {
+            error_log("Warning: Neither is_premium nor is_premium_listing column exists in tl_services");
         }
 
         error_log("Premium subscription activated - Provider: $provider_id, Listing: $premium_listing_id");

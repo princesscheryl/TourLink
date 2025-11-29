@@ -542,20 +542,40 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
 
         function cancelSubscription() {
             if (confirm('Are you sure you want to cancel your premium subscription?\n\nYour benefits will continue until the end of the current billing period.')) {
+                // Disable button and show loading
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+                
                 fetch('../actions/cancel_premium_subscription.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    credentials: 'same-origin'
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
-                        alert('Subscription cancelled successfully');
+                        alert('Subscription cancelled successfully. Your benefits will continue until the end of the current billing period.');
                         location.reload();
                     } else {
-                        alert('Error: ' + data.message);
+                        alert('Error: ' + (data.message || 'Failed to cancel subscription'));
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
                     }
+                })
+                .catch(error => {
+                    console.error('Error cancelling subscription:', error);
+                    alert('An error occurred while cancelling your subscription. Please try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
                 });
             }
         }
