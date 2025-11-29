@@ -478,6 +478,23 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
             </button>
         </div>
 
+        <?php
+        // Display error messages from URL parameters
+        if (isset($_GET['error'])) {
+            $error_msg = '';
+            switch ($_GET['error']) {
+                case 'already_subscribed':
+                    $error_msg = 'You already have an active premium subscription with auto-renewal enabled.';
+                    break;
+                default:
+                    $error_msg = 'An error occurred. Please try again.';
+            }
+            if ($error_msg) {
+                echo '<script>document.addEventListener("DOMContentLoaded", function() { showErrorMessage("' . addslashes($error_msg) . '"); });</script>';
+            }
+        }
+        ?>
+
         <?php if ($active_subscription && !$is_cancelled): ?>
             <!-- Active Subscription View -->
             <div class="premium-grid">
@@ -598,7 +615,7 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
                         <span class="status-value" style="color: #842029;">No (Cancelled)</span>
                     </div>
 
-                    <button class="btn-subscribe" onclick="subscribePremium()" style="width: 100%; margin-top: 20px;">
+                    <button class="btn-subscribe" onclick="subscribePremium(event)" style="width: 100%; margin-top: 20px;">
                         <i class="fas fa-sync-alt"></i> Re-subscribe Now
                     </button>
                 </div>
@@ -627,7 +644,7 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
                         <li><i class="fas fa-times-circle"></i> Cancel anytime</li>
                     </ul>
 
-                    <button class="btn-subscribe" onclick="subscribePremium()">
+                    <button class="btn-subscribe" onclick="subscribePremium(event)">
                         Subscribe Now
                     </button>
                 </div>
@@ -700,11 +717,15 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
     </div>
 
     <script>
-        function subscribePremium() {
-            // Disable button and show loading state
-            const btn = event.target;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        function subscribePremium(event) {
+            // Get the button element from the event
+            const btn = event ? event.target : null;
+            
+            // Disable button and show loading state if we have the button
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            }
 
             // Redirect to payment initialization
             window.location.href = '../actions/initiate_premium_subscription.php';

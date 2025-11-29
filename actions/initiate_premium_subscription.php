@@ -38,10 +38,11 @@ if (!$db->db_connect()) {
 }
 
 $check = $db->db->prepare("
-    SELECT premium_listing_id FROM tl_premium_listings
+    SELECT premium_listing_id, auto_renew FROM tl_premium_listings
     WHERE provider_id = ?
     AND status = 'active'
     AND end_date >= CURDATE()
+    AND (auto_renew = 1 OR auto_renew IS NULL)
 ");
 
 if (!$check) {
@@ -50,9 +51,15 @@ if (!$check) {
 
 $check->bind_param("i", $provider_id);
 $check->execute();
-if ($check->get_result()->num_rows > 0) {
-    header('Location: ../admin/premium_subscription.php?error=already_subscribed');
-    exit();
+$active_result = $check->get_result();
+if ($active_result->num_rows > 0) {
+    // Check if the active subscription has auto_renew enabled
+    $active_sub = $active_result->fetch_assoc();
+    if ($active_sub && ($active_sub['auto_renew'] == 1 || $active_sub['auto_renew'] === '1' || $active_sub['auto_renew'] === null)) {
+        header('Location: ../admin/premium_subscription.php?error=already_subscribed');
+        exit();
+    }
+    // If auto_renew is 0, allow re-subscription (subscription is cancelled but still active until end date)
 }
 
 // Generate payment reference
