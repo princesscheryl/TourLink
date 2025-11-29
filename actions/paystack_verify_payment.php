@@ -1,26 +1,37 @@
 <?php
+// Start output buffering to prevent any premature output
+ob_start();
+
 // Enable error display for debugging
 error_reporting(E_ALL);
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
+ini_set('display_errors', '0'); // Don't display errors, log them instead
+ini_set('display_startup_errors', '0');
 ini_set('log_errors', 1);
+
+// Register shutdown function to catch fatal errors
+register_shutdown_function(function() {
+    $error = error_get_last();
+    if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        ob_end_clean();
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'A fatal error occurred: ' . $error['message'],
+            'debug' => [
+                'file' => basename($error['file']),
+                'line' => $error['line'],
+                'type' => $error['type']
+            ]
+        ]);
+        exit();
+    }
+});
 
 // Set up global error handler to catch all errors and return as JSON
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     error_log("PHP Error [$errno]: $errstr in $errfile:$errline");
-    if (!headers_sent()) {
-        header('Content-Type: application/json');
-    }
-    echo json_encode([
-        'status' => 'error',
-        'message' => "Server error: $errstr",
-        'debug' => [
-            'file' => basename($errfile),
-            'line' => $errline,
-            'full_error' => "$errstr in $errfile:$errline"
-        ]
-    ]);
-    exit();
+    // Don't output here, let the main code handle it
+    return false; // Let PHP continue with normal error handling
 });
 
 header('Content-Type: application/json');
@@ -266,12 +277,17 @@ try {
 
 } catch (Exception $e) {
     error_log("Payment verification error: " . $e->getMessage());
-
+    ob_end_clean(); // Clear any output buffer
     echo json_encode([
         'status' => 'error',
         'verified' => false,
-        'message' => $e->getMessage()
+        'message' => $e->getMessage(),
+        'debug' => [
+            'file' => basename($e->getFile()),
+            'line' => $e->getLine()
+        ]
     ]);
+    exit();
 }
 
 /**
@@ -339,7 +355,23 @@ function process_new_booking_verification($reference) {
 
     // Begin database transaction
     $db = new db_connection();
-    $conn = $db->db_conn();
+    if (!$db->db_connect()) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Database connection failed'
+        ]);
+        return;
+    }
+    
+    $conn = $db->db;
+    if (!$conn) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Database connection object is invalid'
+        ]);
+        return;
+    }
+    
     mysqli_begin_transaction($conn);
 
     try {
@@ -348,23 +380,48 @@ function process_new_booking_verification($reference) {
 
         // Create booking in database
         require_once '../controllers/booking_controller.php';
+        
+        // Check if function exists
+        if (!function_exists('create_booking_ctr')) {
+            throw new Exception("Booking controller function not found. Please check if booking_controller.php is properly loaded.");
+        }
 
-        $booking_id = create_booking_ctr(
-            $booking_data['service_id'],
-            $_SESSION['user_id'],
-            $booking_data['service_date'],
-            $booking_data['service_time'],
-            $booking_data['number_of_people'],
-            $booking_data['total_amount'],
-            'pending',  // booking_status - awaiting provider confirmation
-            'paid',     // payment_status
-            $booking_reference,
-            $booking_data['discount_code'],
-            json_encode($booking_data['guest_details'])
-        );
+        // Get service details to get provider_id and calculate amounts
+        require_once '../controllers/service_controller.php';
+        $service = get_service_by_id_ctr($booking_data['service_id']);
+        if (!$service) {
+            throw new Exception("Service not found");
+        }
+        
+        $provider_id = $service['provider_id'];
+        $original_amount = $booking_data['total_amount'];
+        $discount_amount = isset($booking_data['discount_amount']) ? $booking_data['discount_amount'] : 0;
+        $commission_rate = 0.15; // 15% commission
+        $commission_amount = $original_amount * $commission_rate;
+        $provider_earnings = $original_amount - $commission_amount;
+        
+        // Prepare booking data array for the controller
+        $booking_data_array = [
+            'service_id' => $booking_data['service_id'],
+            'tourist_id' => $_SESSION['user_id'],
+            'provider_id' => $provider_id,
+            'service_date' => $booking_data['service_date'],
+            'service_time' => $booking_data['service_time'],
+            'number_of_people' => $booking_data['number_of_people'],
+            'service_duration' => $booking_data['service_duration'] ?? 1,
+            'original_amount' => $original_amount,
+            'discount_amount' => $discount_amount,
+            'total_amount' => $original_amount - $discount_amount,
+            'commission_amount' => $commission_amount,
+            'provider_earnings' => $provider_earnings,
+            'special_requests' => isset($booking_data['guest_details']) ? (is_string($booking_data['guest_details']) ? $booking_data['guest_details'] : json_encode($booking_data['guest_details'])) : null,
+            'guest_details' => isset($booking_data['guest_details']) ? (is_string($booking_data['guest_details']) ? $booking_data['guest_details'] : json_encode($booking_data['guest_details'])) : null
+        ];
+
+        $booking_id = create_booking_ctr($booking_data_array);
 
         if (!$booking_id) {
-            throw new Exception("Failed to create booking");
+            throw new Exception("Failed to create booking. The booking controller returned false or null.");
         }
 
         error_log("Booking created - ID: $booking_id, Reference: $booking_reference");
@@ -399,6 +456,7 @@ function process_new_booking_verification($reference) {
         unset($_SESSION['pending_booking']);
 
         // Return success
+        ob_end_clean(); // Clear any output buffer
         echo json_encode([
             'status' => 'success',
             'verified' => true,
@@ -409,14 +467,21 @@ function process_new_booking_verification($reference) {
             'amount' => number_format($booking_data['total_amount'], 2),
             'payment_reference' => $reference
         ]);
+        exit();
 
     } catch (Exception $e) {
         mysqli_rollback($conn);
         error_log("Database error during booking verification: " . $e->getMessage());
+        ob_end_clean(); // Clear any output buffer
         echo json_encode([
             'status' => 'error',
-            'message' => $e->getMessage()
+            'message' => $e->getMessage(),
+            'debug' => [
+                'file' => basename($e->getFile()),
+                'line' => $e->getLine()
+            ]
         ]);
+        exit();
     }
 }
 
