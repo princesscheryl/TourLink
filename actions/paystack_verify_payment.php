@@ -204,24 +204,66 @@ try {
             throw new Exception('Failed to update booking status');
         }
 
-        // Record payment
-        $payment_sql = "INSERT INTO tl_payments
-                       (booking_id, tourist_id, amount, currency, payment_method,
-                        transaction_ref, authorization_code, payment_channel,
-                        discount_code, discount_amount, payment_date)
-                       VALUES (?, ?, ?, 'GHS', 'paystack', ?, ?, ?, ?, ?, NOW())";
+        // Record payment - check which columns exist
+        $check_cols = $conn->query("SHOW COLUMNS FROM tl_payments");
+        $columns = [];
+        while ($row = $check_cols->fetch_assoc()) {
+            $columns[] = $row['Field'];
+        }
+        
+        // Build INSERT statement based on available columns
+        $payment_fields = ['booking_id', 'amount'];
+        $payment_values = [$booking_id, $amount_paid];
+        $payment_types = "id";
+        
+        // Add optional columns if they exist
+        if (in_array('transaction_reference', $columns)) {
+            $payment_fields[] = 'transaction_reference';
+            $payment_values[] = $reference;
+            $payment_types .= "s";
+        } elseif (in_array('transaction_ref', $columns)) {
+            $payment_fields[] = 'transaction_ref';
+            $payment_values[] = $reference;
+            $payment_types .= "s";
+        }
+        
+        if (in_array('payment_method', $columns)) {
+            $payment_fields[] = 'payment_method';
+            $payment_values[] = 'card'; // Paystack default
+            $payment_types .= "s";
+        }
+        
+        if (in_array('payment_status', $columns)) {
+            $payment_fields[] = 'payment_status';
+            $payment_values[] = 'successful';
+            $payment_types .= "s";
+        }
+        
+        // Store metadata if column exists
+        if (in_array('transaction_metadata', $columns)) {
+            $metadata = json_encode([
+                'authorization_code' => $authorization_code,
+                'payment_channel' => $payment_channel,
+                'customer_email' => $customer_email,
+                'discount_code' => $discount_code,
+                'discount_amount' => $discount_amount
+            ]);
+            $payment_fields[] = 'transaction_metadata';
+            $payment_values[] = $metadata;
+            $payment_types .= "s";
+        }
+        
+        $fields_str = implode(', ', $payment_fields);
+        $placeholders = implode(', ', array_fill(0, count($payment_fields), '?'));
+        
+        $payment_sql = "INSERT INTO tl_payments ($fields_str) VALUES ($placeholders)";
         $payment_stmt = $conn->prepare($payment_sql);
-        $payment_stmt->bind_param(
-            "iidsssd",
-            $booking_id,
-            $user_id,
-            $amount_paid,
-            $reference,
-            $authorization_code,
-            $payment_channel,
-            $discount_code,
-            $discount_amount
-        );
+        
+        if (!$payment_stmt) {
+            throw new Exception("Failed to prepare payment statement: " . $conn->error);
+        }
+        
+        $payment_stmt->bind_param($payment_types, ...$payment_values);
 
         if (!$payment_stmt->execute()) {
             throw new Exception('Failed to record payment');
@@ -427,20 +469,76 @@ function process_new_booking_verification($reference) {
         error_log("Booking created - ID: $booking_id, Reference: $booking_reference");
 
         // Record payment
-        $payment_sql = "INSERT INTO tl_payments
-                       (booking_id, tourist_id, amount, currency, payment_method,
-                        transaction_ref, authorization_code, payment_channel, payment_date)
-                       VALUES (?, ?, ?, 'GHS', 'paystack', ?, ?, ?, NOW())";
+        // Check which columns exist in tl_payments table
+        $check_cols = $conn->query("SHOW COLUMNS FROM tl_payments");
+        $columns = [];
+        while ($row = $check_cols->fetch_assoc()) {
+            $columns[] = $row['Field'];
+        }
+        
+        // Build INSERT statement based on available columns
+        $payment_fields = ['booking_id', 'amount'];
+        $payment_values = [$booking_id, $amount_paid];
+        $payment_types = "id";
+        
+        // Add optional columns if they exist (check for both possible column names)
+        if (in_array('transaction_reference', $columns)) {
+            $payment_fields[] = 'transaction_reference';
+            $payment_values[] = $reference;
+            $payment_types .= "s";
+        } elseif (in_array('transaction_ref', $columns)) {
+            $payment_fields[] = 'transaction_ref';
+            $payment_values[] = $reference;
+            $payment_types .= "s";
+        }
+        
+        if (in_array('payment_method', $columns)) {
+            $payment_fields[] = 'payment_method';
+            $payment_values[] = 'card'; // Paystack default
+            $payment_types .= "s";
+        }
+        
+        if (in_array('authorization_code', $columns)) {
+            $payment_fields[] = 'authorization_code';
+            $payment_values[] = $authorization_code;
+            $payment_types .= "s";
+        }
+        
+        if (in_array('payment_channel', $columns)) {
+            $payment_fields[] = 'payment_channel';
+            $payment_values[] = $payment_channel;
+            $payment_types .= "s";
+        }
+        
+        if (in_array('payment_status', $columns)) {
+            $payment_fields[] = 'payment_status';
+            $payment_values[] = 'successful';
+            $payment_types .= "s";
+        }
+        
+        // Store payment metadata if column exists
+        if (in_array('transaction_metadata', $columns)) {
+            $metadata = json_encode([
+                'authorization_code' => $authorization_code,
+                'payment_channel' => $payment_channel,
+                'customer_email' => $customer_email
+            ]);
+            $payment_fields[] = 'transaction_metadata';
+            $payment_values[] = $metadata;
+            $payment_types .= "s";
+        }
+        
+        $fields_str = implode(', ', $payment_fields);
+        $placeholders = implode(', ', array_fill(0, count($payment_fields), '?'));
+        
+        $payment_sql = "INSERT INTO tl_payments ($fields_str) VALUES ($placeholders)";
         $payment_stmt = $conn->prepare($payment_sql);
-        $payment_stmt->bind_param(
-            "iidsss",
-            $booking_id,
-            $_SESSION['user_id'],
-            $amount_paid,
-            $reference,
-            $authorization_code,
-            $payment_channel
-        );
+        
+        if (!$payment_stmt) {
+            throw new Exception("Failed to prepare payment statement: " . $conn->error);
+        }
+        
+        $payment_stmt->bind_param($payment_types, ...$payment_values);
 
         if (!$payment_stmt->execute()) {
             throw new Exception("Failed to record payment");
