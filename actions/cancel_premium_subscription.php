@@ -12,7 +12,22 @@ ini_set('log_errors', 1);
 // Start output buffering to prevent any unwanted output
 ob_start();
 
+// Set JSON header early
 header('Content-Type: application/json');
+
+// Register shutdown function to catch fatal errors
+register_shutdown_function(function() {
+    $error = error_get_last();
+    if ($error !== NULL && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        ob_end_clean();
+        echo json_encode([
+            'success' => false,
+            'message' => 'A fatal error occurred: ' . $error['message'] . ' in ' . $error['file'] . ' on line ' . $error['line'],
+            'error' => $error['message']
+        ]);
+        exit();
+    }
+});
 
 session_start();
 require_once '../settings/core.php';

@@ -297,6 +297,83 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
             margin-bottom: 20px;
         }
 
+        .error-message, .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 350px;
+            max-width: 500px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .error-message {
+            border-left: 4px solid #dc3545;
+        }
+
+        .success-message {
+            border-left: 4px solid #28a745;
+        }
+
+        .error-message i {
+            color: #dc3545;
+            font-size: 20px;
+        }
+
+        .success-message i {
+            color: #28a745;
+            font-size: 20px;
+        }
+
+        .error-message span, .success-message span {
+            flex: 1;
+            color: #1a1a1a;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .error-close {
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 16px;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .error-close:hover {
+            color: #1a1a1a;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .error-message, .success-message {
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+                max-width: none;
+            }
+        }
+
         .history-table {
             width: 100%;
             border-collapse: collapse;
@@ -375,6 +452,24 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
         <div class="page-header">
             <h1 class="page-title">Premium Subscription</h1>
             <p class="page-subtitle">Boost your visibility and get more bookings</p>
+        </div>
+
+        <!-- Error Message Display -->
+        <div id="errorMessage" class="error-message" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText"></span>
+            <button type="button" onclick="closeErrorMessage()" class="error-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Success Message Display -->
+        <div id="successMessage" class="success-message" style="display: none;">
+            <i class="fas fa-check-circle"></i>
+            <span id="successText"></span>
+            <button type="button" onclick="closeSuccessMessage()" class="error-close">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
         <?php if ($active_subscription): ?>
@@ -540,6 +635,38 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
             window.location.href = '../actions/initiate_premium_subscription.php';
         }
 
+        function showErrorMessage(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorDiv.style.display = 'flex';
+            
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                closeErrorMessage();
+            }, 8000);
+        }
+
+        function showSuccessMessage(message) {
+            const successDiv = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            successText.textContent = message;
+            successDiv.style.display = 'flex';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                closeSuccessMessage();
+            }, 5000);
+        }
+
+        function closeErrorMessage() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function closeSuccessMessage() {
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
         function cancelSubscription() {
             if (confirm('Are you sure you want to cancel your premium subscription?\n\nYour benefits will continue until the end of the current billing period.')) {
                 // Disable button and show loading
@@ -547,6 +674,10 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
                 const originalText = btn.innerHTML;
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+                
+                // Hide any previous messages
+                closeErrorMessage();
+                closeSuccessMessage();
                 
                 fetch('../actions/cancel_premium_subscription.php', {
                     method: 'POST',
@@ -556,24 +687,46 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
                     credentials: 'same-origin'
                 })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
+                    // Try to parse JSON even if response is not ok
+                    return response.text().then(text => {
+                        try {
+                            return { ok: response.ok, data: JSON.parse(text), status: response.status };
+                        } catch (e) {
+                            // If JSON parsing fails, return the text as error
+                            return { 
+                                ok: false, 
+                                data: { 
+                                    success: false, 
+                                    message: 'Server returned an invalid response. Status: ' + response.status + '. Response: ' + text.substring(0, 200)
+                                },
+                                status: response.status
+                            };
+                        }
+                    });
                 })
-                .then(data => {
-                    if (data.success) {
-                        alert('Subscription cancelled successfully. Your benefits will continue until the end of the current billing period.');
-                        location.reload();
+                .then(result => {
+                    if (result.ok && result.data.success) {
+                        showSuccessMessage('Subscription cancelled successfully. Your benefits will continue until the end of the current billing period.');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
                     } else {
-                        alert('Error: ' + (data.message || 'Failed to cancel subscription'));
+                        // Show detailed error message
+                        let errorMsg = result.data.message || 'Failed to cancel subscription';
+                        if (result.data.error) {
+                            errorMsg += ' (Error: ' + result.data.error + ')';
+                        }
+                        if (result.status && result.status !== 200) {
+                            errorMsg += ' [HTTP ' + result.status + ']';
+                        }
+                        showErrorMessage(errorMsg);
                         btn.disabled = false;
                         btn.innerHTML = originalText;
                     }
                 })
                 .catch(error => {
                     console.error('Error cancelling subscription:', error);
-                    alert('An error occurred while cancelling your subscription. Please try again.');
+                    showErrorMessage('Network error: ' + error.message + '. Please check your internet connection and try again.');
                     btn.disabled = false;
                     btn.innerHTML = originalText;
                 });
