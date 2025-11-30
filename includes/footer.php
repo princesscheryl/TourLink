@@ -66,20 +66,8 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
     <div class="footer-bottom">
         <div class="footer-bottom-content">
             <div class="footer-copyright">
-                <?php 
-                // Include Adinkra symbols
-                if (file_exists(__DIR__ . '/adinkra_symbols.php')) {
-                    include __DIR__ . '/adinkra_symbols.php';
-                }
-                ?>
                 <p>
-                    <?php if (function_exists('get_adinkra_symbol')): ?>
-                        <span class="footer-adinkra"><?php echo get_adinkra_symbol('akoma', '16px', '#d4a017'); ?></span>
-                    <?php endif; ?>
                     &copy; 2025 <span data-i18n="app_name">TourLink</span>. <span data-i18n="footer.copyright">All rights reserved.</span>
-                    <?php if (function_exists('get_adinkra_symbol')): ?>
-                        <span class="footer-adinkra"><?php echo get_adinkra_symbol('gye_nyame', '16px', '#d4a017'); ?></span>
-                    <?php endif; ?>
                 </p>
                 <p class="footer-tagline">
                     <span class="cultural-phrase">Medaase</span> - Proudly supporting Ghana's tourism industry and local communities
@@ -222,13 +210,6 @@ if ($in_view_folder || $in_admin_folder || $in_login_folder) {
         font-size: 12px;
         color: rgba(255,255,255,0.5);
         margin-top: 8px;
-    }
-
-    .footer-adinkra {
-        display: inline-block;
-        vertical-align: middle;
-        margin: 0 4px;
-        opacity: 0.8;
     }
 
     /* Kente Pattern CSS */

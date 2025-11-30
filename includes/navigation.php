@@ -18,12 +18,6 @@ if ($in_view_folder || $in_admin_folder) {
 ?>
 
 <!-- Navigation -->
-<?php 
-// Include Adinkra symbols for decorative use
-if (file_exists(__DIR__ . '/adinkra_symbols.php')) {
-    include __DIR__ . '/adinkra_symbols.php';
-}
-?>
 <nav class="main-nav" role="navigation" aria-label="Main navigation">
     <div class="nav-container">
         <a href="<?php echo $base_path; ?>index_tourlink.php" class="logo" aria-label="TourLink Home">TourLink<span class="logo-dot">.</span></a>

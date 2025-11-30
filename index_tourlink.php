@@ -120,12 +120,6 @@ $categories = get_all_service_categories_ctr();
     </div>
 
     <!-- Main Navigation -->
-    <?php 
-    // Include Adinkra symbols for decorative use
-    if (file_exists('includes/adinkra_symbols.php')) {
-        include 'includes/adinkra_symbols.php';
-    }
-    ?>
     <nav class="main-nav" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
             <a href="index_tourlink.php" class="logo" aria-label="TourLink Home">TourLink<span class="logo-dot">.</span></a>
@@ -228,11 +222,6 @@ $categories = get_all_service_categories_ctr();
 
     <!-- Hero Section -->
     <section class="hero" id="main-content" role="main">
-        <?php if (function_exists('get_adinkra_symbol')): ?>
-        <div style="position: absolute; top: 20px; right: 20px; opacity: 0.3; z-index: 1;">
-            <?php echo get_adinkra_symbol('gye_nyame', '60px', '#d4a017'); ?>
-        </div>
-        <?php endif; ?>
         <div class="hero-content">
             <div class="hero-text">
                 <h1 class="rotating-text-container">

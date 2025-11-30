@@ -246,20 +246,8 @@ if ($payment_type === 'premium') {
                 <i class="fas fa-check"></i>
             </div>
 
-            <?php 
-            // Include Adinkra symbols and cultural messaging
-            if (file_exists(__DIR__ . '/../includes/adinkra_symbols.php')) {
-                include __DIR__ . '/../includes/adinkra_symbols.php';
-            }
-            ?>
-            
             <?php if ($is_premium): ?>
                 <h1>
-                    <?php if (function_exists('get_adinkra_symbol')): ?>
-                        <span style="display: inline-block; vertical-align: middle; margin-right: 8px;">
-                            <?php echo get_adinkra_symbol('nsoromma', '32px', '#28a745'); ?>
-                        </span>
-                    <?php endif; ?>
                     Premium Subscription Activated!
                 </h1>
                 <p class="subtitle">
@@ -267,11 +255,6 @@ if ($payment_type === 'premium') {
                 </p>
             <?php else: ?>
                 <h1>
-                    <?php if (function_exists('get_adinkra_symbol')): ?>
-                        <span style="display: inline-block; vertical-align: middle; margin-right: 8px;">
-                            <?php echo get_adinkra_symbol('akoma', '32px', '#28a745'); ?>
-                        </span>
-                    <?php endif; ?>
                     Payment Successful!
                 </h1>
                 <p class="subtitle">
@@ -367,13 +350,7 @@ if ($payment_type === 'premium') {
             <!-- Cultural Message Box -->
             <div style="background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%); border-radius: 12px; padding: 20px; margin-bottom: 30px; color: white; text-align: center;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px;">
-                    <?php if (function_exists('get_adinkra_symbol')): ?>
-                        <?php echo get_adinkra_symbol('sankofa', '24px', '#d4a017'); ?>
-                    <?php endif; ?>
                     <h3 style="margin: 0; font-size: 18px; color: #d4a017;">Experience Ghana's Rich Culture</h3>
-                    <?php if (function_exists('get_adinkra_symbol')): ?>
-                        <?php echo get_adinkra_symbol('sankofa', '24px', '#d4a017'); ?>
-                    <?php endif; ?>
                 </div>
                 <p style="margin: 0; font-size: 14px; opacity: 0.95; line-height: 1.6;">
                     Your booking supports local communities and preserves Ghana's cultural heritage. 
