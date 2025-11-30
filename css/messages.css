@@ -169,19 +169,60 @@
 
 /* Provider Dashboard Messages Styles */
 .main-content .messages-container {
-    padding: 0 32px;
-    max-width: 100%;
-    width: 100%;
+    display: none; /* Hide the tourist messages container in provider view */
 }
 
-.main-content .messages-content {
+.main-content .content-area {
+    padding: 24px 32px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.main-content .content-area .messages-content {
     background: white;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     padding: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
-.main-content .empty-state {
+.main-content .content-area .conversations-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.main-content .content-area .conversation-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.main-content .content-area .conversation-item:hover {
+    background: #f8f9fa;
+    text-decoration: none;
+    color: inherit;
+}
+
+.main-content .content-area .conversation-item.unread {
+    background: #f0f7ff;
+    border-left: 4px solid #2d6a4f;
+}
+
+.main-content .content-area .empty-state {
     padding: 60px 20px;
 }
 

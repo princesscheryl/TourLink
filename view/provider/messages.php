@@ -59,6 +59,7 @@ $current_page = 'messages';
         </div>
 
         <div class="content-area">
+            <div class="messages-content">
             <?php if (empty($conversations)): ?>
                 <div class="empty-state">
                     <i class="fas fa-comments"></i>
@@ -112,6 +113,7 @@ $current_page = 'messages';
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
+            </div>
         </div>
     </main>
 
