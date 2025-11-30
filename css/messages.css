@@ -75,6 +75,7 @@
     text-decoration: none;
     color: inherit;
     transition: background 0.2s;
+    box-sizing: border-box;
 }
 
 .conversation-item:hover {
@@ -169,14 +170,23 @@
 
 /* Provider Dashboard Messages Styles */
 .main-content .messages-container {
-    display: none; /* Hide the tourist messages container in provider view */
+    display: none !important; /* Hide the tourist messages container in provider view */
+}
+
+/* Ensure main-content doesn't extend behind sidebar */
+.main-content {
+    margin-left: 260px !important;
+    width: calc(100% - 260px) !important;
+    box-sizing: border-box;
 }
 
 .main-content .content-area {
     padding: 24px 32px;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
+    position: relative;
 }
 
 .main-content .content-area .messages-content {
@@ -187,13 +197,18 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
 }
 
 .main-content .content-area .conversations-list {
     display: flex;
     flex-direction: column;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 .main-content .content-area .conversation-item {
@@ -209,6 +224,8 @@
     max-width: 100%;
     box-sizing: border-box;
     overflow: hidden;
+    position: relative;
+    margin: 0;
 }
 
 .main-content .content-area .conversation-item:hover {
