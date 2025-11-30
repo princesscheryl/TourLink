@@ -180,6 +180,18 @@
     box-sizing: border-box;
 }
 
+/* Style the top-bar for messages page - ensure icon displays properly */
+.main-content .top-bar .page-title h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-content .top-bar .page-title h1 i {
+    color: var(--primary, #0f766e);
+    font-size: 1.1rem;
+}
+
 .main-content .content-area {
     padding: 24px 32px;
     width: 100%;

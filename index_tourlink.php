@@ -304,11 +304,11 @@ $categories = get_all_service_categories_ctr();
     <div class="trust-section">
         <div class="trust-item">
             <i class="fas fa-star"></i>
-            <strong data-i18n="trust.reviews">4.8/5 (10K+ Reviews)</strong>
+            <strong data-i18n="trust.reviews">4.8/5 (200+ Reviews)</strong>
         </div>
         <div class="trust-item">
             <i class="fas fa-users"></i>
-            <strong data-i18n="trust.travelers">Trusted by 500K+ Travelers</strong>
+            <strong data-i18n="trust.travelers">Trusted by 500+ Travelers</strong>
         </div>
         <div class="trust-item">
             <i class="fas fa-lock"></i>
@@ -426,8 +426,8 @@ $categories = get_all_service_categories_ctr();
                         <i class="fas fa-headset"></i>
                     </div>
                     <div class="feature-text">
-                        <h4 data-i18n="why_choose.24_7_support">24/7 Customer Support</h4>
-                        <p data-i18n="why_choose.24_7_support_desc">Our travel experts are available round-the-clock to assist you, no matter where you are in the world.</p>
+                        <h4 data-i18n="why_choose.24_7_support">Customer Support</h4>
+                        <p data-i18n="why_choose.24_7_support_desc">Our travel experts are available to assist you, no matter where you are in the world.</p>
                     </div>
                 </div>
                 <div class="feature-item">
