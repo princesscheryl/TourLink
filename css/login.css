@@ -271,6 +271,39 @@ body::before{
     }
     .login-container{
         margin-top:30px;
-        margin-bottom:30px
+        margin-bottom:30px;
+        padding:0 20px;
+    }
+    .card{
+        padding:1.5rem;
+    }
+    img{
+        max-width:100%;
+        height:auto;
+    }
+    form{
+        width:100%;
+    }
+    .form-control{
+        width:100%;
+    }
+}
+
+@media(max-width:480px){
+    .card-header h4{
+        font-size:1.3rem
+    }
+    .btn-custom{
+        padding:10px 20px;
+        font-size:0.9rem;
+        width:100%;
+    }
+    .login-container{
+        margin-top:20px;
+        margin-bottom:20px;
+        padding:0 15px;
+    }
+    .card{
+        padding:1.2rem;
     }
 }

@@ -289,3 +289,61 @@ textarea.form-control {
     }
 }
 
+@media (max-width: 768px) {
+    .container {
+        padding: 0 20px;
+        margin: 30px auto;
+    }
+    
+    .main-content {
+        padding: 30px 20px;
+    }
+    
+    .page-title {
+        font-size: 24px;
+    }
+    
+    .section-title {
+        font-size: 18px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+        margin: 20px auto;
+    }
+    
+    .main-content {
+        padding: 24px 16px;
+    }
+    
+    .page-title {
+        font-size: 20px;
+    }
+    
+    .section-title {
+        font-size: 16px;
+    }
+    
+    .section {
+        margin-bottom: 30px;
+        padding-bottom: 24px;
+    }
+}
+
