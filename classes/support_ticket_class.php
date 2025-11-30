@@ -49,8 +49,9 @@ class SupportTicket {
 
         // Parameter types: s=string, i=integer
         // 1. ticket_number(s), 2. user_id(i), 3. user_type(s), 4. subject(s), 5. category(s), 6. description(s), 7. priority(s), 8. related_booking_id(i), 9. related_service_id(i)
-        // Type string: s-i-s-s-s-s-s-i-i = 9 characters (removed extra 'i' from position 5)
-        $stmt->bind_param("sississsii", $ticket_number, $user_id, $user_type, $subject, $category, $description, $priority, $related_booking_id, $related_service_id);
+        // Type string: s-i-s-s-s-s-s-i-i = 9 characters (corrected from 10)
+        $type_string = "sisssssii";
+        $stmt->bind_param($type_string, $ticket_number, $user_id, $user_type, $subject, $category, $description, $priority, $related_booking_id, $related_service_id);
         
         if ($stmt->execute()) {
             return $this->db->db->insert_id;
