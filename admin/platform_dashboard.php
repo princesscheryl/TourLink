@@ -134,28 +134,28 @@ if (!$regional_revenue) {
                     <div class="stat-icon blue">
                         <i class="fas fa-calendar-check"></i>
                     </div>
-                    <div class="stat-value"><?php echo number_format($stats['total_bookings']); ?></div>
+                    <div class="stat-value"><?php echo number_format($stats['total_bookings'] ?? 0); ?></div>
                     <div class="stat-label">Total Bookings</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon green">
                         <i class="fas fa-store"></i>
                     </div>
-                    <div class="stat-value"><?php echo number_format($stats['total_providers']); ?></div>
+                    <div class="stat-value"><?php echo number_format($stats['total_providers'] ?? 0); ?></div>
                     <div class="stat-label">Active Providers</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon amber">
                         <i class="fas fa-users"></i>
                     </div>
-                    <div class="stat-value"><?php echo number_format($stats['total_tourists']); ?></div>
+                    <div class="stat-value"><?php echo number_format($stats['total_tourists'] ?? 0); ?></div>
                     <div class="stat-label">Registered Tourists</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon purple">
                         <i class="fas fa-concierge-bell"></i>
                     </div>
-                    <div class="stat-value"><?php echo number_format($stats['total_services']); ?></div>
+                    <div class="stat-value"><?php echo number_format($stats['total_services'] ?? 0); ?></div>
                     <div class="stat-label">Active Services</div>
                 </div>
             </div>
@@ -167,17 +167,17 @@ if (!$regional_revenue) {
             </h2>
             <div class="impact-grid">
                 <div class="impact-card">
-                    <div class="impact-value"><?php echo number_format($impact['jobs_supported']); ?></div>
+                    <div class="impact-value"><?php echo number_format($impact['jobs_supported'] ?? 0); ?></div>
                     <div class="impact-label">Jobs Supported</div>
                     <span class="impact-badge">Economic Impact</span>
                 </div>
                 <div class="impact-card">
-                    <div class="impact-value">GHS <?php echo number_format($impact['provider_income'], 0); ?></div>
+                    <div class="impact-value">GHS <?php echo number_format($impact['provider_income'] ?? 0, 0); ?></div>
                     <div class="impact-label">Provider Income Generated</div>
                     <span class="impact-badge">Direct to Communities</span>
                 </div>
                 <div class="impact-card">
-                    <div class="impact-value"><?php echo number_format($impact['communities_reached']); ?></div>
+                    <div class="impact-value"><?php echo number_format($impact['communities_reached'] ?? 0); ?></div>
                     <div class="impact-label">Regions Reached</div>
                     <span class="impact-badge">Geographic Spread</span>
                 </div>

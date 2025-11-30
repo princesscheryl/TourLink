@@ -1,13 +1,10 @@
 <?php
-require_once '../settings/core.php';
+require_once 'includes_platform/auth_check.php';
 require_once '../controllers/support_ticket_controller.php';
 require_once '../classes/tourlink_user_class.php';
 
-// Check if user is admin
-if (!isset($_SESSION['user_id']) || ($_SESSION['user_type'] ?? '') !== 'admin') {
-    header("Location: ../login/login.php");
-    exit();
-}
+// Check admin access
+require_privilege('view_dashboard');
 
 // Get filters
 $status_filter = isset($_GET['status']) ? $_GET['status'] : '';
