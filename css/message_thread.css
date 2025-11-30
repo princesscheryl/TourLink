@@ -241,11 +241,44 @@
 /* Provider Dashboard Message Thread */
 .main-content .content-area .message-thread-container {
     padding: 0;
-    max-width: none;
+    max-width: 100%;
     width: 100%;
     margin: 0;
     position: relative;
     min-height: auto;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.main-content .content-area .message-thread-header {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+.main-content .content-area .messages-area {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.main-content .content-area .message {
+    max-width: 75%;
+    box-sizing: border-box;
+}
+
+.main-content .content-area .message-input-area {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.main-content .content-area .message-form {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .main-content .message-thread-header {

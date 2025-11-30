@@ -235,36 +235,36 @@ require_once '../settings/core.php';
 
             <div class="team-grid">
                 <div class="team-member">
-                    <div class="member-avatar">KA</div>
+                    <div class="member-avatar">PAD</div>
                     <div class="member-name">Princess Asiedu-Donkor</div>
                     <div class="member-role">Chief Executive Officer</div>
                     <p class="member-bio">With a background in Management Information Systems, she combines business insight with technical understanding to ensure that TourLink supports inclusive economic growth across Ghana’s tourism sector.</p>
-
+                </div>
                 <div class="team-member">
-                    <div class="member-avatar">AM</div>
-                    <div class="member-name">Ama Mensah</div>
+                    <div class="member-avatar">DO</div>
+                    <div class="member-name">David Ofori</div>
                     <div class="member-role">Chief Technology Officer</div>
                     <p class="member-bio">Expert in digital platforms and marketplace solutions. Leads our technical innovation to deliver seamless user experiences.</p>
                 </div>
 
                 <div class="team-member">
-                    <div class="member-avatar">KO</div>
-                    <div class="member-name">Kofi Owusu</div>
-                    <div class="member-role">Head of Operations</div>
+                    <div class="member-avatar">KA</div>
+                    <div class="member-name">Kelly Asante</div>
+                    <div class="member-role">Chief Operations Officer</div>
                     <p class="member-bio">Ensures quality standards across all service providers. Manages partnerships and maintains operational excellence.</p>
                 </div>
 
                 <div class="team-member">
-                    <div class="member-avatar">EA</div>
-                    <div class="member-name">Efua Agyeman</div>
-                    <div class="member-role">Marketing Director</div>
-                    <p class="member-bio">Creative strategist driving TourLink's brand presence. Connects with travelers and showcases Ghana's tourism potential.</p>
+                    <div class="member-avatar">RB</div>
+                    <div class="member-name">Rima Baitie</div>
+                    <div class="member-role">Chief Financial Officer</div>
+                    <p class="member-bio">Oversees company budgeting, cost management, and grant reporting for funding bodies such as the African Digital Fund.</p>
                 </div>
 
                 <div class="team-member">
-                    <div class="member-avatar">YB</div>
-                    <div class="member-name">Yaw Boateng</div>
-                    <div class="member-role">Customer Success Manager</div>
+                    <div class="member-avatar">SB</div>
+                    <div class="member-name">Sean Boateng</div>
+                    <div class="member-role">Chief Marketing and Partnerships Officer</div>
                     <p class="member-bio">Dedicated to ensuring exceptional experiences for both travelers and service providers through outstanding support.</p>
                 </div>
             </div>
