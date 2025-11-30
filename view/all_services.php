@@ -50,7 +50,9 @@ if ($services && is_array($services)) {
     // Rating filter
     if ($min_rating !== null) {
         $services = array_filter($services, function($s) use ($min_rating) {
-            return ($s['provider_rating'] ?? 0) >= $min_rating;
+            // Use service's average_rating if available, otherwise fall back to provider_rating
+            $service_rating = $s['average_rating'] ?? $s['provider_rating'] ?? 0;
+            return (float)$service_rating >= (float)$min_rating;
         });
     }
 

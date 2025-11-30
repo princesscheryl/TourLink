@@ -66,6 +66,8 @@ class Service extends db_connection
                        sp.business_name as provider_name,
                        sp.region as provider_region,
                        sp.average_rating as provider_rating,
+                       COALESCE(s.average_rating, 0) as average_rating,
+                       COALESCE(s.total_reviews, 0) as total_reviews,
                        u.first_name as provider_first_name,
                        u.last_name as provider_last_name
                 FROM tl_services s
@@ -123,7 +125,9 @@ class Service extends db_connection
         $sql = "SELECT s.*,
                        sc.category_name,
                        sp.business_name as provider_name,
-                       sp.average_rating as provider_rating
+                       sp.average_rating as provider_rating,
+                       COALESCE(s.average_rating, 0) as average_rating,
+                       COALESCE(s.total_reviews, 0) as total_reviews
                 FROM tl_services s
                 INNER JOIN tl_service_categories sc ON s.category_id = sc.category_id
                 INNER JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
@@ -172,7 +176,9 @@ class Service extends db_connection
         $sql = "SELECT s.*,
                        sc.category_name,
                        sp.business_name as provider_name,
-                       sp.average_rating as provider_rating
+                       sp.average_rating as provider_rating,
+                       COALESCE(s.average_rating, 0) as average_rating,
+                       COALESCE(s.total_reviews, 0) as total_reviews
                 FROM tl_services s
                 INNER JOIN tl_service_categories sc ON s.category_id = sc.category_id
                 INNER JOIN tl_service_providers sp ON s.provider_id = sp.provider_id
@@ -265,6 +271,8 @@ class Service extends db_connection
                        sp.business_name as provider_name,
                        sp.region as provider_region,
                        sp.average_rating as provider_rating,
+                       COALESCE(s.average_rating, 0) as average_rating,
+                       COALESCE(s.total_reviews, 0) as total_reviews,
                        u.first_name as provider_first_name,
                        u.last_name as provider_last_name,
                        f.festival_name,
