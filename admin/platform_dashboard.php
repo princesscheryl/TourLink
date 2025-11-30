@@ -128,38 +128,6 @@ if (!$regional_revenue) {
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-value"><?php echo number_format($stats['total_bookings'] ?? 0); ?></div>
-                    <div class="stat-label">Total Bookings</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon green">
-                        <i class="fas fa-store"></i>
-                    </div>
-                    <div class="stat-value"><?php echo number_format($stats['total_providers'] ?? 0); ?></div>
-                    <div class="stat-label">Active Providers</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon amber">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-value"><?php echo number_format($stats['total_tourists'] ?? 0); ?></div>
-                    <div class="stat-label">Registered Tourists</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon purple">
-                        <i class="fas fa-concierge-bell"></i>
-                    </div>
-                    <div class="stat-value"><?php echo number_format($stats['total_services'] ?? 0); ?></div>
-                    <div class="stat-label">Active Services</div>
-                </div>
-            </div>
-
             <!-- Impact Metrics Section -->
             <h2 class="section-title">
                 <i class="fas fa-seedling"></i>

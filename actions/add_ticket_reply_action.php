@@ -3,9 +3,16 @@ require_once '../settings/core.php';
 require_once '../controllers/support_ticket_controller.php';
 require_once '../classes/email_class.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login/login.php");
+// Check if platform admin OR regular user is logged in
+$is_platform_admin = isset($_SESSION['admin_id']);
+$is_regular_user = isset($_SESSION['user_id']);
+
+if (!$is_platform_admin && !$is_regular_user) {
+    if ($is_platform_admin) {
+        header("Location: ../admin/platform_login.php");
+    } else {
+        header("Location: ../login/login.php");
+    }
     exit();
 }
 
@@ -19,22 +26,38 @@ if (!$ticket_id || empty($message)) {
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-$user_type = $_SESSION['user_type'] ?? 'tourist';
+// Set user context based on login type
+if ($is_platform_admin) {
+    // Platform admins use admin_id, but for ticket replies we need to use a system user_id
+    // For now, we'll use admin_id as user_id (tickets table uses user_id)
+    $user_id = $_SESSION['admin_id'];
+    $user_type = 'admin';
+} else {
+    $user_id = $_SESSION['user_id'];
+    $user_type = $_SESSION['user_type'] ?? 'tourist';
+}
 
 // Get ticket to verify ownership
 $ticket = get_ticket_by_id_ctr($ticket_id);
 if (!$ticket) {
     $_SESSION['ticket_error'] = 'Ticket not found';
-    header("Location: ../view/my_tickets.php");
+    if ($is_platform_admin) {
+        header("Location: ../admin/manage_tickets.php");
+    } else {
+        header("Location: ../view/my_tickets.php");
+    }
     exit();
 }
 
 // Check permission (user can only reply to their own tickets, admin can reply to any)
-$is_admin = ($user_type === 'admin');
+$is_admin = $is_platform_admin || ($user_type === 'admin');
 if (!$is_admin && $ticket['user_id'] != $user_id) {
     $_SESSION['ticket_error'] = 'You do not have permission to reply to this ticket';
-    header("Location: ../view/my_tickets.php");
+    if ($is_platform_admin) {
+        header("Location: ../admin/manage_tickets.php");
+    } else {
+        header("Location: ../view/my_tickets.php");
+    }
     exit();
 }
 

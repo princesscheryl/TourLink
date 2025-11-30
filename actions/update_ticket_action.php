@@ -2,9 +2,16 @@
 require_once '../settings/core.php';
 require_once '../controllers/support_ticket_controller.php';
 
-// Check if user is admin
-if (!isset($_SESSION['user_id']) || ($_SESSION['user_type'] ?? '') !== 'admin') {
-    header("Location: ../login/login.php");
+// Check if platform admin OR regular admin
+$is_platform_admin = isset($_SESSION['admin_id']);
+$is_regular_admin = isset($_SESSION['user_id']) && ($_SESSION['user_type'] ?? '') === 'admin';
+
+if (!$is_platform_admin && !$is_regular_admin) {
+    if ($is_platform_admin) {
+        header("Location: ../admin/platform_login.php");
+    } else {
+        header("Location: ../login/login.php");
+    }
     exit();
 }
 
@@ -14,7 +21,7 @@ $assigned_to = isset($_POST['assigned_to']) && $_POST['assigned_to'] ? (int)$_PO
 
 if (!$ticket_id || !$status) {
     $_SESSION['ticket_error'] = 'Invalid request';
-    header("Location: ../admin/ticket_details.php?id=" . $ticket_id);
+    header("Location: ../view/ticket_details.php?id=" . $ticket_id);
     exit();
 }
 

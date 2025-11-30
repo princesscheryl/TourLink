@@ -60,14 +60,24 @@ if (!$is_platform_admin && !$is_admin && $ticket['user_id'] != $user_id) {
 }
 
 // Get ticket replies
-$include_internal = $is_admin;
+$include_internal = $is_platform_admin || ($is_admin ?? false);
 $replies = get_ticket_replies_ctr($ticket_id, $include_internal);
 
-// Get all admins for assignment (admin only)
+// Get all admins for assignment (platform admin only)
 $admins = [];
-if ($is_admin) {
-    $user_class = new TourlinkUser();
-    $admins = $user_class->get_users_by_type('admin');
+if ($is_platform_admin) {
+    require_once '../classes/admin_class.php';
+    $admin_class = new Admin();
+    // Get platform admins from tl_admins table
+    $admin_result = $admin_class->db->query("SELECT admin_id, CONCAT(first_name, ' ', last_name) as name FROM tl_admins WHERE is_active = 1");
+    if ($admin_result) {
+        while ($row = $admin_result->fetch_assoc()) {
+            $admins[] = [
+                'admin_id' => $row['admin_id'],
+                'name' => $row['name']
+            ];
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -79,8 +89,9 @@ if ($is_admin) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <?php if ($is_admin): ?>
+    <?php if ($is_platform_admin): ?>
         <link href="../css/admin_sidebar.css" rel="stylesheet">
+        <link href="../css/manage_tickets.css" rel="stylesheet">
     <?php else: ?>
         <link href="../css/navigation.css" rel="stylesheet">
         <link href="../css/footer.css" rel="stylesheet">
@@ -90,8 +101,16 @@ if ($is_admin) {
     <script src="../js/dark-mode.js"></script>
 </head>
 <body>
-    <?php if ($is_admin): ?>
-        <?php include '../includes/admin_sidebar.php'; ?>
+    <?php if ($is_platform_admin): ?>
+        <?php 
+        $current_page = 'tickets';
+        include '../includes/admin_sidebar.php'; 
+        ?>
+        <main class="main-content">
+            <div class="top-bar">
+                <h1 class="page-title">Ticket Details</h1>
+            </div>
+            <div class="content-area">
     <?php else: ?>
         <?php include '../includes/navigation.php'; ?>
     <?php endif; ?>
@@ -111,7 +130,7 @@ if ($is_admin) {
 
         <div class="ticket-header-section">
             <div class="ticket-header-top">
-                <a href="<?php echo $is_admin ? '../admin/manage_tickets.php' : 'my_tickets.php'; ?>" class="back-link">
+                <a href="<?php echo $is_platform_admin ? '../admin/manage_tickets.php' : 'my_tickets.php'; ?>" class="back-link">
                     <i class="fas fa-arrow-left"></i> Back to Tickets
                 </a>
                 <div class="ticket-number-badge">
@@ -135,7 +154,7 @@ if ($is_admin) {
             </div>
         </div>
 
-        <?php if ($is_admin): ?>
+        <?php if ($is_platform_admin): ?>
         <div class="admin-actions-section">
             <form method="POST" action="../actions/update_ticket_action.php" class="admin-controls-form">
                 <input type="hidden" name="ticket_id" value="<?php echo $ticket_id; ?>">
@@ -152,13 +171,23 @@ if ($is_admin) {
                 </div>
                 
                 <div class="control-group">
+                    <label>Priority</label>
+                    <select name="priority" class="form-select">
+                        <option value="low" <?php echo $ticket['priority'] === 'low' ? 'selected' : ''; ?>>Low</option>
+                        <option value="medium" <?php echo $ticket['priority'] === 'medium' ? 'selected' : ''; ?>>Medium</option>
+                        <option value="high" <?php echo $ticket['priority'] === 'high' ? 'selected' : ''; ?>>High</option>
+                        <option value="urgent" <?php echo $ticket['priority'] === 'urgent' ? 'selected' : ''; ?>>Urgent</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
                     <label>Assign To</label>
                     <select name="assigned_to" class="form-select">
                         <option value="">Unassigned</option>
                         <?php if ($admins): ?>
                             <?php foreach ($admins as $admin): ?>
-                                <option value="<?php echo $admin['user_id']; ?>" <?php echo $ticket['assigned_to'] == $admin['user_id'] ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($admin['first_name'] . ' ' . $admin['last_name']); ?>
+                                <option value="<?php echo $admin['admin_id']; ?>" <?php echo $ticket['assigned_to'] == $admin['admin_id'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($admin['name']); ?>
                                 </option>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -198,7 +227,7 @@ if ($is_admin) {
                         <span class="info-value"><?php echo date('F d, Y g:i A', strtotime($ticket['resolved_at'])); ?></span>
                     </div>
                     <?php endif; ?>
-                    <?php if ($is_admin && $ticket['assigned_to']): ?>
+                    <?php if ($is_platform_admin && $ticket['assigned_to']): ?>
                     <div class="info-item">
                         <span class="info-label">Assigned To:</span>
                         <span class="info-value"><?php echo htmlspecialchars(($ticket['assigned_first_name'] ?? '') . ' ' . ($ticket['assigned_last_name'] ?? '')); ?></span>
@@ -222,7 +251,7 @@ if ($is_admin) {
                 <?php if (empty($replies)): ?>
                     <div class="no-replies">
                         <i class="fas fa-comments"></i>
-                        <p>No replies yet. <?php echo $is_admin ? 'Be the first to respond!' : 'Support will respond soon.'; ?></p>
+                        <p>No replies yet. <?php echo ($is_platform_admin || ($is_admin ?? false)) ? 'Be the first to respond!' : 'Support will respond soon.'; ?></p>
                     </div>
                 <?php else: ?>
                     <?php foreach ($replies as $reply): 
@@ -256,11 +285,11 @@ if ($is_admin) {
 
             <?php if ($ticket['status'] !== 'closed'): ?>
             <div class="reply-form-section">
-                <h4><?php echo $is_admin ? 'Add Reply' : 'Add a Reply'; ?></h4>
+                <h4><?php echo ($is_platform_admin || ($is_admin ?? false)) ? 'Add Reply' : 'Add a Reply'; ?></h4>
                 <form method="POST" action="../actions/add_ticket_reply_action.php" id="replyForm">
                     <input type="hidden" name="ticket_id" value="<?php echo $ticket_id; ?>">
                     
-                    <?php if ($is_admin): ?>
+                    <?php if ($is_platform_admin || ($is_admin ?? false)): ?>
                     <div class="form-check mb-3">
                         <input type="checkbox" class="form-check-input" id="internalNote" name="is_internal_note" value="1">
                         <label class="form-check-label" for="internalNote">
@@ -283,7 +312,10 @@ if ($is_admin) {
         </div>
     </div>
 
-    <?php if (!$is_admin): ?>
+    <?php if ($is_platform_admin): ?>
+            </div>
+        </main>
+    <?php else: ?>
         <?php include '../includes/footer.php'; ?>
     <?php endif; ?>
     

@@ -543,11 +543,6 @@
                         <small class="text-muted" id="region-help" data-i18n="auth.region_help">This is your main business location. You can offer services in other regions when creating listings.</small>
                     </div>
 
-                    <div class="alert alert-info">
-                        <i class="fa fa-info-circle"></i>
-                        <strong>Next Steps:</strong> After registration, you'll be redirected to pay the GHS 20 onboarding fee. Once payment is confirmed, our team will review and verify your account within 24-48 hours.
-                    </div>
-
                     <button type="submit" class="btn-register w-100" aria-label="Register as provider">
                         <span data-i18n="auth.register_as_provider">Register as Provider</span>
                     </button>
