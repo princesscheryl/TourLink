@@ -79,6 +79,7 @@ if (!$regional_revenue) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="../css/admin_dashboard.css" rel="stylesheet">
+    <link href="../css/platform_dashboard.css" rel="stylesheet">
     <script>
         // Pass PHP variables to JavaScript
         window.dashboardData = {
@@ -89,445 +90,6 @@ if (!$regional_revenue) {
             regionalRevenue: <?php echo json_encode($regional_revenue); ?>
         };
     </script>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
-        }
-
-
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            min-height: 100vh;
-        }
-
-        /* Top Bar */
-        .top-bar {
-            background: white;
-            padding: 16px 32px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .page-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .admin-avatar {
-            width: 36px;
-            height: 36px;
-            background: #1b4332;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .admin-info {
-            text-align: right;
-        }
-
-        .admin-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .admin-role {
-            font-size: 11px;
-            color: #64748b;
-        }
-
-        /* Dashboard Content */
-        .dashboard-content {
-            padding: 32px;
-        }
-
-        /* North Star Metric */
-        .north-star-card {
-            background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
-            border-radius: 16px;
-            padding: 32px;
-            color: white;
-            margin-bottom: 32px;
-        }
-
-        .north-star-label {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            opacity: 0.8;
-            margin-bottom: 8px;
-        }
-
-        .north-star-value {
-            font-size: 48px;
-            font-weight: 700;
-            line-height: 1;
-            margin-bottom: 8px;
-        }
-
-        .north-star-description {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 16px;
-        }
-
-        .north-star-growth {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .stat-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            margin-bottom: 16px;
-        }
-
-        .stat-icon.blue { background: #eff6ff; color: #3b82f6; }
-        .stat-icon.green { background: #f0fdf4; color: #22c55e; }
-        .stat-icon.amber { background: #fffbeb; color: #f59e0b; }
-        .stat-icon.purple { background: #faf5ff; color: #a855f7; }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        /* Impact Section */
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-title i {
-            color: #d4a017;
-        }
-
-        .impact-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-
-        .impact-card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
-        .impact-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1b4332;
-            margin-bottom: 8px;
-        }
-
-        .impact-label {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 12px;
-        }
-
-        .impact-badge {
-            display: inline-block;
-            background: #f0fdf4;
-            color: #166534;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        /* Content Row */
-        .content-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .card-body {
-            padding: 24px;
-        }
-
-        /* Table */
-        .data-table {
-            width: 100%;
-        }
-
-        .data-table th {
-            text-align: left;
-            padding: 12px 0;
-            font-size: 11px;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .data-table td {
-            padding: 14px 0;
-            font-size: 13px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        .status-badge.pending { background: #fef3c7; color: #92400e; }
-        .status-badge.confirmed { background: #dbeafe; color: #1e40af; }
-        .status-badge.completed { background: #dcfce7; color: #166534; }
-        .status-badge.cancelled { background: #fee2e2; color: #991b1b; }
-
-        /* Regional Stats */
-        .region-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .region-item:last-child {
-            border-bottom: none;
-        }
-
-        .region-name {
-            font-size: 13px;
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        .region-count {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1b4332;
-        }
-
-        /* Chart Container */
-        .chart-container {
-            height: 250px;
-        }
-
-        .chart-container-large {
-            height: 300px;
-        }
-
-        /* Analytics Grid */
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .analytics-card {
-            background: white;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-        }
-
-        .analytics-card-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .analytics-card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .analytics-card-body {
-            padding: 24px;
-        }
-
-        /* Mini Stat Cards */
-        .mini-stat-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .mini-stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 16px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
-        .mini-stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1b4332;
-            margin-bottom: 4px;
-        }
-
-        .mini-stat-label {
-            font-size: 11px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .mini-stat-trend {
-            font-size: 10px;
-            color: #22c55e;
-            margin-top: 4px;
-        }
-
-        /* Footer */
-        .dashboard-footer {
-            padding: 24px 32px;
-            border-top: 1px solid #e2e8f0;
-            background: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .footer-text {
-            font-size: 12px;
-            color: #94a3b8;
-        }
-
-        .footer-brand {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        @media (max-width: 1200px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .impact-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .content-row {
-                grid-template-columns: 1fr;
-            }
-            .analytics-grid {
-                grid-template-columns: 1fr;
-            }
-            .mini-stat-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .stats-grid, .impact-grid {
-                grid-template-columns: 1fr;
-            }
-        }
 </head>
 <body>
     <?php
@@ -833,16 +395,19 @@ if (!$regional_revenue) {
     </main>
 
     <script src="../js/admin_dashboard.js"></script>
-</body>
-</html>
-            const [year, month] = item.month.split('-');
+    <script>
+        // Initialize charts when dashboard data is available
+        if (window.dashboardData && window.dashboardData.bookingTrends) {
+            const bookingData = window.dashboardData.bookingTrends;
+            const bookingCtx = document.getElementById('bookingChart').getContext('2d');
+            
+            const labels = bookingData.map(item => {
+                const [year, month] = item.month.split('-');
             const date = new Date(year, month - 1);
             return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
         });
 
-        const bookings = bookingData.map(item => item.bookings);
-
-        new Chart(bookingCtx, {
+                    new Chart(bookingCtx.getContext('2d'), {
             type: 'line',
             data: {
                 labels: labels.length ? labels : ['No data'],
@@ -895,11 +460,12 @@ if (!$regional_revenue) {
             }
         });
 
-        // Revenue Trends Chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        const revenue = bookingData.map(item => parseFloat(item.revenue || 0));
+                    // Revenue Trends Chart
+                    const revenueCtx = document.getElementById('revenueChart');
+                    if (revenueCtx) {
+                        const revenue = bookingData.map(item => parseFloat(item.revenue || 0));
 
-        new Chart(revenueCtx, {
+                        new Chart(revenueCtx.getContext('2d'), {
             type: 'bar',
             data: {
                 labels: labels.length ? labels : ['No data'],
@@ -946,26 +512,27 @@ if (!$regional_revenue) {
                             text: 'Month'
                         }
                     }
-                }
-            }
-        });
+                        }
+                    }
+                });
 
-        // Booking Status Breakdown Pie Chart
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        const statusData = <?php echo json_encode($status_breakdown); ?>;
+                    // Booking Status Breakdown Pie Chart
+                    const statusCtx = document.getElementById('statusChart');
+                    if (statusCtx) {
+                        const statusData = window.dashboardData.statusBreakdown;
         
-        const statusLabels = Object.keys(statusData);
-        const statusCounts = Object.values(statusData);
-        const totalStatus = statusCounts.reduce((a, b) => a + b, 0);
-        const statusColors = {
-            'pending': '#fef3c7',
-            'confirmed': '#dbeafe',
-            'completed': '#dcfce7',
-            'cancelled': '#fee2e2',
-            'in_progress': '#f3e8ff'
-        };
+                        const statusLabels = Object.keys(statusData);
+                        const statusCounts = Object.values(statusData);
+                        const totalStatus = statusCounts.reduce((a, b) => a + b, 0);
+                        const statusColors = {
+                            'pending': '#fef3c7',
+                            'confirmed': '#dbeafe',
+                            'completed': '#dcfce7',
+                            'cancelled': '#fee2e2',
+                            'in_progress': '#f3e8ff'
+                        };
 
-        new Chart(statusCtx, {
+                        new Chart(statusCtx.getContext('2d'), {
             type: 'doughnut',
             data: {
                 labels: statusLabels.map(s => s.charAt(0).toUpperCase() + s.slice(1)),
@@ -1017,20 +584,21 @@ if (!$regional_revenue) {
                             }
                         }
                     },
-                }
-            }
-        });
+                            }
+                        }
+                    });
 
-        // Regional Provider Distribution Chart
-        const regionalCtx = document.getElementById('regionalChart').getContext('2d');
-        const regionalData = <?php echo json_encode($regional_stats); ?>;
+                    // Regional Provider Distribution Chart
+                    const regionalCtx = document.getElementById('regionalChart');
+                    if (regionalCtx) {
+                        const regionalData = window.dashboardData.regionalStats;
         
-        const regionalLabels = regionalData.map(r => r.region);
-        const regionalCounts = regionalData.map(r => parseInt(r.provider_count));
-        const totalRegional = regionalCounts.reduce((a, b) => a + b, 0);
-        const regionalColors = ['#1b4332', '#2d6a4f', '#40916c', '#52b788', '#74c69d'];
+                        const regionalLabels = regionalData.map(r => r.region);
+                        const regionalCounts = regionalData.map(r => parseInt(r.provider_count));
+                        const totalRegional = regionalCounts.reduce((a, b) => a + b, 0);
+                        const regionalColors = ['#1b4332', '#2d6a4f', '#40916c', '#52b788', '#74c69d'];
 
-        new Chart(regionalCtx, {
+                        new Chart(regionalCtx.getContext('2d'), {
             type: 'pie',
             data: {
                 labels: regionalLabels,
@@ -1082,20 +650,21 @@ if (!$regional_revenue) {
                             }
                         }
                     },
-                }
-            }
-        });
+                            }
+                        }
+                    });
 
-        // Service Category Performance Chart
-        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-        const categoryData = <?php echo json_encode($category_performance); ?>;
+                    // Service Category Performance Chart
+                    const categoryCtx = document.getElementById('categoryChart');
+                    if (categoryCtx) {
+                        const categoryData = window.dashboardData.categoryPerformance;
         
-        const categoryLabels = categoryData.map(c => c.category_name);
-        const categoryBookings = categoryData.map(c => parseInt(c.booking_count || 0));
-        const categoryServices = categoryData.map(c => parseInt(c.service_count || 0));
-        const categoryRevenue = categoryData.map(c => parseFloat(c.revenue || 0));
+                        const categoryLabels = categoryData.map(c => c.category_name);
+                        const categoryBookings = categoryData.map(c => parseInt(c.booking_count || 0));
+                        const categoryServices = categoryData.map(c => parseInt(c.service_count || 0));
+                        const categoryRevenue = categoryData.map(c => parseFloat(c.revenue || 0));
 
-        new Chart(categoryCtx, {
+                        new Chart(categoryCtx.getContext('2d'), {
             type: 'bar',
             data: {
                 labels: categoryLabels,
@@ -1151,18 +720,20 @@ if (!$regional_revenue) {
                 }
             }
         });
+                    }
 
-        // Regional Revenue Breakdown Chart
-        const regionalRevenueCtx = document.getElementById('regionalRevenueChart').getContext('2d');
-        const regionalRevenueData = <?php echo json_encode($regional_revenue); ?>;
+                    // Regional Revenue Breakdown Chart
+                    const regionalRevenueCtx = document.getElementById('regionalRevenueChart');
+                    if (regionalRevenueCtx) {
+                        const regionalRevenueData = window.dashboardData.regionalRevenue;
         
-        const regionalRevenueLabels = regionalRevenueData.map(r => r.region);
-        const regionalRevenueAmounts = regionalRevenueData.map(r => parseFloat(r.revenue || 0));
-        const regionalBookingCounts = regionalRevenueData.map(r => parseInt(r.booking_count || 0));
-        const regionalProviderCounts = regionalRevenueData.map(r => parseInt(r.provider_count || 0));
-        const totalRevenue = regionalRevenueAmounts.reduce((a, b) => a + b, 0);
+                        const regionalRevenueLabels = regionalRevenueData.map(r => r.region);
+                        const regionalRevenueAmounts = regionalRevenueData.map(r => parseFloat(r.revenue || 0));
+                        const regionalBookingCounts = regionalRevenueData.map(r => parseInt(r.booking_count || 0));
+                        const regionalProviderCounts = regionalRevenueData.map(r => parseInt(r.provider_count || 0));
+                        const totalRevenue = regionalRevenueAmounts.reduce((a, b) => a + b, 0);
 
-        new Chart(regionalRevenueCtx, {
+                        new Chart(regionalRevenueCtx.getContext('2d'), {
             type: 'bar',
             data: {
                 labels: regionalRevenueLabels,
@@ -1217,10 +788,13 @@ if (!$regional_revenue) {
                             display: true,
                             text: 'Regions'
                         }
-                    }
+                            }
+                        }
+                    });
                 }
             }
-        });
+        }
+    });
     </script>
 </body>
 </html>
