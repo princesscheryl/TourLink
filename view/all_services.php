@@ -126,6 +126,7 @@ if (isset($_SESSION['user_id'])) {
     <link href="../css/footer.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
+    <link href="../css/all_services.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
     <script src="../js/accessibility.js"></script>
 </head>
