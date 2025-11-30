@@ -3,6 +3,7 @@ require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
 require_once '../controllers/service_category_controller.php';
 require_once '../classes/festival_class.php';
+require_once '../classes/hosted_upload_class.php';
 
 // Get filter parameters
 $category_filter = isset($_GET['category']) ? (int)$_GET['category'] : null;
@@ -355,14 +356,31 @@ if (isset($_SESSION['user_id'])) {
                                     <?php endif; ?>
 
                                     <?php
-                                    require_once '../classes/hosted_upload_class.php';
-                                    $images = json_decode($service['service_images'], true);
                                     $valid_images = [];
-                                    if (is_array($images) && !empty($images)) {
+                                    $service_images_data = $service['service_images'] ?? null;
+                                    
+                                    if (!empty($service_images_data)) {
+                                        // Try to decode JSON
+                                        $images = json_decode($service_images_data, true);
+                                        
+                                        // Handle JSON decode errors
+                                        if (json_last_error() !== JSON_ERROR_NONE) {
+                                            // If JSON decode fails, try treating it as a single string
+                                            $images = [$service_images_data];
+                                        }
+                                        
+                                        // Ensure we have an array
+                                        if (!is_array($images)) {
+                                            $images = [];
+                                        }
+                                        
+                                        // Process each image
                                         foreach ($images as $img) {
-                                            if (!empty($img)) {
+                                            if (!empty($img) && is_string($img)) {
                                                 $img_url = HostedUpload::getImageUrl($img, '../');
-                                                $valid_images[] = $img_url;
+                                                if (!empty($img_url)) {
+                                                    $valid_images[] = $img_url;
+                                                }
                                             }
                                         }
                                     }
