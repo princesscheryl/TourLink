@@ -441,8 +441,15 @@ $languages = [
             <div class="profile-sidebar">
                 <div class="profile-card">
                     <div class="profile-avatar">
-                        <?php if (!empty($user['profile_image'])): ?>
-                            <img src="../<?php echo htmlspecialchars($user['profile_image']); ?>" alt="Profile">
+                        <?php 
+                        require_once '../classes/hosted_upload_class.php';
+                        if (!empty($user['profile_image'])): 
+                            $profile_img_url = HostedUpload::getImageUrl($user['profile_image'], '../');
+                        ?>
+                            <img src="<?php echo htmlspecialchars($profile_img_url); ?>" alt="Profile" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="profile-avatar-placeholder" style="display:none;">
+                                <?php echo strtoupper(substr($user['first_name'], 0, 1)); ?>
+                            </div>
                         <?php else: ?>
                             <div class="profile-avatar-placeholder">
                                 <?php echo strtoupper(substr($user['first_name'], 0, 1)); ?>
@@ -486,8 +493,14 @@ $languages = [
                     <!-- Profile Picture -->
                     <div class="picture-section">
                         <div class="picture-preview" id="picturePreview">
-                            <?php if (!empty($user['profile_image'])): ?>
-                                <img src="../<?php echo htmlspecialchars($user['profile_image']); ?>" alt="Profile" id="previewImg">
+                            <?php 
+                            if (!empty($user['profile_image'])): 
+                                $profile_img_url = HostedUpload::getImageUrl($user['profile_image'], '../');
+                            ?>
+                                <img src="<?php echo htmlspecialchars($profile_img_url); ?>" alt="Profile" id="previewImg" onerror="this.style.display='none'; document.getElementById('previewPlaceholder').style.display='flex';">
+                                <div class="picture-preview-placeholder" id="previewPlaceholder" style="display:none;">
+                                    <?php echo strtoupper(substr($user['first_name'], 0, 1)); ?>
+                                </div>
                             <?php else: ?>
                                 <div class="picture-preview-placeholder" id="previewPlaceholder">
                                     <?php echo strtoupper(substr($user['first_name'], 0, 1)); ?>

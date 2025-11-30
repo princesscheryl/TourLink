@@ -14,6 +14,8 @@ if ($_SESSION['user_role'] != 1) {
     exit();
 }
 
+require_once '../classes/hosted_upload_class.php';
+
 // Check if request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
@@ -52,64 +54,20 @@ if ($_FILES['product_image']['size'] > $max_size) {
     exit();
 }
 
-// Define upload directory structure: uploads/u{user_id}/p{product_id}/
-$base_upload_dir = __DIR__ . '/../uploads';
-$user_dir = $base_upload_dir . '/u' . $user_id;
-$product_dir = $user_dir . '/p' . $product_id;
+// Upload file to hosted uploads service
+$upload_result = HostedUpload::uploadFile($_FILES['product_image']['tmp_name'], $_FILES['product_image']['name']);
 
-// Verify that uploading to the correct location
-// All uploads must be inside the uploads/ directory
-if (strpos(realpath($base_upload_dir), realpath(__DIR__ . '/../uploads')) !== 0 && realpath($base_upload_dir) !== realpath(__DIR__ . '/../uploads')) {
-    echo json_encode(['success' => false, 'message' => 'Invalid upload directory']);
-    exit();
-}
-
-// Create directories if they don't exist (only inside uploads/)
-if (!file_exists($base_upload_dir)) {
-    if (!mkdir($base_upload_dir, 0755, true)) {
-        echo json_encode(['success' => false, 'message' => 'Failed to create uploads directory']);
-        exit();
-    }
-}
-
-if (!file_exists($user_dir)) {
-    if (!mkdir($user_dir, 0755, true)) {
-        echo json_encode(['success' => false, 'message' => 'Failed to create user directory']);
-        exit();
-    }
-}
-
-if (!file_exists($product_dir)) {
-    if (!mkdir($product_dir, 0755, true)) {
-        echo json_encode(['success' => false, 'message' => 'Failed to create product directory']);
-        exit();
-    }
-}
-
-// Generate unique filename
-$file_extension = pathinfo($_FILES['product_image']['name'], PATHINFO_EXTENSION);
-$file_name = 'image_' . time() . '_' . uniqid() . '.' . $file_extension;
-$file_path = $product_dir . '/' . $file_name;
-
-// Verify the final path is still inside uploads/ directory
-$real_product_dir = realpath($product_dir);
-$real_upload_dir = realpath($base_upload_dir);
-
-if ($real_product_dir === false || strpos($real_product_dir, $real_upload_dir) !== 0) {
-    echo json_encode(['success' => false, 'message' => 'Security violation: Attempted upload outside authorized directory']);
-    exit();
-}
-
-// Move uploaded file
-if (move_uploaded_file($_FILES['product_image']['tmp_name'], $file_path)) {
-    // Return relative path for storing in database
-    $relative_path = 'uploads/u' . $user_id . '/p' . $product_id . '/' . $file_name;
+if ($upload_result['success']) {
+    // Return hosted URL for storing in database
     echo json_encode([
         'success' => true,
         'message' => 'Image uploaded successfully',
-        'file_path' => $relative_path
+        'file_path' => $upload_result['url']
     ]);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to move uploaded file']);
+    echo json_encode([
+        'success' => false,
+        'message' => $upload_result['message']
+    ]);
 }
 ?>

@@ -8,6 +8,7 @@ require_once 'settings/core.php';
 require_once 'controllers/service_controller.php';
 require_once 'controllers/service_category_controller.php';
 require_once 'classes/festival_class.php';
+require_once 'classes/hosted_upload_class.php';
 
 // Get premium services for Featured Experiences section
 $db_temp = new db_connection();
@@ -1773,8 +1774,15 @@ $categories = get_all_service_categories_ctr();
                     <!-- Profile Dropdown -->
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="profile-trigger" onclick="toggleProfileDropdown()">
-                            <?php if(!empty($_SESSION['profile_image'])): ?>
-                                <img src="<?php echo htmlspecialchars($_SESSION['profile_image']); ?>" alt="Profile" class="profile-pic">
+                            <?php 
+                            require_once 'classes/hosted_upload_class.php';
+                            if(!empty($_SESSION['profile_image'])): 
+                                $profile_img_url = HostedUpload::getImageUrl($_SESSION['profile_image'], '');
+                            ?>
+                                <img src="<?php echo htmlspecialchars($profile_img_url); ?>" alt="Profile" class="profile-pic" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="profile-pic-placeholder" style="display:none;">
+                                    <?php echo strtoupper(substr($_SESSION['first_name'], 0, 1)); ?>
+                                </div>
                             <?php else: ?>
                                 <div class="profile-pic-placeholder">
                                     <?php echo strtoupper(substr($_SESSION['first_name'], 0, 1)); ?>
@@ -1959,14 +1967,25 @@ $categories = get_all_service_categories_ctr();
                 <div class="featured-slider" id="featuredSlider">
                     <?php foreach($premium_services as $service):
                         $images = json_decode($service['service_images'], true);
-                        $first_image = $images[0] ?? 'default.jpg';
+                        $first_image = $images[0] ?? null;
+                        $image_url = $first_image ? HostedUpload::getImageUrl($first_image, '') : null;
                         $rating = round($service['average_rating'] ?? 0, 1);
                         $is_verified = $service['verification_status'] === 'verified';
                     ?>
                     <div class="featured-card">
                         <div class="featured-card-image">
-                            <img src="uploads/services/<?php echo htmlspecialchars($first_image); ?>"
-                                 alt="<?php echo htmlspecialchars($service['service_title']); ?>">
+                            <?php if ($image_url): ?>
+                            <img src="<?php echo htmlspecialchars($image_url); ?>"
+                                 alt="<?php echo htmlspecialchars($service['service_title']); ?>"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="featured-image-placeholder" style="display:none; background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); height: 100%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
+                            </div>
+                            <?php else: ?>
+                            <div class="featured-image-placeholder" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); height: 100%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
+                            </div>
+                            <?php endif; ?>
                             <?php if ($is_verified): ?>
                             <div class="verified-badge">
                                 <i class="fas fa-check-circle"></i> Verified

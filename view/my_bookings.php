@@ -267,13 +267,14 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
         <?php else: ?>
             <?php foreach ($filtered_bookings as $booking): ?>
                 <?php
+                require_once '../classes/hosted_upload_class.php';
                 $image_url = null;
                 if (!empty($booking['service_images'])) {
                     $images = json_decode($booking['service_images'], true);
                     if (is_array($images) && count($images) > 0) {
-                        $image_url = '../' . $images[0];
-                    } elseif (file_exists('../' . $booking['service_images'])) {
-                        $image_url = '../' . $booking['service_images'];
+                        $image_url = HostedUpload::getImageUrl($images[0], '../');
+                    } elseif (!empty($booking['service_images'])) {
+                        $image_url = HostedUpload::getImageUrl($booking['service_images'], '../');
                     }
                 }
                 $status_class = 'status-' . $booking['booking_status'];
@@ -281,8 +282,11 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
                 <div class="booking-card">
                     <div class="booking-card-inner">
                         <div class="booking-image">
-                            <?php if ($image_url && file_exists($image_url)): ?>
-                                <img src="<?php echo htmlspecialchars($image_url); ?>" alt="Service">
+                            <?php if ($image_url): ?>
+                                <img src="<?php echo htmlspecialchars($image_url); ?>" alt="Service" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="booking-image-placeholder" style="display:none;">
+                                    <i class="fa fa-image"></i>
+                                </div>
                             <?php else: ?>
                                 <div class="booking-image-placeholder">
                                     <i class="fa fa-image"></i>

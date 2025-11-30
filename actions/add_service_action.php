@@ -7,6 +7,7 @@ ini_set('display_startup_errors', '1');
 require_once '../settings/core.php';
 require_once '../controllers/service_controller.php';
 require_once '../classes/service_provider_class.php';
+require_once '../classes/hosted_upload_class.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -57,22 +58,16 @@ if (isset($_FILES['service_images']) && !empty($_FILES['service_images']['name']
 }
 
 /**
- * Handle multiple image uploads
+ * Handle multiple image uploads to hosted service
  * @param array $files - $_FILES array
  * @param int $provider_id
- * @return array - Array of uploaded file paths
+ * @return array - Array of uploaded file URLs
  */
 function handleImageUploads($files, $provider_id) {
-    $uploaded_paths = [];
+    $uploaded_urls = [];
     $max_files = 5;
     $max_size = 5 * 1024 * 1024; // 5MB
     $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-
-    // Create upload directory if it doesn't exist
-    $upload_dir = '../uploads/services/' . $provider_id . '/';
-    if (!file_exists($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
 
     // Process each file
     $file_count = is_array($files['name']) ? count($files['name']) : 1;
@@ -105,41 +100,16 @@ function handleImageUploads($files, $provider_id) {
             continue; // Skip files that are too large
         }
 
-        // Generate unique filename
-        $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-        $new_filename = uniqid('service_' . $provider_id . '_', true) . '.' . $extension;
-        $destination = $upload_dir . $new_filename;
-
-        // Try to resize and optimize image
-        $upload_success = false;
-
-        // First try GD resize
-        if (function_exists('imagecreatefromjpeg') && resizeImage($file_tmp, $destination, 1200, 800, 85)) {
-            $upload_success = true;
+        // Upload to hosted service
+        $upload_result = HostedUpload::uploadFile($file_tmp, $file_name);
+        
+        if ($upload_result['success']) {
+            $uploaded_urls[] = $upload_result['url'];
         }
-        // Fallback: just move the uploaded file without resizing
-        elseif (move_uploaded_file($file_tmp, $destination)) {
-            $upload_success = true;
-        }
-
-        if ($upload_success) {
-            // Store relative path (from project root)
-            $relative_path = 'uploads/services/' . $provider_id . '/' . $new_filename;
-            $uploaded_paths[] = $relative_path;
-
-            // Try to create thumbnail (optional, don't fail if it doesn't work)
-            if (function_exists('imagecreatefromjpeg')) {
-                $thumb_dir = $upload_dir . 'thumbs/';
-                if (!file_exists($thumb_dir)) {
-                    @mkdir($thumb_dir, 0755, true);
-                }
-                $thumb_destination = $thumb_dir . 'thumb_' . $new_filename;
-                @resizeImage($destination, $thumb_destination, 400, 300, 80);
-            }
-        }
+        // If upload fails, skip this file (don't break the whole process)
     }
 
-    return $uploaded_paths;
+    return $uploaded_urls;
 }
 
 /**

@@ -2,6 +2,7 @@
 session_start();
 require_once '../classes/service_class.php';
 require_once '../classes/service_provider_class.php';
+require_once '../classes/hosted_upload_class.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -60,13 +61,6 @@ $provider_id = $provider['provider_id'];
 $upload_error_log = [];
 
 if (!empty($_FILES['service_images']['name'][0])) {
-    $upload_dir = '../uploads/services/' . $provider_id . '/';
-
-    // Create directory if needed
-    if (!is_dir($upload_dir)) {
-        @mkdir($upload_dir, 0755, true);
-    }
-
     $new_images = [];
     $allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
     $max_size = 5 * 1024 * 1024; // 5MB
@@ -98,15 +92,13 @@ if (!empty($_FILES['service_images']['name'][0])) {
                 continue;
             }
 
-            $ext = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
-            $filename = uniqid('service_' . $provider_id . '_') . '.' . $ext;
-            $filepath = $upload_dir . $filename;
-
-            if (move_uploaded_file($tmp_name, $filepath)) {
-                $relative_path = 'uploads/services/' . $provider_id . '/' . $filename;
-                $new_images[] = $relative_path;
+            // Upload to hosted service
+            $upload_result = HostedUpload::uploadFile($tmp_name, $original_name);
+            
+            if ($upload_result['success']) {
+                $new_images[] = $upload_result['url'];
             } else {
-                $upload_error_log[] = "Failed to save: $original_name";
+                $upload_error_log[] = "Failed to upload: $original_name - " . $upload_result['message'];
             }
         } else {
             $error_messages = [
@@ -122,12 +114,14 @@ if (!empty($_FILES['service_images']['name'][0])) {
     }
 
     if (!empty($new_images)) {
-        // Delete old images
+        // Delete old images (only if they're local files, not hosted URLs)
         foreach ($service_images as $old_img) {
-            // Handle both old format (filename only) and new format (full path)
-            $old_path = strpos($old_img, 'uploads/') === 0 ? '../' . $old_img : '../uploads/services/' . $old_img;
-            if (file_exists($old_path)) {
-                @unlink($old_path);
+            // Only try to delete local files
+            if (!HostedUpload::isHostedUrl($old_img)) {
+                $old_path = strpos($old_img, 'uploads/') === 0 ? '../' . $old_img : '../uploads/services/' . $old_img;
+                if (file_exists($old_path)) {
+                    @unlink($old_path);
+                }
             }
         }
         $service_images = $new_images;

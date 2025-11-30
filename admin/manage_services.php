@@ -814,12 +814,11 @@ $current_page = 'services';
                 <div class="table-row" data-status="<?php echo $service['service_status']; ?>">
                     <div class="service-cell">
                         <?php
+                        require_once '../classes/hosted_upload_class.php';
                         $images = json_decode($service['service_images'], true);
                         $thumb = null;
                         if ($images && count($images) > 0) {
-                            // Handle both old format (filename only) and new format (full relative path)
-                            $img = $images[0];
-                            $thumb = (strpos($img, 'uploads/') === 0) ? '../' . $img : '../uploads/services/' . $img;
+                            $thumb = HostedUpload::getImageUrl($images[0], '../');
                         }
                         ?>
                         <?php if ($thumb): ?>

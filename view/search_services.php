@@ -524,13 +524,18 @@ $regions = ['Greater Accra', 'Central', 'Ashanti', 'Northern', 'Western', 'Easte
                 <?php foreach ($services as $service): ?>
                     <div class="service-card">
                         <?php
+                        require_once '../classes/hosted_upload_class.php';
                         $images = json_decode($service['service_images'], true);
-                        $first_image = is_array($images) && !empty($images) ? '../' . $images[0] : null;
+                        $first_image = is_array($images) && !empty($images) ? HostedUpload::getImageUrl($images[0], '../') : null;
                         ?>
                         <?php if ($first_image): ?>
                             <img src="<?php echo htmlspecialchars($first_image); ?>"
                                  alt="<?php echo htmlspecialchars($service['service_title']); ?>"
-                                 class="service-image">
+                                 class="service-image"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: none; align-items: center; justify-content: center;">
+                                <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
+                            </div>
                         <?php else: ?>
                             <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: flex; align-items: center; justify-content: center;">
                                 <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>

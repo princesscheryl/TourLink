@@ -13,6 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once '../classes/tourlink_user_class.php';
+require_once '../classes/hosted_upload_class.php';
 
 // Check if file was uploaded
 if (!isset($_FILES['profile_picture'])) {
@@ -62,101 +63,46 @@ if ($file['size'] > $max_size) {
     exit();
 }
 
-// Get absolute path to uploads directory
-$base_dir = dirname(__DIR__); // Get parent directory (tourlink)
-$upload_dir = $base_dir . '/uploads/profile_pictures/';
+// Upload file to hosted uploads service
+$upload_result = HostedUpload::uploadFile($file['tmp_name'], $file['name']);
 
-// Create uploads directory if it doesn't exist
-if (!is_dir($upload_dir)) {
-    $old_umask = umask(0);
-    $success = @mkdir($upload_dir, 0777, true);
-    umask($old_umask);
-
-    if (!$success && !is_dir($upload_dir)) {
-        $response['status'] = 'error';
-        $response['message'] = 'Failed to create upload directory. Please contact administrator.';
-        echo json_encode($response);
-        exit();
-    }
-
-    // Try to set permissions
-    @chmod($upload_dir, 0777);
-
-    // Create .htaccess for security (prevent PHP execution in uploads)
-    $htaccess_content = "# Prevent PHP execution in uploads directory\n";
-    $htaccess_content .= "php_flag engine off\n";
-    $htaccess_content .= "AddType text/plain .php .php3 .php4 .php5 .phtml .phps\n";
-    @file_put_contents($upload_dir . '.htaccess', $htaccess_content);
-}
-
-// Final check - verify directory exists
-if (!is_dir($upload_dir)) {
+if (!$upload_result['success']) {
     $response['status'] = 'error';
-    $response['message'] = 'Upload directory does not exist: ' . $upload_dir;
+    $response['message'] = $upload_result['message'];
     echo json_encode($response);
     exit();
 }
 
-// Generate unique filename
-$file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-$new_filename = 'profile_' . $_SESSION['user_id'] . '_' . time() . '.' . $file_extension;
-$upload_path = $upload_dir . $new_filename;
+// Get the hosted file URL
+$hosted_file_url = $upload_result['url'];
 
-// Try to move uploaded file (bypass writability check - just try it)
-if (!move_uploaded_file($file['tmp_name'], $upload_path)) {
-    // If move failed, check why
-    $error_info = error_get_last();
-    $response['status'] = 'error';
-    $response['message'] = 'Failed to upload file';
-    $response['debug'] = [
-        'upload_dir' => $upload_dir,
-        'upload_path' => $upload_path,
-        'dir_exists' => is_dir($upload_dir),
-        'dir_writable' => is_writable($upload_dir),
-        'permissions' => substr(sprintf('%o', fileperms($upload_dir)), -4),
-        'tmp_file' => $file['tmp_name'],
-        'tmp_exists' => file_exists($file['tmp_name']),
-        'error' => $error_info ? $error_info['message'] : 'No error info'
-    ];
-    echo json_encode($response);
-    exit();
-}
-
-// Verify file was uploaded successfully
-if (!file_exists($upload_path)) {
-    $response['status'] = 'error';
-    $response['message'] = 'File upload verification failed';
-    echo json_encode($response);
-    exit();
-}
-
-// Update database with file path
+// Update database with hosted file URL
 $user_class = new TourlinkUser();
 $user = $user_class->get_user_by_id($_SESSION['user_id']);
 
-// Delete old profile picture if exists
+// Delete old profile picture if exists (only if it's a local file)
 if (!empty($user['profile_image'])) {
-    $old_file_path = $base_dir . '/' . $user['profile_image'];
-    if (file_exists($old_file_path)) {
-        @unlink($old_file_path); // @ suppresses warnings if deletion fails
+    // Only try to delete if it's a local path, not a hosted URL
+    if (!HostedUpload::isHostedUrl($user['profile_image'])) {
+        $base_dir = dirname(__DIR__);
+        $old_file_path = $base_dir . '/' . $user['profile_image'];
+        if (file_exists($old_file_path)) {
+            @unlink($old_file_path); // @ suppresses warnings if deletion fails
+        }
     }
 }
 
-// Save relative path to database
-$db_path = 'uploads/profile_pictures/' . $new_filename;
-$updated = $user_class->update_user($_SESSION['user_id'], array('profile_image' => $db_path));
+// Save hosted URL to database
+$updated = $user_class->update_user($_SESSION['user_id'], array('profile_image' => $hosted_file_url));
 
 if ($updated) {
     // Update session
-    $_SESSION['profile_image'] = $db_path;
+    $_SESSION['profile_image'] = $hosted_file_url;
 
     $response['status'] = 'success';
     $response['message'] = 'Profile picture uploaded successfully!';
-    $response['image_path'] = $db_path;
+    $response['image_path'] = $hosted_file_url;
 } else {
-    // Delete uploaded file if database update failed
-    unlink($upload_path);
-
     $response['status'] = 'error';
     $response['message'] = 'Failed to update profile picture in database';
 }

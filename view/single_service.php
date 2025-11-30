@@ -4,6 +4,7 @@ require_once '../controllers/service_controller.php';
 require_once '../classes/service_provider_class.php';
 require_once '../controllers/favorite_controller.php';
 require_once '../controllers/review_controller.php';
+require_once '../classes/hosted_upload_class.php';
 
 $service_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -963,17 +964,15 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
         <div class="service-gallery">
             <div class="gallery-main">
                 <?php if ($has_images): ?>
-                    <?php $first_img = '../' . $gallery_images[0]; ?>
-                    <?php if (file_exists($first_img)): ?>
-                        <img src="<?php echo htmlspecialchars($first_img); ?>"
-                             alt="<?php echo htmlspecialchars($service['service_title']); ?>"
-                             id="mainGalleryImage">
-                    <?php else: ?>
-                        <div class="gallery-placeholder">
-                            <i class="fa fa-image"></i>
-                            <span>Image not available</span>
-                        </div>
-                    <?php endif; ?>
+                    <?php $first_img = HostedUpload::getImageUrl($gallery_images[0], '../'); ?>
+                    <img src="<?php echo htmlspecialchars($first_img); ?>"
+                         alt="<?php echo htmlspecialchars($service['service_title']); ?>"
+                         id="mainGalleryImage"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="gallery-placeholder" style="display:none;">
+                        <i class="fa fa-image"></i>
+                        <span>Image not available</span>
+                    </div>
                 <?php else: ?>
                     <div class="gallery-placeholder">
                         <i class="fa fa-image"></i>
@@ -985,13 +984,11 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
             <?php if ($has_images && count($gallery_images) > 1): ?>
             <div class="gallery-thumbs">
                 <?php foreach ($gallery_images as $index => $img): ?>
-                    <?php $img_path = '../' . $img; ?>
-                    <?php if (file_exists($img_path)): ?>
+                    <?php $img_path = HostedUpload::getImageUrl($img, '../'); ?>
                     <div class="gallery-thumb <?php echo $index === 0 ? 'active' : ''; ?>"
                          onclick="changeGalleryImage('<?php echo htmlspecialchars($img_path); ?>', this)">
-                        <img src="<?php echo htmlspecialchars($img_path); ?>" alt="Thumbnail <?php echo $index + 1; ?>">
+                        <img src="<?php echo htmlspecialchars($img_path); ?>" alt="Thumbnail <?php echo $index + 1; ?>" onerror="this.style.display='none';">
                     </div>
-                    <?php endif; ?>
                 <?php endforeach; ?>
             </div>
             <?php endif; ?>

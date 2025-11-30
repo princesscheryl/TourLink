@@ -205,12 +205,19 @@ $user_phone = $_SESSION['phone'] ?? '';
                     <h3 class="summary-title">Booking summary</h3>
 
                     <div class="service-preview">
-                        <?php if ($service['service_images']):
+                        <?php 
+                        require_once '../classes/hosted_upload_class.php';
+                        if ($service['service_images']):
                             $images = json_decode($service['service_images'], true);
-                            $first_image = $images[0] ?? 'default.jpg';
+                            $first_image = $images[0] ?? null;
+                            if ($first_image):
+                                $image_url = HostedUpload::getImageUrl($first_image, '../');
                         ?>
-                            <img src="../uploads/services/<?php echo htmlspecialchars($first_image); ?>" alt="Service" class="service-thumb">
-                        <?php endif; ?>
+                            <img src="<?php echo htmlspecialchars($image_url); ?>" alt="Service" class="service-thumb" onerror="this.style.display='none';">
+                        <?php 
+                            endif;
+                        endif; 
+                        ?>
                         <div class="service-info">
                             <h4><?php echo htmlspecialchars($service['service_title']); ?></h4>
                             <p><?php echo htmlspecialchars($service['category_name']); ?></p>

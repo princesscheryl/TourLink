@@ -58,8 +58,15 @@ if (file_exists(__DIR__ . '/adinkra_symbols.php')) {
             <!-- Profile Dropdown -->
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-trigger" onclick="toggleProfileDropdown()">
-                    <?php if(!empty($_SESSION['profile_image'])): ?>
-                        <img src="<?php echo htmlspecialchars($base_path . $_SESSION['profile_image']); ?>" alt="Profile" class="profile-pic">
+                    <?php 
+                    require_once __DIR__ . '/../classes/hosted_upload_class.php';
+                    if(!empty($_SESSION['profile_image'])): 
+                        $profile_img_url = HostedUpload::getImageUrl($_SESSION['profile_image'], $base_path);
+                    ?>
+                        <img src="<?php echo htmlspecialchars($profile_img_url); ?>" alt="Profile" class="profile-pic" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="profile-pic-placeholder" style="display:none;">
+                            <?php echo strtoupper(substr($_SESSION['first_name'], 0, 1)); ?>
+                        </div>
                     <?php else: ?>
                         <div class="profile-pic-placeholder">
                             <?php echo strtoupper(substr($_SESSION['first_name'], 0, 1)); ?>

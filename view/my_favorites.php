@@ -406,6 +406,7 @@ try {
                             <?php
                             // Handle service_image (JSON array or single path)
                             $service_image = $favorite['service_image'] ?? null;
+                            require_once '../classes/hosted_upload_class.php';
                             $image_url = null;
 
                             if ($service_image) {
@@ -413,13 +414,10 @@ try {
                                 $images = json_decode($service_image, true);
                                 if (is_array($images) && count($images) > 0) {
                                     // Use first image from array
-                                    $first_image = $images[0];
-                                    if (file_exists('../' . $first_image)) {
-                                        $image_url = '../' . $first_image;
-                                    }
-                                } elseif (file_exists('../' . $service_image)) {
-                                    // Single image path (old format)
-                                    $image_url = '../' . $service_image;
+                                    $image_url = HostedUpload::getImageUrl($images[0], '../');
+                                } elseif (!empty($service_image)) {
+                                    // Single image path
+                                    $image_url = HostedUpload::getImageUrl($service_image, '../');
                                 }
                             }
                             ?>
@@ -427,7 +425,11 @@ try {
                             <?php if ($image_url): ?>
                                 <img src="<?php echo htmlspecialchars($image_url); ?>"
                                      alt="<?php echo htmlspecialchars($favorite['service_name']); ?>"
-                                     class="service-image">
+                                     class="service-image"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: none; align-items: center; justify-content: center;">
+                                    <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
+                                </div>
                             <?php else: ?>
                                 <div class="service-image" style="background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); display: flex; align-items: center; justify-content: center;">
                                     <i class="fa fa-image fa-3x" style="color: white; opacity: 0.5;"></i>
