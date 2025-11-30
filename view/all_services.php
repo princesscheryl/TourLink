@@ -355,13 +355,14 @@ if (isset($_SESSION['user_id'])) {
                                     <?php endif; ?>
 
                                     <?php
+                                    require_once '../classes/hosted_upload_class.php';
                                     $images = json_decode($service['service_images'], true);
                                     $valid_images = [];
                                     if (is_array($images) && !empty($images)) {
                                         foreach ($images as $img) {
-                                            $img_path = '../' . $img;
-                                            if (file_exists($img_path)) {
-                                                $valid_images[] = $img_path;
+                                            if (!empty($img)) {
+                                                $img_url = HostedUpload::getImageUrl($img, '../');
+                                                $valid_images[] = $img_url;
                                             }
                                         }
                                     }
