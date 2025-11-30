@@ -55,7 +55,7 @@
 │  │   - Call Paystack verify API                            │   │
 │  │   - Validate payment status                             │   │
 │  │   - Validate amount                                     │   │
-│  │   - Update booking payment_status to 'escrow'           │   │
+│  │   - Update booking payment_status to 'paid'             │   │
 │  │   - Record payment in tl_payments                       │   │
 │  │   - Record discount usage (if applied)                  │   │
 │  │   - Calculate commission (15%)                          │   │
@@ -212,7 +212,7 @@ tl_payments Table
 
 tl_bookings Table
 ├── booking_id: 42
-├── payment_status: "escrow"
+├── payment_status: "paid"
 ├── discount_amount: 15.05
 └── total_amount: 135.45
 ```
@@ -304,8 +304,7 @@ tl_bookings Table
 ├──────────────────────────────────┤
 │ payment_status:                  │
 │   - 'pending' (before payment)   │
-│   - 'escrow' (after payment)     │
-│   - 'released' (to provider)     │
+│   - 'paid' (after payment)       │
 │   - 'refunded' (if cancelled)    │
 └──────────────────────────────────┘
 
@@ -355,7 +354,7 @@ Examples of Data:
 │ total_amount: 135.45                    │
 │ commission_amount: 20.32 (15%)          │
 │ provider_earnings: 115.13               │
-│ payment_status: escrow                  │
+│ payment_status: paid                    │
 │ booking_status: pending                 │
 └─────────────────────────────────────────┘
 ```
@@ -469,8 +468,7 @@ TourLink supports two payment types:
 1. BOOKING PAYMENT
    ─────────────────
    - Tourist pays for a service booking
-   - Payment goes into escrow
-   - Released to provider after service completion
+   - Payment is recorded and booking confirmed
    - Supports discount codes
    - 15% commission deducted
 
@@ -565,19 +563,20 @@ Database Changes:
    - Checks if already paid before initialization
 ```
 
-## Escrow System
+## Payment Flow
 
 ```
-Payment Flow:
-1. Tourist pays → payment_status = 'escrow'
-2. Provider confirms booking → booking_status = 'confirmed'
-3. Service completed → booking_status = 'completed'
-4. Payment released → payment_status = 'released'
+Payment Process:
+1. Tourist initiates payment → payment_status = 'pending'
+2. Payment processed via Paystack → payment verified
+3. Payment recorded → payment_status = 'paid'
+4. Booking confirmed → booking_status = 'pending' (awaiting provider confirmation)
 
-This ensures:
-- Tourist payment is secured
-- Provider only receives payment after service
-- Dispute resolution capability
-- Refund capability if service not provided
+Payment ensures:
+- Secure transaction via Paystack gateway
+- Payment verification before booking confirmation
+- Commission calculation (15%) for platform
+- Discount code support
+- Transaction reference tracking
 ```
 
