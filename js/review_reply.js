@@ -26,12 +26,11 @@ if (typeof window.reviewReplyInitialized === 'undefined') {
             const responseText = textarea ? textarea.value.trim() : '';
         
         if (!responseText) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Please enter a response',
-                confirmButtonColor: '#0f766e'
-            });
+            if (typeof Toast !== 'undefined') {
+                Toast.error('Please enter a response', 'Error');
+            } else {
+                alert('Please enter a response');
+            }
             return;
         }
 
@@ -66,33 +65,28 @@ if (typeof window.reviewReplyInitialized === 'undefined') {
             dataType: 'json',
             success: function(response) {
                 if (response.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message || 'Your response has been posted successfully',
-                        confirmButtonColor: '#0f766e',
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => {
+                    if (typeof Toast !== 'undefined') {
+                        Toast.success(response.message || 'Your response has been posted successfully', 'Success');
+                    }
+                    // Reload after a short delay to show the toast
+                    setTimeout(() => {
                         location.reload();
-                    });
+                    }, 1500);
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response.message || 'Failed to post response. Please try again.',
-                        confirmButtonColor: '#0f766e'
-                    });
+                    if (typeof Toast !== 'undefined') {
+                        Toast.error(response.message || 'Failed to post response. Please try again.', 'Error');
+                    } else {
+                        alert(response.message || 'Failed to post response. Please try again.');
+                    }
                     submitBtn.prop('disabled', false).html(originalText);
                 }
             },
             error: function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.',
-                    confirmButtonColor: '#0f766e'
-                });
+                if (typeof Toast !== 'undefined') {
+                    Toast.error('An error occurred. Please try again.', 'Error');
+                } else {
+                    alert('An error occurred. Please try again.');
+                }
                 submitBtn.prop('disabled', false).html(originalText);
             }
         });

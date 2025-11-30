@@ -27,12 +27,11 @@ if (typeof window.reviewSubmitInitialized === 'undefined') {
                 
                 // Validate
                 if (!serviceId || !bookingId || !rating || !reviewTitle || !reviewText) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Please fill in all required fields and select a rating',
-                        confirmButtonColor: '#2d6a4f'
-                    });
+                    if (typeof Toast !== 'undefined') {
+                        Toast.error('Please fill in all required fields and select a rating', 'Error');
+                    } else {
+                        alert('Please fill in all required fields and select a rating');
+                    }
                     return;
                 }
                 
@@ -51,23 +50,19 @@ if (typeof window.reviewSubmitInitialized === 'undefined') {
                     dataType: 'json',
                     success: function(response) {
                         if (response.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: response.message || 'Thank you for your review!',
-                                confirmButtonColor: '#2d6a4f',
-                                timer: 2000,
-                                showConfirmButton: false
-                            }).then(() => {
+                            if (typeof Toast !== 'undefined') {
+                                Toast.success(response.message || 'Thank you for your review!', 'Success');
+                            }
+                            // Reload after a short delay to show the toast
+                            setTimeout(() => {
                                 location.reload();
-                            });
+                            }, 1500);
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Failed to submit review. Please try again.',
-                                confirmButtonColor: '#2d6a4f'
-                            });
+                            if (typeof Toast !== 'undefined') {
+                                Toast.error(response.message || 'Failed to submit review. Please try again.', 'Error');
+                            } else {
+                                alert(response.message || 'Failed to submit review. Please try again.');
+                            }
                             submitBtn.prop('disabled', false).html(originalText);
                         }
                     },
@@ -88,12 +83,11 @@ if (typeof window.reviewSubmitInitialized === 'undefined') {
                             }
                         }
                         
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: errorMessage,
-                            confirmButtonColor: '#2d6a4f'
-                        });
+                        if (typeof Toast !== 'undefined') {
+                            Toast.error(errorMessage, 'Error');
+                        } else {
+                            alert(errorMessage);
+                        }
                         submitBtn.prop('disabled', false).html(originalText);
                     }
                 });
