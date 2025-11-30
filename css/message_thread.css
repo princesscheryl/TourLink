@@ -3,6 +3,7 @@
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
+    padding-top: 100px; /* Account for fixed navigation (70px nav + 30px spacing) */
     min-height: calc(100vh - 200px);
     display: flex;
     flex-direction: column;
@@ -232,7 +233,8 @@
 
 /* Provider Dashboard Message Thread */
 .main-content .message-thread-container {
-    padding: 0;
+    padding: 20px;
+    padding-top: 20px; /* Provider pages don't have fixed nav, so less padding needed */
     max-width: 100%;
 }
 
