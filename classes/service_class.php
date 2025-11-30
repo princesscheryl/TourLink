@@ -94,6 +94,7 @@ class Service extends db_connection
                        sp.total_bookings as provider_bookings,
                        sp.years_of_experience,
                        sp.languages_spoken,
+                       u.user_id as provider_user_id,
                        u.first_name as provider_first_name,
                        u.last_name as provider_last_name,
                        u.phone as provider_phone,

@@ -171,6 +171,19 @@ if (!isset($current_page)) {
                     <span class="badge"><?php echo $unanswered_reviews_count; ?></span>
                 <?php endif; ?>
             </a>
+            <a href="<?php echo $base_path; ?>view/provider/messages.php" class="nav-item <?php echo $current_page === 'messages' ? 'active' : ''; ?>">
+                <i class="fa fa-envelope"></i> Messages
+                <?php 
+                // Get unread messages count
+                if (!isset($unread_messages_count)) {
+                    require_once __DIR__ . '/../controllers/message_controller.php';
+                    $unread_messages_count = get_unread_message_count_ctr($_SESSION['user_id']);
+                }
+                if ($unread_messages_count > 0): 
+                ?>
+                    <span class="badge"><?php echo $unread_messages_count; ?></span>
+                <?php endif; ?>
+            </a>
         </div>
 
         <div class="nav-section">

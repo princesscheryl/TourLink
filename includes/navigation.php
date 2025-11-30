@@ -90,6 +90,21 @@ if (file_exists(__DIR__ . '/adinkra_symbols.php')) {
                         My Bookings
                     </a>
                     <?php endif; ?>
+                    <a href="<?php echo $base_path; ?>view/messages.php">
+                        <i class="fa fa-envelope"></i>
+                        Messages
+                        <?php 
+                        if (isset($_SESSION['user_id'])) {
+                            require_once __DIR__ . '/../controllers/message_controller.php';
+                            $unread_count = get_unread_message_count_ctr($_SESSION['user_id']);
+                            if ($unread_count > 0): 
+                        ?>
+                            <span style="background: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; margin-left: 8px;"><?php echo $unread_count; ?></span>
+                        <?php 
+                            endif;
+                        }
+                        ?>
+                    </a>
                     <?php if(isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'provider'): ?>
                         <div class="dropdown-divider"></div>
                         <a href="<?php echo $base_path; ?>admin/provider_dashboard.php">

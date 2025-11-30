@@ -249,6 +249,19 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                     <hr>
 
                     <h6><i class="fa fa-address-book"></i> Contact Provider</h6>
+                    <?php if (isset($_SESSION['user_id']) && !$is_provider && isset($service['provider_user_id'])): ?>
+                        <a href="message_thread.php?conversation_id=<?php 
+                            require_once '../controllers/message_controller.php';
+                            $conversation_id = 'conv_' . min($_SESSION['user_id'], $service['provider_user_id']) . '_' . max($_SESSION['user_id'], $service['provider_user_id']);
+                            echo urlencode($conversation_id);
+                        ?>&service_id=<?php echo $service_id; ?>" class="btn btn-outline-primary w-100 mb-3">
+                            <i class="fa fa-envelope"></i> Send Message
+                        </a>
+                    <?php elseif (!isset($_SESSION['user_id'])): ?>
+                        <a href="../login/login.php" class="btn btn-outline-primary w-100 mb-3">
+                            <i class="fa fa-sign-in-alt"></i> Sign in to Message
+                        </a>
+                    <?php endif; ?>
                     <div class="contact-info">
                         <?php if ($service['provider_phone']): ?>
                         <p><i class="fa fa-phone"></i> <?php echo htmlspecialchars($service['provider_phone']); ?></p>
