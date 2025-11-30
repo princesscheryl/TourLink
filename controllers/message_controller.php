@@ -64,13 +64,18 @@ function get_conversation_details_ctr($conversation_id, $current_user_id) {
     $message_class = new Message();
     $details = $message_class->get_conversation_details($conversation_id, $current_user_id);
     
-    if (!$details) {
+    if (!$details || !isset($details['other_user_id'])) {
         return null;
     }
     
     // Get other user info
     $user_class = new TourlinkUser();
     $other_user = $user_class->get_user_by_id($details['other_user_id']);
+    
+    if (!$other_user) {
+        return null;
+    }
+    
     $details['other_user'] = $other_user;
     
     // Get service info if linked

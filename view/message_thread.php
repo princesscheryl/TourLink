@@ -39,6 +39,11 @@ if (!$conv_details) {
 }
 
 $other_user = $conv_details['other_user'];
+if (!$other_user) {
+    header("Location: messages.php");
+    exit();
+}
+
 $messages = get_conversation_messages_ctr($conversation_id, $user_id);
 if (!$messages) {
     $messages = [];

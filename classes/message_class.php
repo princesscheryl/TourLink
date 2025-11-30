@@ -165,9 +165,10 @@ class Message {
 
     /**
      * Get conversation details (other user info, service info if linked)
+     * Handles both existing conversations and new ones (no messages yet)
      */
     public function get_conversation_details($conversation_id, $current_user_id) {
-        // Get the other user in the conversation
+        // First, try to get details from existing messages
         $sql = "SELECT DISTINCT
                     CASE 
                         WHEN m.sender_id = ? THEN m.receiver_id
@@ -180,15 +181,34 @@ class Message {
                 LIMIT 1";
         
         $stmt = $this->db->db->prepare($sql);
-        if (!$stmt) {
-            return null;
+        if ($stmt) {
+            $stmt->bind_param("is", $current_user_id, $conversation_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $details = $result->fetch_assoc();
+            
+            if ($details) {
+                return $details;
+            }
         }
-
-        $stmt->bind_param("is", $current_user_id, $conversation_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
         
-        return $result->fetch_assoc();
+        // If no messages exist, extract user IDs from conversation_id
+        // Format: conv_user1_user2 (where user1 < user2)
+        if (preg_match('/^conv_(\d+)_(\d+)$/', $conversation_id, $matches)) {
+            $user1_id = (int)$matches[1];
+            $user2_id = (int)$matches[2];
+            
+            // Determine which is the other user
+            $other_user_id = ($current_user_id == $user1_id) ? $user2_id : $user1_id;
+            
+            return [
+                'other_user_id' => $other_user_id,
+                'service_id' => null,
+                'booking_id' => null
+            ];
+        }
+        
+        return null;
     }
 }
 
