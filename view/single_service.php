@@ -73,8 +73,17 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/single_service.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
-    <style>
+    <script>
+        // Pass PHP variables to JavaScript
+        window.serviceData = {
+            basePrice: <?php echo $service['base_price']; ?>,
+            pricingUnit: '<?php echo $service['pricing_unit']; ?>',
+            maxCapacity: <?php echo $service['max_capacity'] ?: 'null'; ?>
+        };
+        window.serviceId = <?php echo $service_id; ?>;
+    </script>
         * {
             margin: 0;
             padding: 0;
@@ -921,8 +930,6 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
                 text-align: left;
             }
         }
-    </style>
-</head>
 <body>
     <nav class="main-nav">
         <div class="nav-container">
@@ -1487,286 +1494,6 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
     <script src="../js/review_reply.js"></script>
     <script src="../js/review_submit.js"></script>
     <script src="../js/favorites.js"></script>
-    <script>
-        // Service data for pricing calculation
-        const serviceData = {
-            basePrice: <?php echo $service['base_price']; ?>,
-            pricingUnit: '<?php echo $service['pricing_unit']; ?>',
-            maxCapacity: <?php echo $service['max_capacity'] ?: 'null'; ?>
-        };
-
-        let guestCount = 1;
-
-        function bookService() {
-            const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
-            modal.show();
-        }
-
-        function updateGuestCount(change) {
-            const newCount = guestCount + change;
-            const maxCapacity = serviceData.maxCapacity || 20;
-
-            if (newCount >= 1 && newCount <= maxCapacity) {
-                guestCount = newCount;
-                document.getElementById('guestCountDisplay').textContent = guestCount;
-                document.getElementById('number_of_people').value = guestCount;
-                document.getElementById('guestMultiplier').textContent = guestCount;
-
-                // Update decrease button state
-                document.getElementById('decreaseGuests').disabled = (guestCount <= 1);
-                document.getElementById('increaseGuests').disabled = (guestCount >= maxCapacity);
-
-                // Update pricing
-                updatePricing();
-            }
-        }
-
-        function updatePricing() {
-            let total = serviceData.basePrice;
-            let duration = 1;
-
-            // Get duration if applicable
-            const durationSelect = document.getElementById('service_duration');
-            if (durationSelect) {
-                duration = parseInt(durationSelect.value) || 1;
-            }
-
-            // Calculate based on pricing unit
-            if (serviceData.pricingUnit === 'per_hour' || serviceData.pricingUnit === 'per_day') {
-                total = serviceData.basePrice * duration;
-
-                // Update duration display
-                const durationMultiplier = document.getElementById('durationMultiplier');
-                const durationSubtotal = document.getElementById('durationSubtotal');
-                if (durationMultiplier) durationMultiplier.textContent = duration;
-                if (durationSubtotal) durationSubtotal.textContent = 'GHS ' + formatNumber(total);
-            }
-
-            if (serviceData.pricingUnit === 'per_person') {
-                total = serviceData.basePrice * guestCount;
-                const subtotalEl = document.getElementById('subtotalAmount');
-                const guestMultiplier = document.getElementById('guestMultiplier');
-                if (guestMultiplier) guestMultiplier.textContent = guestCount;
-                if (subtotalEl) subtotalEl.textContent = 'GHS ' + formatNumber(total);
-            }
-
-            document.getElementById('totalAmount').textContent = 'GHS ' + formatNumber(total);
-        }
-
-        function formatNumber(num) {
-            return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        // Gallery image switching
-        function changeGalleryImage(src, thumbElement) {
-            const mainImage = document.getElementById('mainGalleryImage');
-            if (mainImage) {
-                mainImage.src = src;
-            }
-            // Update active state
-            document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
-            if (thumbElement) {
-                thumbElement.classList.add('active');
-            }
-        }
-
-        function submitBooking() {
-            const form = document.getElementById('bookingForm');
-            if (!form) {
-                console.error('Booking form not found');
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Booking form not found. Please refresh the page and try again.',
-                    confirmButtonColor: '#2d6a4f'
-                });
-                return;
-            }
-
-            // Get form values - use form.querySelector as fallback if getElementById fails
-            const serviceIdInput = document.getElementById('service_id') || form.querySelector('[name="service_id"]');
-            const serviceDateInput = document.getElementById('service_date') || form.querySelector('[name="service_date"]');
-            const serviceTimeInput = document.getElementById('service_time') || form.querySelector('[name="service_time"]');
-            const numberOfPeopleInput = document.getElementById('number_of_people') || form.querySelector('[name="number_of_people"]');
-            const serviceDurationInput = document.getElementById('service_duration') || form.querySelector('[name="service_duration"]');
-
-            const serviceDate = serviceDateInput ? serviceDateInput.value : '';
-            const serviceTime = serviceTimeInput ? serviceTimeInput.value : '';
-            const serviceId = serviceIdInput ? serviceIdInput.value : '';
-            const numberOfPeople = numberOfPeopleInput ? numberOfPeopleInput.value : '1';
-            const serviceDuration = serviceDurationInput ? serviceDurationInput.value : '1';
-
-            // Validate form
-            if (!serviceDate) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Date Required',
-                    text: 'Please select a date for your booking.',
-                    confirmButtonColor: '#2d6a4f'
-                });
-                return;
-            }
-
-            if (!serviceTime) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Time Required',
-                    text: 'Please select a preferred time.',
-                    confirmButtonColor: '#2d6a4f'
-                });
-                return;
-            }
-
-            if (!serviceId) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Service ID is missing. Please refresh the page and try again.',
-                    confirmButtonColor: '#2d6a4f'
-                });
-                return;
-            }
-
-            // Redirect to booking page with parameters
-            const params = new URLSearchParams({
-                service_id: serviceId,
-                date: serviceDate,
-                time: serviceTime,
-                guests: numberOfPeople,
-                duration: serviceDuration
-            });
-
-            window.location.href = 'book_service.php?' + params.toString();
-        }
-
-        // Legacy AJAX booking (deprecated - keeping for reference)
-        function submitBookingOld() {
-            const form = document.getElementById('bookingForm');
-            const serviceDate = document.getElementById('service_date').value;
-            const serviceTime = document.getElementById('service_time').value;
-
-            if (!serviceDate || !serviceTime) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Required Fields',
-                    text: 'Please select date and time.',
-                    confirmButtonColor: '#2d6a4f'
-                });
-                return;
-            }
-
-            const bookBtn = document.querySelector('.btn-book');
-            const originalText = bookBtn.innerHTML;
-            bookBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Processing...';
-            bookBtn.disabled = true;
-
-            $.ajax({
-                url: '../actions/create_booking_action.php',
-                method: 'POST',
-                data: $(form).serialize(),
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Booking Requested!',
-                            html: `
-                                <p>Your booking request has been submitted successfully.</p>
-                                <p><strong>Reference:</strong> ${response.booking_reference}</p>
-                                <p class="text-muted">The service provider will review and confirm your booking.</p>
-                            `,
-                            confirmButtonColor: '#2d6a4f',
-                            confirmButtonText: 'View My Bookings'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = 'my_bookings.php';
-                            }
-                        });
-                    } else {
-                        if (response.require_login) {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Login Required',
-                                text: response.message,
-                                confirmButtonColor: '#2d6a4f',
-                                confirmButtonText: 'Sign In'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.href = '../login/login.php';
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Booking Failed',
-                                text: response.message,
-                                confirmButtonColor: '#2d6a4f'
-                            });
-                        }
-                    }
-                },
-                error: function() {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred. Please try again.',
-                        confirmButtonColor: '#2d6a4f'
-                    });
-                },
-                complete: function() {
-                    bookBtn.innerHTML = originalText;
-                    bookBtn.disabled = false;
-                }
-            });
-        }
-
-        // Initialize on page load
-        $(document).ready(function() {
-            // Set minimum date to tomorrow
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            document.getElementById('service_date').min = tomorrow.toISOString().split('T')[0];
-
-            // Initialize button states
-            document.getElementById('decreaseGuests').disabled = true;
-        });
-
-        // Update button text when favorite is toggled
-        $(document).on('favoriteToggled', function(event, data) {
-            if (data.serviceId == <?php echo $service_id; ?>) {
-                // Update large favorite button (top of page)
-                const buttonLarge = $('.favorite-btn-large');
-                const span = buttonLarge.find('span');
-                const iconLarge = buttonLarge.find('i');
-
-                if (data.action === 'added') {
-                    span.text('Saved');
-                    iconLarge.removeClass('far').addClass('fas');
-                    buttonLarge.addClass('active');
-                } else {
-                    span.text('Save');
-                    iconLarge.removeClass('fas').addClass('far');
-                    buttonLarge.removeClass('active');
-                }
-
-                // Update sidebar favorite button
-                const buttonSidebar = $('.favorite-btn-sidebar');
-                const iconSidebar = buttonSidebar.find('i');
-
-                if (data.action === 'added') {
-                    buttonSidebar.html('<i class="fas fa-heart"></i> Saved');
-                    buttonSidebar.addClass('active');
-                    buttonSidebar.attr('aria-label', 'Remove from favorites');
-                } else {
-                    buttonSidebar.html('<i class="far fa-heart"></i> Add to Favorites');
-                    buttonSidebar.removeClass('active');
-                    buttonSidebar.attr('aria-label', 'Add to favorites');
-                }
-            }
-        });
-
-    </script>
+    <script src="../js/single_service.js"></script>
 </body>
 </html>
