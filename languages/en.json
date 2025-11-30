@@ -17,7 +17,8 @@
     "profile_settings": "Profile Settings",
     "dark_mode": "Dark Mode",
     "light_mode": "Light Mode",
-    "cart": "Cart"
+    "cart": "Cart",
+    "back_to_home": "Back to Home"
   },
 
   "hero": {
@@ -124,6 +125,7 @@
   },
 
   "auth": {
+    "sign_in": "Sign In",
     "sign_in_title": "Sign In",
     "sign_in_subtitle": "Enter your credentials to access your account",
     "sign_up_title": "Create Tourist Account",

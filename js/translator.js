@@ -125,6 +125,12 @@
                 const key = element.getAttribute('data-i18n');
                 const translation = this.get(key);
 
+                // Only translate if a valid translation was found (not the key itself)
+                if (translation === key) {
+                    // Translation not found, keep original content (fallback text)
+                    return;
+                }
+
                 // Handle different element types
                 if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                     if (element.placeholder) {
@@ -148,21 +154,30 @@
             const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
             placeholderElements.forEach(element => {
                 const key = element.getAttribute('data-i18n-placeholder');
-                element.placeholder = this.get(key);
+                const translation = this.get(key);
+                if (translation !== key) {
+                    element.placeholder = translation;
+                }
             });
 
             // Translate elements with data-i18n-title (tooltips)
             const titleElements = document.querySelectorAll('[data-i18n-title]');
             titleElements.forEach(element => {
                 const key = element.getAttribute('data-i18n-title');
-                element.title = this.get(key);
+                const translation = this.get(key);
+                if (translation !== key) {
+                    element.title = translation;
+                }
             });
 
             // Translate elements with data-i18n-aria-label
             const ariaElements = document.querySelectorAll('[data-i18n-aria-label]');
             ariaElements.forEach(element => {
                 const key = element.getAttribute('data-i18n-aria-label');
-                element.setAttribute('aria-label', this.get(key));
+                const translation = this.get(key);
+                if (translation !== key) {
+                    element.setAttribute('aria-label', translation);
+                }
             });
 
             // Update page title

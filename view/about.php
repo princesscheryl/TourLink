@@ -211,7 +211,7 @@ require_once '../settings/core.php';
     <div class="main-container">
         <div class="content-card">
             <h2>Our Story</h2>
-            <p>Founded in 2025, TourLink Technologies Ltd. is revolutionizing the tourism industry in Ghana by creating a seamless digital marketplace that connects travelers with verified local tour providers. Our platform empowers both tourists seeking authentic Ghanaian experiences and service providers looking to expand their reach.</p>
+            <p>Founded in 2025, TourLink Technologies Ltd. is revolutionizing the tourism industry in Ghana by creating a seamless digital marketplace that connects travelers with verified local tour providers. Our platform empowers both people seeking authentic Ghanaian experiences and service providers looking to expand their reach.</p>
 
             <h3>Our Mission</h3>
             <p>To make Ghana's rich cultural heritage, natural beauty, and adventure opportunities accessible to travelers worldwide while supporting local tourism businesses through innovative technology solutions.</p>
@@ -236,10 +236,9 @@ require_once '../settings/core.php';
             <div class="team-grid">
                 <div class="team-member">
                     <div class="member-avatar">KA</div>
-                    <div class="member-name">Kwame Asante</div>
+                    <div class="member-name">Princess Asiedu-Donkor</div>
                     <div class="member-role">Chief Executive Officer</div>
-                    <p class="member-bio">Tourism industry veteran with 15+ years of experience. Passionate about leveraging technology to promote Ghana's tourism sector globally.</p>
-                </div>
+                    <p class="member-bio">With a background in Management Information Systems, she combines business insight with technical understanding to ensure that TourLink supports inclusive economic growth across Ghana’s tourism sector.</p>
 
                 <div class="team-member">
                     <div class="member-avatar">AM</div>
