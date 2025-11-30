@@ -45,6 +45,17 @@ $category = isset($_GET['category']) ? $_GET['category'] : '';
     <?php include '../includes/navigation.php'; ?>
 
     <div class="create-ticket-container">
+        <?php if (isset($_SESSION['ticket_errors'])): ?>
+            <div class="alert alert-danger">
+                <ul style="margin: 0; padding-left: 20px;">
+                    <?php foreach ($_SESSION['ticket_errors'] as $error): ?>
+                        <li><?php echo htmlspecialchars($error); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <?php unset($_SESSION['ticket_errors']); ?>
+        <?php endif; ?>
+
         <div class="ticket-header">
             <h1><i class="fas fa-headset"></i> Contact Support</h1>
             <p>We're here to help! Describe your issue and we'll get back to you as soon as possible.</p>
