@@ -73,7 +73,15 @@ $current_page = 'messages';
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="message-thread-container">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1><i class="fas fa-envelope"></i> Messages</h1>
+                <p>Conversation with <?php echo htmlspecialchars($other_user['first_name'] . ' ' . $other_user['last_name']); ?></p>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <div class="message-thread-container">
             <div class="message-thread-header">
                 <a href="messages.php" class="back-btn">
                     <i class="fas fa-arrow-left"></i> Back to Messages
@@ -144,6 +152,7 @@ $current_page = 'messages';
                     </button>
                 </form>
             </div>
+        </div>
         </div>
     </main>
 

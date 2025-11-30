@@ -9,6 +9,13 @@
     flex-direction: column;
 }
 
+/* Override for provider dashboard - no top padding needed */
+.main-content .message-thread-container {
+    padding-top: 20px;
+    max-width: none;
+    width: 100%;
+}
+
 .message-thread-header {
     background: white;
     border-radius: 12px;
@@ -232,12 +239,13 @@
 }
 
 /* Provider Dashboard Message Thread */
-.main-content .message-thread-container {
-    padding: 20px 32px;
-    padding-top: 20px;
-    max-width: 100%;
+.main-content .content-area .message-thread-container {
+    padding: 0;
+    max-width: none;
     width: 100%;
     margin: 0;
+    position: relative;
+    min-height: auto;
 }
 
 .main-content .message-thread-header {
