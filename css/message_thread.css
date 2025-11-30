@@ -233,9 +233,11 @@
 
 /* Provider Dashboard Message Thread */
 .main-content .message-thread-container {
-    padding: 20px;
-    padding-top: 20px; /* Provider pages don't have fixed nav, so less padding needed */
+    padding: 20px 32px;
+    padding-top: 20px;
     max-width: 100%;
+    width: 100%;
+    margin: 0;
 }
 
 .main-content .message-thread-header {

@@ -168,6 +168,12 @@
 }
 
 /* Provider Dashboard Messages Styles */
+.main-content .messages-container {
+    padding: 0 32px;
+    max-width: 100%;
+    width: 100%;
+}
+
 .main-content .messages-content {
     background: white;
     border-radius: 12px;
