@@ -75,7 +75,7 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
     <title>Premium Subscription - TourLink</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+    <link href="../css/premium_subscription.css" rel="stylesheet">
         * {
             margin: 0;
             padding: 0;
@@ -447,7 +447,6 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
                 grid-template-columns: 1fr;
             }
         }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -556,7 +555,7 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
                     </div>
 
                     <?php if ($active_subscription['auto_renew']): ?>
-                        <button class="btn-cancel" onclick="cancelSubscription()" style="width: 100%; margin-top: 20px;">
+                        <button class="btn-cancel" onclick="cancelSubscription(event)" style="width: 100%; margin-top: 20px;">
                             Cancel Subscription
                         </button>
                     <?php endif; ?>
@@ -716,118 +715,6 @@ $history = $history_query->get_result()->fetch_all(MYSQLI_ASSOC);
         <?php endif; ?>
     </div>
 
-    <script>
-        function subscribePremium(event) {
-            // Get the button element from the event
-            const btn = event ? event.target : null;
-            
-            // Disable button and show loading state if we have the button
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            }
-
-            // Redirect to payment initialization
-            window.location.href = '../actions/initiate_premium_subscription.php';
-        }
-
-        function showErrorMessage(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            const errorText = document.getElementById('errorText');
-            errorText.textContent = message;
-            errorDiv.style.display = 'flex';
-            
-            // Auto-hide after 8 seconds
-            setTimeout(() => {
-                closeErrorMessage();
-            }, 8000);
-        }
-
-        function showSuccessMessage(message) {
-            const successDiv = document.getElementById('successMessage');
-            const successText = document.getElementById('successText');
-            successText.textContent = message;
-            successDiv.style.display = 'flex';
-            
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                closeSuccessMessage();
-            }, 5000);
-        }
-
-        function closeErrorMessage() {
-            document.getElementById('errorMessage').style.display = 'none';
-        }
-
-        function closeSuccessMessage() {
-            document.getElementById('successMessage').style.display = 'none';
-        }
-
-        function cancelSubscription() {
-            if (confirm('Are you sure you want to cancel your premium subscription?\n\nYour benefits will continue until the end of the current billing period.')) {
-                // Disable button and show loading
-                const btn = event.target;
-                const originalText = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
-                
-                // Hide any previous messages
-                closeErrorMessage();
-                closeSuccessMessage();
-                
-                fetch('../actions/cancel_premium_subscription.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'same-origin'
-                })
-                .then(response => {
-                    // Try to parse JSON even if response is not ok
-                    return response.text().then(text => {
-                        try {
-                            return { ok: response.ok, data: JSON.parse(text), status: response.status };
-                        } catch (e) {
-                            // If JSON parsing fails, return the text as error
-                            return { 
-                                ok: false, 
-                                data: { 
-                                    success: false, 
-                                    message: 'Server returned an invalid response. Status: ' + response.status + '. Response: ' + text.substring(0, 200)
-                                },
-                                status: response.status
-                            };
-                        }
-                    });
-                })
-                .then(result => {
-                    if (result.ok && result.data.success) {
-                        showSuccessMessage('Subscription cancelled successfully. Your benefits will continue until the end of the current billing period.');
-                        setTimeout(() => {
-                            location.reload();
-                        }, 2000);
-                    } else {
-                        // Show detailed error message
-                        let errorMsg = result.data.message || 'Failed to cancel subscription';
-                        if (result.data.error) {
-                            errorMsg += ' (Error: ' + result.data.error + ')';
-                        }
-                        if (result.status && result.status !== 200) {
-                            errorMsg += ' [HTTP ' + result.status + ']';
-                        }
-                        showErrorMessage(errorMsg);
-                        btn.disabled = false;
-                        btn.innerHTML = originalText;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error cancelling subscription:', error);
-                    showErrorMessage('Network error: ' + error.message + '. Please check your internet connection and try again.');
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                });
-            }
-        }
-    </script>
+    <script src="../js/premium_subscription.js"></script>
 </body>
 </html>

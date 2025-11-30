@@ -78,7 +78,17 @@ if (!$regional_revenue) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
+    <link href="../css/admin_dashboard.css" rel="stylesheet">
+    <script>
+        // Pass PHP variables to JavaScript
+        window.dashboardData = {
+            bookingTrends: <?php echo json_encode($booking_trends); ?>,
+            statusBreakdown: <?php echo json_encode($status_breakdown); ?>,
+            regionalStats: <?php echo json_encode($regional_stats); ?>,
+            categoryPerformance: <?php echo json_encode($category_performance); ?>,
+            regionalRevenue: <?php echo json_encode($regional_revenue); ?>
+        };
+    </script>
         * {
             margin: 0;
             padding: 0;
@@ -518,7 +528,6 @@ if (!$regional_revenue) {
                 grid-template-columns: 1fr;
             }
         }
-    </style>
 </head>
 <body>
     <?php
@@ -823,12 +832,9 @@ if (!$regional_revenue) {
         </div>
     </main>
 
-    <script>
-        // Booking Trends Chart
-        const bookingCtx = document.getElementById('bookingChart').getContext('2d');
-        const bookingData = <?php echo json_encode($booking_trends); ?>;
-
-        const labels = bookingData.map(item => {
+    <script src="../js/admin_dashboard.js"></script>
+</body>
+</html>
             const [year, month] = item.month.split('-');
             const date = new Date(year, month - 1);
             return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });

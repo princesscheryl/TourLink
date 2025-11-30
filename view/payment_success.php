@@ -238,7 +238,6 @@ if ($payment_type === 'premium') {
                 justify-content: center;
             }
         }
-    </style>
 </head>
 <body>
     <?php include '../includes/navigation.php'; ?>
