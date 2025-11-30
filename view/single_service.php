@@ -1484,6 +1484,7 @@ if (isset($_SESSION['user_id']) && !$is_provider) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/review_reply.js"></script>
+    <script src="../js/review_submit.js"></script>
     <script src="../js/favorites.js"></script>
     <script>
         // Service data for pricing calculation

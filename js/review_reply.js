@@ -4,19 +4,26 @@
  * Used in: manage_reviews.php, single_service.php
  */
 
-$(document).ready(function() {
-    $('.reply-form').on('submit', function(e) {
-        e.preventDefault();
+// Prevent multiple initializations
+if (typeof window.reviewReplyInitialized === 'undefined') {
+    window.reviewReplyInitialized = true;
+    
+    // Use event delegation to prevent multiple listeners and improve performance
+    $(document).ready(function() {
+        // Remove any existing listeners first to prevent duplicates
+        $(document).off('submit', '.reply-form');
         
-        const form = $(this);
-        const reviewId = form.data('review-id');
-        const serviceId = form.data('service-id');
-        const responseText = form.find('textarea[name="provider_response"]').val().trim();
-        
-        // Fallback if textarea selector doesn't work
-        if (!responseText) {
-            responseText = form.find('textarea').val().trim();
-        }
+        // Use event delegation - attach listener to document, not individual forms
+        $(document).on('submit', '.reply-form', function(e) {
+            e.preventDefault();
+            
+            const form = $(this);
+            const reviewId = form.data('review-id');
+            const serviceId = form.data('service-id');
+            
+            // Get textarea value directly without jQuery traversal to improve performance
+            const textarea = form.find('textarea[name="provider_response"]')[0] || form.find('textarea')[0];
+            const responseText = textarea ? textarea.value.trim() : '';
         
         if (!responseText) {
             Swal.fire({
@@ -90,5 +97,5 @@ $(document).ready(function() {
             }
         });
     });
-});
-
+    });
+}

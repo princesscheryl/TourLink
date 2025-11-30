@@ -72,16 +72,62 @@ if (has_reviewed_booking_ctr($booking_id, $tourist_id)) {
 
 // Submit the review (provider_id is available from the booking)
 $provider_id = $booking['provider_id'];
-$review_id = submit_review_ctr($service_id, $provider_id, $tourist_id, $booking_id, $rating, $review_title, $review_text);
 
-ob_end_clean(); // Clear any output before redirect
+// Check if this is an AJAX request
+$is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
-if ($review_id) {
-    $_SESSION['success'] = "Thank you for your review! Your feedback helps other tourists.";
+try {
+    $review_id = submit_review_ctr($service_id, $provider_id, $tourist_id, $booking_id, $rating, $review_title, $review_text);
+    
+    ob_end_clean(); // Clear any output before redirect
+    
+    if ($review_id && $review_id > 0) {
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Thank you for your review! Your feedback helps other tourists.'
+            ]);
+            exit();
+        }
+        
+        $_SESSION['success'] = "Thank you for your review! Your feedback helps other tourists.";
+        header("Location: ../view/single_service.php?id=$service_id#reviews");
+    } else {
+        // Check if review was already submitted (duplicate check)
+        $already_reviewed = has_reviewed_booking_ctr($booking_id, $tourist_id);
+        
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'error',
+                'message' => $already_reviewed ? "You have already reviewed this booking" : "Failed to submit review. Please try again."
+            ]);
+            exit();
+        }
+        
+        if ($already_reviewed) {
+            $_SESSION['error'] = "You have already reviewed this booking";
+        } else {
+            $_SESSION['error'] = "Failed to submit review. Please try again.";
+        }
+        header("Location: ../view/single_service.php?id=$service_id#reviews");
+    }
+} catch (Exception $e) {
+    ob_end_clean();
+    error_log("Review submission error: " . $e->getMessage());
+    
+    if ($is_ajax) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'An error occurred while submitting your review. Please try again.'
+        ]);
+        exit();
+    }
+    
+    $_SESSION['error'] = "An error occurred while submitting your review. Please try again.";
     header("Location: ../view/single_service.php?id=$service_id#reviews");
-} else {
-    $_SESSION['error'] = "Failed to submit review. Please try again.";
-    header("Location: ../view/single_service.php?id=$service_id");
 }
 
 exit();
