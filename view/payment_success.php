@@ -66,7 +66,7 @@ if ($payment_type === 'premium') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="../css/navigation.css" rel="stylesheet">
     <link href="../css/footer.css" rel="stylesheet">
-    <style>
+    <link href="../css/payment_success.css" rel="stylesheet">
         * {
             margin: 0;
             padding: 0;
@@ -236,8 +236,6 @@ if ($payment_type === 'premium') {
             .btn {
                 width: 100%;
                 justify-content: center;
-            }
-        }
 </head>
 <body>
     <?php include '../includes/navigation.php'; ?>

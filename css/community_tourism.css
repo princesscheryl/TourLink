@@ -1,0 +1,666 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f8f9fa;
+    color: #1a1a1a;
+}
+
+.page-header {
+    background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+    color: white;
+    padding: 120px 0 80px;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=1600') center/cover;
+    opacity: 0.15;
+}
+
+.header-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(212, 160, 23, 0.2);
+    border: 1px solid #d4a017;
+    color: #d4a017;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.page-header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 600px;
+    line-height: 1.7;
+}
+
+.container-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Impact Stats Bar */
+.impact-bar {
+    background: white;
+    margin-top: -50px;
+    position: relative;
+    z-index: 10;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    padding: 32px;
+}
+
+.impact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.impact-stat {
+    text-align: center;
+    padding: 16px;
+    border-right: 1px solid #e5e7eb;
+}
+
+.impact-stat:last-child {
+    border-right: none;
+}
+
+.impact-stat i {
+    font-size: 32px;
+    color: #1b4332;
+    margin-bottom: 12px;
+}
+
+.impact-stat h3 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1b4332;
+    margin-bottom: 4px;
+}
+
+.impact-stat p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Why Community Tourism */
+.why-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.why-content h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1b4332;
+    margin-bottom: 20px;
+}
+
+.why-content p {
+    font-size: 15px;
+    color: #4b5563;
+    line-height: 1.8;
+    margin-bottom: 24px;
+}
+
+.benefits-list {
+    list-style: none;
+}
+
+.benefits-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.benefits-list li i {
+    color: #d4a017;
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.benefits-list li span {
+    font-size: 14px;
+    color: #374151;
+}
+
+.why-image {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.why-image-card {
+    background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+    border-radius: 16px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.why-image-card:first-child {
+    grid-row: span 2;
+    height: 100%;
+}
+
+.why-image-card i {
+    font-size: 48px;
+    color: rgba(255,255,255,0.2);
+}
+
+.why-image-card span {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Experiences Section */
+.experiences-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.section-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.section-header p {
+    font-size: 16px;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.experiences-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+
+.experience-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    transition: all 0.3s;
+}
+
+.experience-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+}
+
+.experience-image {
+    height: 200px;
+    background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.experience-image i {
+    font-size: 56px;
+    color: rgba(255,255,255,0.2);
+}
+
+.experience-tag {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: #d4a017;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.experience-duration {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.experience-content {
+    padding: 24px;
+}
+
+.experience-content h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.experience-location {
+    font-size: 13px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.experience-content p {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.experience-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.experience-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1b4332;
+}
+
+.experience-price span {
+    font-size: 12px;
+    font-weight: 400;
+    color: #6b7280;
+}
+
+.btn-book {
+    background: #1b4332;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-book:hover {
+    background: #143728;
+    color: white;
+}
+
+/* Why Visit Ghana Section */
+.why-ghana-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.partners-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.partner-card {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.partner-card:hover {
+    border-color: #1b4332;
+    background: white;
+}
+
+.partner-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.partner-avatar i {
+    font-size: 32px;
+    color: rgba(255,255,255,0.8);
+}
+
+.partner-card h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+
+.partner-card .location {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 12px;
+}
+
+.partner-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.partner-stats span {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.partner-stats span strong {
+    color: #1b4332;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+    text-align: center;
+    color: white;
+}
+
+.cta-section h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.cta-section p {
+    font-size: 16px;
+    opacity: 0.9;
+    max-width: 500px;
+    margin: 0 auto 32px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-cta-primary {
+    background: #d4a017;
+    color: #1b4332;
+    padding: 14px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+.btn-cta-primary:hover {
+    background: #b8860b;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-cta-secondary {
+    background: transparent;
+    color: white;
+    padding: 14px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    border: 2px solid rgba(255,255,255,0.3);
+    transition: all 0.3s;
+}
+
+.btn-cta-secondary:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: white;
+    color: white;
+}
+
+@media (max-width: 1024px) {
+    .impact-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .experiences-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .partners-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    .why-grid {
+        grid-template-columns: 1fr;
+    }
+    .why-image {
+        display: none;
+    }
+    .impact-grid,
+    .experiences-grid,
+    .partners-grid {
+        grid-template-columns: 1fr;
+    }
+    .impact-stat {
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .impact-stat:last-child {
+        border-bottom: none;
+    }
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] body {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .impact-bar {
+    background: #2d2d2d !important;
+}
+
+[data-theme="dark"] .impact-stat {
+    border-right-color: #404040 !important;
+    border-bottom-color: #404040 !important;
+}
+
+[data-theme="dark"] .impact-stat i {
+    color: #52b788 !important;
+}
+
+[data-theme="dark"] .impact-stat h3 {
+    color: #52b788 !important;
+}
+
+[data-theme="dark"] .impact-stat p {
+    color: #a0a0a0 !important;
+}
+
+[data-theme="dark"] .why-section {
+    background: #1a1a1a !important;
+}
+
+[data-theme="dark"] .why-content h2 {
+    color: #52b788 !important;
+}
+
+[data-theme="dark"] .why-content p {
+    color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] .benefits-list li span {
+    color: #c0c0c0 !important;
+}
+
+[data-theme="dark"] .experiences-section {
+    background: #1a1a1a !important;
+}
+
+[data-theme="dark"] .section-header h2 {
+    color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .section-header p {
+    color: #a0a0a0 !important;
+}
+
+[data-theme="dark"] .experience-card {
+    background: #2d2d2d !important;
+}
+
+[data-theme="dark"] .experience-content h3 {
+    color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .experience-location {
+    color: #a0a0a0 !important;
+}
+
+[data-theme="dark"] .experience-content p {
+    color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] .experience-footer {
+    border-top-color: #404040 !important;
+}
+
+[data-theme="dark"] .experience-price {
+    color: #52b788 !important;
+}
+
+[data-theme="dark"] .experience-price span {
+    color: #a0a0a0 !important;
+}
+
+[data-theme="dark"] .btn-book {
+    background: #52b788 !important;
+    color: #1a1a1a !important;
+}
+
+[data-theme="dark"] .btn-book:hover {
+    background: #40916c !important;
+    color: #1a1a1a !important;
+}
+
+[data-theme="dark"] .why-ghana-section {
+    background: #1a1a1a !important;
+}
+
+[data-theme="dark"] .partner-card {
+    background: #2d2d2d !important;
+}
+
+[data-theme="dark"] .partner-card:hover {
+    background: #3d3d3d !important;
+    border-color: #52b788 !important;
+}
+
+[data-theme="dark"] .partner-card h4 {
+    color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .partner-card .location {
+    color: #a0a0a0 !important;
+}
+
+[data-theme="dark"] .partner-stats span {
+    color: #a0a0a0 !important;
+}
+
+[data-theme="dark"] .partner-stats span strong {
+    color: #52b788 !important;
+}
+
+/* Dark Mode - Rich Cultural Tapestry Section */
+[data-theme="dark"] h3[style*="color: #1b4332"] {
+    color: #52b788 !important;
+}
+
+[data-theme="dark"] h4[style*="color: #1b4332"] {
+    color: #74c69d !important;
+}
+
+[data-theme="dark"] p[style*="color: #666"] {
+    color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] div[style*="color: #666"] {
+    color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] div[style*="background: white"] {
+    background: #2d2d2d !important;
+}
+
+[data-theme="dark"] p[style*="color: #2d6a4f"] {
+    color: #74c69d !important;
+}
+
+[data-theme="dark"] div[style*="background: linear-gradient(135deg, rgba(212,160,23,0.1)"] {
+    background: linear-gradient(135deg, rgba(82,183,136,0.15), rgba(64,145,108,0.1)) !important;
+    border-color: #52b788 !important;
+}

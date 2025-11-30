@@ -42,7 +42,7 @@ $total_amount = floatval($booking['total_amount']);
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="../css/navigation.css" rel="stylesheet">
     <link href="../css/footer.css" rel="stylesheet">
-    <style>
+    <link href="../css/booking_payment.css" rel="stylesheet">
         * {
             margin: 0;
             padding: 0;
@@ -295,8 +295,6 @@ $total_amount = floatval($booking['total_amount']);
             .payment-sidebar {
                 position: static;
             }
-        }
-    </style>
 </head>
 <body>
     <?php include '../includes/navigation.php'; ?>
@@ -391,121 +389,11 @@ $total_amount = floatval($booking['total_amount']);
     <?php include '../includes/footer.php'; ?>
 
     <script>
-        const bookingId = <?php echo $booking_id; ?>;
-        let originalAmount = <?php echo $total_amount; ?>;
-        let discountAmount = 0;
-        let appliedDiscountCode = null;
-
-        document.getElementById('applyDiscountBtn').addEventListener('click', applyDiscount);
-        document.getElementById('discountCode').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                applyDiscount();
-            }
-        });
-
-        document.getElementById('payButton').addEventListener('click', initializePayment);
-
-        async function applyDiscount() {
-            const code = document.getElementById('discountCode').value.trim().toUpperCase();
-            const messageEl = document.getElementById('discountMessage');
-            const applyBtn = document.getElementById('applyDiscountBtn');
-
-            if (!code) {
-                showDiscountMessage('Please enter a discount code', 'error');
-                return;
-            }
-
-            applyBtn.disabled = true;
-            applyBtn.textContent = 'Checking...';
-
-            try {
-                // Validate discount by attempting payment initialization (dry run)
-                const response = await fetch('../actions/validate_discount.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        booking_id: bookingId,
-                        discount_code: code,
-                        amount: originalAmount
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    discountAmount = parseFloat(data.discount_amount);
-                    appliedDiscountCode = code;
-
-                    document.getElementById('discountAmount').textContent = `- GH₵ ${discountAmount.toFixed(2)}`;
-                    document.getElementById('discountRow').style.display = 'flex';
-                    document.getElementById('totalAmount').textContent = `GH₵ ${data.final_amount}`;
-
-                    showDiscountMessage(`Discount applied! You save GH₵ ${discountAmount.toFixed(2)}`, 'success');
-                    document.getElementById('discountCode').disabled = true;
-                    applyBtn.style.display = 'none';
-                } else {
-                    showDiscountMessage(data.message || 'Invalid discount code', 'error');
-                }
-
-            } catch (error) {
-                console.error('Discount validation error:', error);
-                showDiscountMessage('Failed to validate discount code', 'error');
-            } finally {
-                applyBtn.disabled = false;
-                applyBtn.textContent = 'Apply';
-            }
-        }
-
-        function showDiscountMessage(message, type) {
-            const messageEl = document.getElementById('discountMessage');
-            messageEl.textContent = message;
-            messageEl.className = `discount-message ${type}`;
-        }
-
-        async function initializePayment() {
-            const email = '<?php echo htmlspecialchars($_SESSION['email'] ?? ''); ?>';
-            const payBtn = document.getElementById('payButton');
-
-            if (!email) {
-                alert('Email not found in session. Please logout and login again.');
-                return;
-            }
-
-            payBtn.disabled = true;
-            payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-            try {
-                const response = await fetch('../actions/paystack_init_transaction.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        booking_id: bookingId,
-                        email: email,
-                        discount_code: appliedDiscountCode
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success' && data.authorization_url) {
-                    window.location.href = data.authorization_url;
-                } else {
-                    alert(data.message || 'Failed to initialize payment');
-                    payBtn.disabled = false;
-                    payBtn.innerHTML = '<i class="fas fa-lock"></i> Proceed to Payment';
-                }
-
-            } catch (error) {
-                console.error('Payment initialization error:', error);
-                alert('Connection error. Please try again.');
-                payBtn.disabled = false;
-                payBtn.innerHTML = '<i class="fas fa-lock"></i> Proceed to Payment';
-            }
-        }
+        // Pass PHP variables to JavaScript
+        window.bookingId = <?php echo $booking_id; ?>;
+        window.originalAmount = <?php echo $total_amount; ?>;
+        window.userEmail = '<?php echo htmlspecialchars($_SESSION['email'] ?? ''); ?>';
     </script>
+    <script src="../js/booking_payment.js"></script>
 </body>
 </html>

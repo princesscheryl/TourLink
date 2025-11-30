@@ -12,9 +12,9 @@ require_once '../settings/core.php';
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
+    <link href="../css/become_provider.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
     <script src="../js/translator.js"></script>
-    <style>
         * {
             margin: 0;
             padding: 0;
@@ -611,9 +611,6 @@ require_once '../settings/core.php';
         }
 
         [data-theme="dark"] .theme-toggle-btn:hover {
-            background: #4d4d4d !important;
-        }
-    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -878,22 +875,6 @@ require_once '../settings/core.php';
         <p>&copy; 2025 TourLink. All rights reserved.</p>
     </footer>
 
-    <script>
-        // FAQ Toggle
-        function toggleFAQ(element) {
-            const faqItem = element.parentElement;
-            const isActive = faqItem.classList.contains('active');
-
-            // Close all FAQs
-            document.querySelectorAll('.faq-item').forEach(item => {
-                item.classList.remove('active');
-            });
-
-            // Open clicked FAQ if it wasn't active
-            if (!isActive) {
-                faqItem.classList.add('active');
-            }
-        }
-    </script>
+    <script src="../js/become_provider.js"></script>
 </body>
 </html>

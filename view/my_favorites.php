@@ -49,10 +49,10 @@ try {
     <link href="../css/footer.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
+    <link href="../css/my_favorites.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
     <script src="../js/translator.js"></script>
     <script src="../js/accessibility.js"></script>
-    <style>
         * {
             margin: 0;
             padding: 0;
@@ -359,9 +359,6 @@ try {
 
             .nav-link:not(.active) {
                 display: none;
-            }
-        }
-    </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link" data-i18n="accessibility.skip_to_content">Skip to main content</a>

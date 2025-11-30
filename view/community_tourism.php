@@ -14,10 +14,10 @@ require_once '../settings/core.php';
     <link href="../css/footer.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
+    <link href="../css/community_tourism.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
     <script src="../js/translator.js"></script>
     <script src="../js/accessibility.js"></script>
-    <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -682,9 +682,6 @@ require_once '../settings/core.php';
 
         [data-theme="dark"] div[style*="background: linear-gradient(135deg, rgba(212,160,23,0.1)"] {
             background: linear-gradient(135deg, rgba(82,183,136,0.15), rgba(64,145,108,0.1)) !important;
-            border-color: #52b788 !important;
-        }
-    </style>
 </head>
 <body>
     <?php include '../includes/navigation.php'; ?>

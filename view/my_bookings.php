@@ -34,8 +34,9 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
     <link href="../css/navigation.css" rel="stylesheet">
     <link href="../css/footer.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
+    <link href="../css/my_bookings.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
-    <style>
+    <script src="../js/my_bookings.js"></script>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: #f8f9fa; min-height: 100vh; }
 
@@ -218,9 +219,6 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
         @media (max-width: 768px) {
             .booking-card-inner { flex-direction: column; }
             .booking-image { width: 100%; height: 160px; }
-            .booking-status-price { flex-direction: row; width: 100%; margin-top: 12px; }
-        }
-    </style>
 </head>
 <body>
     <?php include '../includes/navigation.php'; ?>
@@ -340,46 +338,5 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-    function cancelBooking(bookingId) {
-        Swal.fire({
-            title: 'Cancel Booking?',
-            text: 'Are you sure you want to cancel this booking?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, cancel it',
-            input: 'textarea',
-            inputLabel: 'Reason for cancellation (optional)',
-            inputPlaceholder: 'Enter your reason...'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '../actions/update_booking_status_action.php',
-                    method: 'POST',
-                    data: {
-                        booking_id: bookingId,
-                        status: 'cancelled',
-                        reason: result.value || ''
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            Swal.fire('Cancelled', response.message, 'success').then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire('Error', response.message, 'error');
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Error', 'Failed to cancel booking', 'error');
-                    }
-                });
-            }
-        });
-    }
-    </script>
 </body>
 </html>
