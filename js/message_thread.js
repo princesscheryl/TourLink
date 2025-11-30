@@ -44,7 +44,11 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('booking_id', window.bookingId);
         }
 
-        fetch('../actions/send_message_action.php', {
+        // Determine correct path based on current location
+        const isProviderView = window.location.pathname.includes('/provider/');
+        const actionPath = isProviderView ? '../../actions/send_message_action.php' : '../actions/send_message_action.php';
+        
+        fetch(actionPath, {
             method: 'POST',
             body: formData,
             credentials: 'same-origin'
