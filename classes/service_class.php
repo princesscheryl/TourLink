@@ -36,15 +36,15 @@ class Service extends db_connection
         if ($has_festival_column && $festival_id !== null) {
             // Include festival_id in the query
             $stmt = $this->db->prepare(
-                "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, festival_id, service_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')"
+                "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, festival_id, service_status, availability_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 'available')"
             );
             $stmt->bind_param("iissdssisis", $provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images, $festival_id);
         } else {
             // Exclude festival_id from the query
             $stmt = $this->db->prepare(
-                "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, service_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')"
+                "INSERT INTO tl_services (provider_id, category_id, service_title, service_description, base_price, pricing_unit, service_location, available_regions, max_capacity, service_images, service_status, availability_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 'available')"
             );
             $stmt->bind_param("iissdssisi", $provider_id, $category_id, $title, $description, $base_price, $pricing_unit, $service_location, $available_regions, $max_capacity, $service_images);
         }
