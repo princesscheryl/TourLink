@@ -10,7 +10,6 @@
     <link href="../css/dark-mode.css" rel="stylesheet">
     <link href="../css/accessibility.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
-    <script src="../js/translator.js"></script>
     <script src="../js/accessibility.js"></script>
     <style>
         * {
@@ -388,14 +387,6 @@
 
     <!-- Header Controls -->
     <div class="header-controls">
-        <!-- Language Switcher -->
-        <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-            <option value="es">Español</option>
-            <option value="tw">Twi</option>
-            <option value="ga">Ga</option>
-        </select>
 
         <!-- Theme Toggle -->
         <button onclick="toggleTheme()" class="theme-toggle-btn" id="publicThemeToggle" aria-label="Toggle dark mode">

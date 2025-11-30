@@ -127,7 +127,6 @@ $regions = ['Greater Accra', 'Central', 'Ashanti', 'Northern', 'Western', 'Easte
     <link href="../css/footer.css" rel="stylesheet">
     <link href="../css/dark-mode.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
-    <script src="../js/translator.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;

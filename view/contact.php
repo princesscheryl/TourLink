@@ -16,7 +16,6 @@ require_once '../settings/core.php';
     <link href="../css/accessibility.css" rel="stylesheet">
     <link href="../css/contact.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
-    <script src="../js/translator.js"></script>
     <script src="../js/accessibility.js"></script>
     <script src="../js/contact.js"></script>
 </head>

@@ -51,7 +51,6 @@ try {
     <link href="../css/accessibility.css" rel="stylesheet">
     <link href="../css/my_favorites.css" rel="stylesheet">
     <script src="../js/dark-mode.js"></script>
-    <script src="../js/translator.js"></script>
     <script src="../js/accessibility.js"></script>
 </head>
 <body>

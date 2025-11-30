@@ -30,18 +30,32 @@ class SupportTicket {
     public function create_ticket($user_id, $user_type, $subject, $category, $description, $priority = 'medium', $related_booking_id = null, $related_service_id = null) {
         $ticket_number = $this->generate_ticket_number();
         
+        // Handle NULL values for optional fields
+        if ($related_booking_id === null || $related_booking_id === 0) {
+            $related_booking_id = null;
+        }
+        if ($related_service_id === null || $related_service_id === 0) {
+            $related_service_id = null;
+        }
+        
         $sql = "INSERT INTO tl_support_tickets (ticket_number, user_id, user_type, subject, category, description, priority, related_booking_id, related_service_id, status) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')";
         
         $stmt = $this->db->db->prepare($sql);
         if (!$stmt) {
+            error_log("Failed to prepare statement: " . $this->db->db->error);
             return false;
         }
 
+        // Parameter types: s=string, i=integer
+        // 1. ticket_number(s), 2. user_id(i), 3. user_type(s), 4. subject(s), 5. category(s), 6. description(s), 7. priority(s), 8. related_booking_id(i), 9. related_service_id(i)
+        // Type string: s-i-s-s-s-s-s-i-i = 9 characters (removed extra 'i' from position 5)
         $stmt->bind_param("sississsii", $ticket_number, $user_id, $user_type, $subject, $category, $description, $priority, $related_booking_id, $related_service_id);
         
         if ($stmt->execute()) {
             return $this->db->db->insert_id;
+        } else {
+            error_log("Failed to execute statement: " . $stmt->error);
         }
         
         return false;

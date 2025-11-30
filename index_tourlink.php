@@ -89,7 +89,6 @@ $categories = get_all_service_categories_ctr();
     <link href="css/dark-mode.css" rel="stylesheet">
     <link href="css/accessibility.css" rel="stylesheet">
     <script src="js/dark-mode.js"></script>
-    <script src="js/translator.js"></script>
     <script src="js/accessibility.js"></script>
     <link href="css/index_tourlink.css" rel="stylesheet">
 <body>
@@ -197,14 +196,6 @@ $categories = get_all_service_categories_ctr();
                     <a href="login/login.php" class="btn-signin" data-i18n="nav.sign_in">Sign In</a>
                 <?php endif; ?>
 
-                <!-- Language Switcher (visible to all) -->
-                <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
-                    <option value="en">English</option>
-                    <option value="fr">Français</option>
-                    <option value="es">Español</option>
-                    <option value="tw">Twi</option>
-                    <option value="ga">Ga</option>
-                </select>
 
                 <!-- Theme Toggle (visible to all) -->
                 <button onclick="toggleTheme()" class="theme-toggle-btn" id="publicThemeToggle" aria-label="Toggle dark mode">

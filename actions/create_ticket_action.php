@@ -1,12 +1,29 @@
 <?php
-require_once '../settings/core.php';
-require_once '../controllers/support_ticket_controller.php';
-require_once '../classes/email_class.php';
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login/login.php");
-    exit();
+// Start output buffering
+ob_start();
+
+try {
+    require_once '../settings/core.php';
+    require_once '../controllers/support_ticket_controller.php';
+    require_once '../classes/email_class.php';
+
+    // Check if user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        ob_end_clean();
+        header("Location: ../login/login.php");
+        exit();
+    }
+} catch (Exception $e) {
+    ob_end_clean();
+    die("Error loading required files: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
+} catch (Error $e) {
+    ob_end_clean();
+    die("Fatal error: " . $e->getMessage() . "<br>File: " . $e->getFile() . "<br>Line: " . $e->getLine());
 }
 
 $user_id = $_SESSION['user_id'];
@@ -47,7 +64,15 @@ if (!empty($errors)) {
 }
 
 // Create ticket
-$ticket_id = create_ticket_ctr($user_id, $user_type, $subject, $category, $description, $priority, $related_booking_id, $related_service_id);
+try {
+    $ticket_id = create_ticket_ctr($user_id, $user_type, $subject, $category, $description, $priority, $related_booking_id, $related_service_id);
+} catch (Exception $e) {
+    ob_end_clean();
+    $_SESSION['ticket_errors'] = ['Error creating ticket: ' . $e->getMessage()];
+    $_SESSION['ticket_form_data'] = $_POST;
+    header("Location: ../view/create_ticket.php");
+    exit();
+}
 
 if ($ticket_id) {
     // Get ticket details for email
@@ -85,10 +110,12 @@ if ($ticket_id) {
         // send_admin_notification($ticket);
     }
     
+    ob_end_clean();
     $_SESSION['ticket_success'] = "Your ticket #{$ticket['ticket_number']} has been created successfully!";
     header("Location: ../view/ticket_details.php?id=" . $ticket_id);
     exit();
 } else {
+    ob_end_clean();
     $_SESSION['ticket_errors'] = ['Failed to create ticket. Please try again.'];
     $_SESSION['ticket_form_data'] = $_POST;
     header("Location: ../view/create_ticket.php");

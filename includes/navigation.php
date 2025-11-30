@@ -144,16 +144,6 @@ if ($in_view_folder || $in_admin_folder) {
             <a href="<?php echo $base_path; ?>login/login.php" class="btn-signin" data-i18n="nav.sign_in">Sign In</a>
         <?php endif; ?>
 
-        <?php if(!isset($_SESSION['user_id'])): ?>
-        <!-- Language Switcher (shown when not logged in) -->
-        <select id="languageSelector" class="language-selector" aria-label="Select language" onchange="changeLanguage(this.value)">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-            <option value="es">Español</option>
-            <option value="tw">Twi</option>
-            <option value="ga">Ga</option>
-        </select>
-        <?php endif; ?>
 
         <!-- Hamburger Menu (Mobile) -->
         <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
