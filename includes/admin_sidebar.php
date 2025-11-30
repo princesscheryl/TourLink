@@ -65,6 +65,21 @@ if (!isset($current_page)) {
             <i class="fas fa-tags"></i>
             Discount Codes
         </a>
+        <a href="<?php echo $base_path; ?>admin/manage_tickets.php" class="nav-link <?php echo $current_page === 'tickets' ? 'active' : ''; ?>">
+            <i class="fas fa-headset"></i>
+            Support Tickets
+            <?php 
+            // Get new tickets count
+            if (!isset($new_tickets_count)) {
+                require_once __DIR__ . '/../controllers/support_ticket_controller.php';
+                $stats = get_ticket_stats_ctr();
+                $new_tickets_count = $stats['new_tickets'] ?? 0;
+            }
+            if ($new_tickets_count > 0): 
+            ?>
+                <span class="badge" style="background: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; margin-left: 8px;"><?php echo $new_tickets_count; ?></span>
+            <?php endif; ?>
+        </a>
     </div>
 
     <div class="nav-section">

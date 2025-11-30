@@ -210,7 +210,11 @@ class SupportTicket {
      * Update ticket status
      */
     public function update_ticket_status($ticket_id, $status, $assigned_to = null) {
-        $sql = "UPDATE tl_support_tickets SET status = ?, assigned_to = ?";
+        if ($assigned_to) {
+            $sql = "UPDATE tl_support_tickets SET status = ?, assigned_to = ?";
+        } else {
+            $sql = "UPDATE tl_support_tickets SET status = ?";
+        }
         
         if ($status === 'resolved' || $status === 'closed') {
             $sql .= ", resolved_at = NOW()";
@@ -228,16 +232,6 @@ class SupportTicket {
         if ($assigned_to) {
             $stmt->bind_param("sii", $status, $assigned_to, $ticket_id);
         } else {
-            $stmt->bind_param("sii", $status, $assigned_to, $ticket_id);
-            $stmt->bind_param("sii", $status, $assigned_to, $ticket_id);
-            $sql = "UPDATE tl_support_tickets SET status = ?";
-            if ($status === 'resolved' || $status === 'closed') {
-                $sql .= ", resolved_at = NOW()";
-            } else {
-                $sql .= ", resolved_at = NULL";
-            }
-            $sql .= " WHERE ticket_id = ?";
-            $stmt = $this->db->db->prepare($sql);
             $stmt->bind_param("si", $status, $ticket_id);
         }
         

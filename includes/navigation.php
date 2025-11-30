@@ -99,6 +99,10 @@ if ($in_view_folder || $in_admin_folder) {
                         }
                         ?>
                     </a>
+                    <a href="<?php echo $base_path; ?>view/my_tickets.php">
+                        <i class="fa fa-headset"></i>
+                        Support
+                    </a>
                     <?php if(isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'provider'): ?>
                         <div class="dropdown-divider"></div>
                         <a href="<?php echo $base_path; ?>admin/provider_dashboard.php">

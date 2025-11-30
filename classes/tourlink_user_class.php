@@ -255,5 +255,25 @@ class TourLinkUser extends db_connection
 
         return $stmt->execute();
     }
+
+    /**
+     * Get users by type
+     * @param string $user_type (tourist, provider, admin)
+     * @return array Array of users
+     */
+    public function get_users_by_type($user_type)
+    {
+        $stmt = $this->db->prepare("SELECT user_id, first_name, last_name, email, user_type FROM tl_users WHERE user_type = ? ORDER BY first_name, last_name");
+        $stmt->bind_param("s", $user_type);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+        
+        return $users;
+    }
 }
 ?>
