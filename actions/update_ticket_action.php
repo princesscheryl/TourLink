@@ -17,6 +17,7 @@ if (!$is_platform_admin && !$is_regular_admin) {
 
 $ticket_id = isset($_POST['ticket_id']) ? (int)$_POST['ticket_id'] : 0;
 $status = isset($_POST['status']) ? $_POST['status'] : '';
+$priority = isset($_POST['priority']) ? $_POST['priority'] : '';
 $assigned_to = isset($_POST['assigned_to']) && $_POST['assigned_to'] ? (int)$_POST['assigned_to'] : null;
 
 if (!$ticket_id || !$status) {
@@ -25,8 +26,8 @@ if (!$ticket_id || !$status) {
     exit();
 }
 
-// Update ticket
-$result = update_ticket_status_ctr($ticket_id, $status, $assigned_to);
+// Update ticket (status, priority, and assignment)
+$result = update_ticket_status_ctr($ticket_id, $status, $assigned_to, $priority);
 
 if ($result) {
     // If assigning, also assign via assign method

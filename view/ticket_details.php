@@ -161,7 +161,7 @@ if ($is_platform_admin) {
                 
                 <div class="control-group">
                     <label>Status</label>
-                    <select name="status" class="form-select" id="statusSelect">
+                    <select name="status" class="form-select" id="statusSelect" onchange="this.form.submit()">
                         <option value="new" <?php echo $ticket['status'] === 'new' ? 'selected' : ''; ?>>New</option>
                         <option value="open" <?php echo $ticket['status'] === 'open' ? 'selected' : ''; ?>>Open</option>
                         <option value="in_progress" <?php echo $ticket['status'] === 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
@@ -172,7 +172,7 @@ if ($is_platform_admin) {
                 
                 <div class="control-group">
                     <label>Priority</label>
-                    <select name="priority" class="form-select">
+                    <select name="priority" class="form-select" id="prioritySelect" onchange="this.form.submit()">
                         <option value="low" <?php echo $ticket['priority'] === 'low' ? 'selected' : ''; ?>>Low</option>
                         <option value="medium" <?php echo $ticket['priority'] === 'medium' ? 'selected' : ''; ?>>Medium</option>
                         <option value="high" <?php echo $ticket['priority'] === 'high' ? 'selected' : ''; ?>>High</option>
@@ -182,7 +182,7 @@ if ($is_platform_admin) {
                 
                 <div class="control-group">
                     <label>Assign To</label>
-                    <select name="assigned_to" class="form-select">
+                    <select name="assigned_to" class="form-select" id="assignedSelect" onchange="this.form.submit()">
                         <option value="">Unassigned</option>
                         <?php if ($admins): ?>
                             <?php foreach ($admins as $admin): ?>
@@ -194,7 +194,12 @@ if ($is_platform_admin) {
                     </select>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Update Ticket</button>
+                <div class="control-group" style="flex: 0 0 auto;">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+                        <i class="fas fa-save"></i> Update
+                    </button>
+                </div>
             </form>
         </div>
         <?php endif; ?>
@@ -299,9 +304,11 @@ if ($is_platform_admin) {
                     <?php endif; ?>
                     
                     <textarea name="message" class="form-control" rows="5" placeholder="Type your reply here..." required></textarea>
-                    <button type="submit" class="btn btn-primary mt-3">
-                        <i class="fas fa-paper-plane"></i> Send Reply
-                    </button>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Reply
+                        </button>
+                    </div>
                 </form>
             </div>
             <?php else: ?>

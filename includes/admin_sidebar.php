@@ -10,9 +10,12 @@
 
 // Determine the correct base path
 $in_admin_folder = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false);
+$in_view_folder = (strpos($_SERVER['PHP_SELF'], '/view/') !== false);
 
 // Set base path based on current location
 if ($in_admin_folder) {
+    $base_path = '../';
+} elseif ($in_view_folder) {
     $base_path = '../';
 } else {
     $base_path = '';

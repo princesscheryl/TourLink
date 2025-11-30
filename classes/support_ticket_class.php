@@ -224,32 +224,39 @@ class SupportTicket {
     /**
      * Update ticket status
      */
-    public function update_ticket_status($ticket_id, $status, $assigned_to = null) {
-        if ($assigned_to) {
-            $sql = "UPDATE tl_support_tickets SET status = ?, assigned_to = ?";
-        } else {
-            $sql = "UPDATE tl_support_tickets SET status = ?";
+    public function update_ticket_status($ticket_id, $status, $assigned_to = null, $priority = null) {
+        $updates = ["status = ?"];
+        $params = [$status];
+        $types = "s";
+        
+        if ($assigned_to !== null) {
+            $updates[] = "assigned_to = ?";
+            $params[] = $assigned_to;
+            $types .= "i";
+        }
+        
+        if ($priority !== null && $priority !== '') {
+            $updates[] = "priority = ?";
+            $params[] = $priority;
+            $types .= "s";
         }
         
         if ($status === 'resolved' || $status === 'closed') {
-            $sql .= ", resolved_at = NOW()";
+            $updates[] = "resolved_at = NOW()";
         } else {
-            $sql .= ", resolved_at = NULL";
+            $updates[] = "resolved_at = NULL";
         }
         
-        $sql .= " WHERE ticket_id = ?";
+        $sql = "UPDATE tl_support_tickets SET " . implode(", ", $updates) . " WHERE ticket_id = ?";
+        $params[] = $ticket_id;
+        $types .= "i";
         
         $stmt = $this->db->db->prepare($sql);
         if (!$stmt) {
             return false;
         }
 
-        if ($assigned_to) {
-            $stmt->bind_param("sii", $status, $assigned_to, $ticket_id);
-        } else {
-            $stmt->bind_param("si", $status, $ticket_id);
-        }
-        
+        $stmt->bind_param($types, ...$params);
         return $stmt->execute();
     }
 

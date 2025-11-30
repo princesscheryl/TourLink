@@ -45,9 +45,9 @@ function get_all_tickets_ctr($filters = []) {
 /**
  * Update ticket status
  */
-function update_ticket_status_ctr($ticket_id, $status, $assigned_to = null) {
+function update_ticket_status_ctr($ticket_id, $status, $assigned_to = null, $priority = null) {
     $ticket_class = new SupportTicket();
-    return $ticket_class->update_ticket_status($ticket_id, $status, $assigned_to);
+    return $ticket_class->update_ticket_status($ticket_id, $status, $assigned_to, $priority);
 }
 
 /**
