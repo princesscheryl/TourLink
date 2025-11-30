@@ -60,39 +60,48 @@ class Admin extends db_connection
             AND r.rating >= 4
             AND r.review_status = 'approved'
         ");
-        $stats['high_quality_experiences'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['high_quality_experiences'] = $row ? (int)$row['total'] : 0;
 
         // Total revenue generated for providers
         $result = $this->db->query("SELECT COALESCE(SUM(total_amount), 0) as total FROM tl_bookings WHERE booking_status IN ('confirmed', 'completed')");
-        $stats['total_revenue'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['total_revenue'] = $row ? (float)$row['total'] : 0;
 
         // Total bookings
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_bookings");
-        $stats['total_bookings'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['total_bookings'] = $row ? (int)$row['total'] : 0;
 
         // Completed bookings
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_bookings WHERE booking_status = 'completed'");
-        $stats['completed_bookings'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['completed_bookings'] = $row ? (int)$row['total'] : 0;
 
         // Total providers
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_service_providers WHERE verification_status = 'verified'");
-        $stats['total_providers'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['total_providers'] = $row ? (int)$row['total'] : 0;
 
         // Total tourists (users who are not providers)
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_users WHERE user_type = 'tourist'");
-        $stats['total_tourists'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['total_tourists'] = $row ? (int)$row['total'] : 0;
 
         // Total services
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_services WHERE service_status = 'active'");
-        $stats['total_services'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['total_services'] = $row ? (int)$row['total'] : 0;
 
         // This month's bookings
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_bookings WHERE MONTH(booking_date) = MONTH(CURRENT_DATE()) AND YEAR(booking_date) = YEAR(CURRENT_DATE())");
-        $stats['monthly_bookings'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['monthly_bookings'] = $row ? (int)$row['total'] : 0;
 
         // This month's revenue
         $result = $this->db->query("SELECT COALESCE(SUM(total_amount), 0) as total FROM tl_bookings WHERE booking_status IN ('confirmed', 'completed') AND MONTH(booking_date) = MONTH(CURRENT_DATE()) AND YEAR(booking_date) = YEAR(CURRENT_DATE())");
-        $stats['monthly_revenue'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['monthly_revenue'] = $row ? (float)$row['total'] : 0;
 
         // Monthly Active Tourists (tourists who completed bookings this month)
         $result = $this->db->query("
@@ -102,7 +111,8 @@ class Admin extends db_connection
             AND MONTH(completion_date) = MONTH(CURRENT_DATE())
             AND YEAR(completion_date) = YEAR(CURRENT_DATE())
         ");
-        $stats['monthly_active_tourists'] = $result->fetch_assoc()['total'] ?? 0;
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['monthly_active_tourists'] = $row ? (int)$row['total'] : 0;
 
         // Monthly Active Providers (providers who received completed bookings this month)
         $result = $this->db->query("
@@ -113,15 +123,18 @@ class Admin extends db_connection
             AND MONTH(b.completion_date) = MONTH(CURRENT_DATE())
             AND YEAR(b.completion_date) = YEAR(CURRENT_DATE())
         ");
-        $stats['monthly_active_providers'] = $result->fetch_assoc()['total'] ?? 0;
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['monthly_active_providers'] = $row ? (int)$row['total'] : 0;
 
         // Pending bookings
         $result = $this->db->query("SELECT COUNT(*) as total FROM tl_bookings WHERE booking_status = 'pending'");
-        $stats['pending_bookings'] = $result->fetch_assoc()['total'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['pending_bookings'] = $row ? (int)$row['total'] : 0;
 
         // Average booking value
         $result = $this->db->query("SELECT COALESCE(AVG(total_amount), 0) as avg FROM tl_bookings WHERE booking_status IN ('confirmed', 'completed')");
-        $stats['avg_booking_value'] = $result->fetch_assoc()['avg'];
+        $row = $result ? $result->fetch_assoc() : null;
+        $stats['avg_booking_value'] = $row ? (float)$row['avg'] : 0;
 
         return $stats;
     }

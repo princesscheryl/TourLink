@@ -190,7 +190,7 @@ $current_page = 'tickets';
                                         <strong><?php echo htmlspecialchars($ticket['ticket_number']); ?></strong>
                                     </td>
                                     <td>
-                                        <a href="ticket_details.php?id=<?php echo $ticket['ticket_id']; ?>" class="ticket-link">
+                                        <a href="../view/ticket_details.php?id=<?php echo $ticket['ticket_id']; ?>" class="ticket-link">
                                             <?php echo htmlspecialchars($ticket['subject']); ?>
                                         </a>
                                     </td>
@@ -221,7 +221,7 @@ $current_page = 'tickets';
                                     </td>
                                     <td><?php echo $created_date; ?></td>
                                     <td>
-                                        <a href="ticket_details.php?id=<?php echo $ticket['ticket_id']; ?>" class="btn btn-sm btn-primary">
+                                        <a href="../view/ticket_details.php?id=<?php echo $ticket['ticket_id']; ?>" class="btn btn-sm btn-primary">
                                             View
                                         </a>
                                     </td>

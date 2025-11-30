@@ -3,33 +3,59 @@ require_once '../settings/core.php';
 require_once '../controllers/support_ticket_controller.php';
 require_once '../classes/tourlink_user_class.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
+// Check if user is logged in OR if admin is logged in
+$is_platform_admin = false;
+$user_id = null;
+$user_type = null;
+
+// Check for platform admin (admin dashboard)
+if (isset($_SESSION['admin_id'])) {
+    $is_platform_admin = true;
+    $user_id = $_SESSION['admin_id']; // For admin context
+    $user_type = 'admin';
+} 
+// Check for regular user login
+elseif (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $user_type = $_SESSION['user_type'] ?? 'tourist';
+    $is_admin = ($user_type === 'admin');
+} 
+// No valid session
+else {
     header("Location: ../login/login.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-$user_type = $_SESSION['user_type'] ?? 'tourist';
-$is_admin = ($user_type === 'admin');
-
 $ticket_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if (!$ticket_id) {
-    header("Location: my_tickets.php");
+    if ($is_platform_admin) {
+        header("Location: ../admin/manage_tickets.php");
+    } else {
+        header("Location: my_tickets.php");
+    }
     exit();
 }
 
 $ticket = get_ticket_by_id_ctr($ticket_id);
 
 if (!$ticket) {
-    header("Location: my_tickets.php");
+    if ($is_platform_admin) {
+        header("Location: ../admin/manage_tickets.php");
+    } else {
+        header("Location: my_tickets.php");
+    }
     exit();
 }
 
 // Check if user has permission to view this ticket
-if (!$is_admin && $ticket['user_id'] != $user_id) {
-    header("Location: my_tickets.php");
+// Platform admins can view all tickets, regular admins can view all tickets, users can only view their own
+if (!$is_platform_admin && !$is_admin && $ticket['user_id'] != $user_id) {
+    if ($is_platform_admin) {
+        header("Location: ../admin/manage_tickets.php");
+    } else {
+        header("Location: my_tickets.php");
+    }
     exit();
 }
 
